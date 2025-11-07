@@ -1,10 +1,31 @@
 {
   "name": "@jobmatch/shared",
   "version": "1.0.0",
-  "description": "Shared types, schemas, and utilities for JobMatch",
+  "description": "Shared types, schemas, utilities and tRPC routers for JobMatch",
   "private": true,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./schemas": {
+      "types": "./dist/schemas/index.d.ts",
+      "default": "./dist/schemas/index.js"
+    },
+    "./trpc": {
+      "types": "./dist/trpc/index.d.ts",
+      "default": "./dist/trpc/index.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "default": "./dist/types/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf dist",
@@ -13,6 +34,7 @@
     "lint:fix": "eslint src --ext .ts,.tsx --fix"
   },
   "dependencies": {
+    "@trpc/server": "^10.45.2",
     "zod": "^3.22.4"
   },
   "devDependencies": {
