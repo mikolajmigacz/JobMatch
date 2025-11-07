@@ -1,0 +1,54 @@
+services:
+  localstack:
+    image: localstack/localstack:2.3
+    container_name: jobmatch-localstack
+    ports:
+      - '4566:4566'
+    environment:
+      - SERVICES=dynamodb,sqs,s3
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - LOCALSTACK_HOSTNAME=localstack
+      - DATA_DIR=/tmp/localstack
+    volumes:
+      - localstack_data:/tmp/localstack
+      - ./docker/localstack/entrypoint.sh:/app/docker-entrypoint.sh
+      - /var/run/docker.sock:/var/run/docker.sock
+    entrypoint: /app/docker-entrypoint.sh
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'bash',
+          '-c',
+          'curl -s http://localhost:4566/_localstack/health | grep -q available || exit 1',
+        ]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    networks:
+      - jobmatch-network
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: jobmatch-mailhog
+    ports:
+      - '1025:1025'
+      - '8025:8025'
+    healthcheck:
+      test: ['CMD', 'nc', '-z', 'localhost', '1025']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - jobmatch-network
+
+networks:
+  jobmatch-network:
+    driver: bridge
+
+volumes:
+  localstack_data:
+    driver: local
