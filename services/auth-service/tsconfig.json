@@ -3,10 +3,24 @@
   "compilerOptions": {
     "outDir": "./dist",
     "baseUrl": ".",
+    "module": "commonjs",
+    "moduleResolution": "node",
     "paths": {
       "@jobmatch/shared": ["../../packages/shared/src"],
       "@jobmatch/shared/*": ["../../packages/shared/src/*"],
+      "@domain/*": ["./src/domain/*"],
+      "@application/*": ["./src/application/*"],
+      "@infrastructure/*": ["./src/infrastructure/*"],
+      "@ui/*": ["./src/ui/*"],
+      "@shared/*": ["./src/shared/*"],
       "@/*": ["./src/*"]
+    }
+  },
+  "ts-node": {
+    "esm": false,
+    "transpileOnly": true,
+    "compilerOptions": {
+      "module": "commonjs"
     }
   },
   "include": ["src"],
