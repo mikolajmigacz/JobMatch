@@ -7,7 +7,6 @@ import {
   UseInterceptors,
   UploadedFile,
   UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthenticationService } from '@application/authentication.service';
@@ -18,6 +17,8 @@ import {
 } from '@shared/exceptions/auth.exceptions';
 import { HttpCode, HttpStatus, BadRequestException, Headers } from '@nestjs/common';
 import type { RegisterRequest, LoginRequest } from '@jobmatch/shared';
+import { RegisterDtoSchema, LoginDtoSchema } from '@jobmatch/shared';
+import { ZodValidationPipe } from '@shared/pipes/zod-validation.pipe';
 
 @Controller('auth')
 export class AuthController {
@@ -26,7 +27,7 @@ export class AuthController {
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   @UseInterceptors(FileInterceptor('companyLogo'))
-  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+  @UsePipes(new ZodValidationPipe(RegisterDtoSchema))
   async register(
     @Body() dto: RegisterRequest,
     @UploadedFile() file?: { buffer: Buffer; mimetype: string }
@@ -46,6 +47,7 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
+  @UsePipes(new ZodValidationPipe(LoginDtoSchema))
   async login(@Body() dto: LoginRequest) {
     try {
       return await this.authService.login(dto);
