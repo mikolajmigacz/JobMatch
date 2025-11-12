@@ -1,1 +1,0 @@
-export { dynamoClient } from './client';

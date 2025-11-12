@@ -9,9 +9,8 @@ export class JwtTokenService implements ITokenService {
   private readonly expiresIn: string;
 
   constructor(private configService: ConfigService) {
-    this.secret =
-      this.configService.get<string>('JWT_SECRET') || 'dev-secret-key-change-in-production';
-    this.expiresIn = this.configService.get<string>('JWT_EXPIRES_IN') || '7d';
+    this.secret = this.configService.get<string>('JWT_SECRET') as string;
+    this.expiresIn = this.configService.get<string>('JWT_EXPIRES_IN') as string;
   }
 
   async generateToken(payload: TokenPayload): Promise<string> {

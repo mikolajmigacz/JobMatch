@@ -1,6 +1,9 @@
 import { UserId } from '../value-objects/user-id';
 
-export type UserRole = 'job_seeker' | 'employer';
+export enum UserRole {
+  JOB_SEEKER = 'job_seeker',
+  EMPLOYER = 'employer',
+}
 
 export class User {
   private constructor(

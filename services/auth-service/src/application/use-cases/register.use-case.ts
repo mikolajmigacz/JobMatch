@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { User } from '@domain/entities/user';
+import { User, UserRole } from '@domain/entities/user';
 import { IUserRepository } from '@domain/repositories/user.repository';
 import { IPasswordService } from '@domain/services/password.service';
 import { ITokenService } from '@domain/services/token.service';
@@ -25,7 +25,7 @@ export class RegisterUseCase {
     const user = User.create(
       request.email,
       hashedPassword,
-      request.role,
+      request.role as UserRole,
       request.name,
       request.companyName
     );

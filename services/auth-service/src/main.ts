@@ -5,12 +5,13 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  const corsOrigin = process.env.CORS_ORIGIN as string;
   app.enableCors({
-    origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:4000'],
+    origin: corsOrigin.split(','),
     credentials: true,
   });
 
-  const port = parseInt(process.env.AUTH_SERVICE_PORT || '3001', 10);
+  const port = parseInt(process.env.AUTH_SERVICE_PORT as string, 10);
 
   await app.listen(port);
   // eslint-disable-next-line no-console

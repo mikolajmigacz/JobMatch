@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { GetCommand, PutCommand, QueryCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
-import { dynamoClient } from '@jobmatch/shared';
-import { User } from '@domain/entities/user';
+import { dynamoClient } from '../dynamodb/client';
+import { User, UserRole } from '@domain/entities/user';
 import { UserId } from '@domain/value-objects/user-id';
 import { IUserRepository } from '@domain/repositories/user.repository';
 
@@ -44,7 +44,7 @@ export class DynamoDbUserRepository implements IUserRepository {
       UserId.from(item.userId as string),
       item.email as string,
       item.password as string,
-      item.role as 'job_seeker' | 'employer',
+      item.role as UserRole,
       item.name as string,
       (item.companyName as string) || undefined,
       (item.companyLogoUrl as string) || undefined,
@@ -70,7 +70,7 @@ export class DynamoDbUserRepository implements IUserRepository {
       UserId.from(item.userId as string),
       item.email as string,
       item.password as string,
-      item.role as 'job_seeker' | 'employer',
+      item.role as UserRole,
       item.name as string,
       (item.companyName as string) || undefined,
       (item.companyLogoUrl as string) || undefined,
@@ -93,7 +93,7 @@ export class DynamoDbUserRepository implements IUserRepository {
         UserId.from(item.userId as string),
         item.email as string,
         item.password as string,
-        item.role as 'job_seeker' | 'employer',
+        item.role as UserRole,
         item.name as string,
         (item.companyName as string) || undefined,
         (item.companyLogoUrl as string) || undefined,
