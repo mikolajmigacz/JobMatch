@@ -21,7 +21,7 @@ export class RegisterUseCase {
     logoFile?: { buffer: Buffer; mimetype: string }
   ): Promise<AuthResponse> {
     // Validate logo requirement for employers
-    if (request.role === 'employer' && !logoFile) {
+    if (request.role === UserRole.EMPLOYER && !logoFile) {
       throw new Error('Logo is required for employers');
     }
 
@@ -40,7 +40,7 @@ export class RegisterUseCase {
       request.companyName
     );
 
-    if (logoFile && request.role === 'employer') {
+    if (logoFile && request.role === UserRole.EMPLOYER) {
       const key = `logos/${request.email}/${logoFile.buffer.length}-${Date.now()}`;
       const logoUrl = await this.fileStorageService.uploadFile(
         process.env.S3_BUCKET as string,

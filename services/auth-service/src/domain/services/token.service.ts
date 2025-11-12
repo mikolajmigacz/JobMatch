@@ -1,7 +1,9 @@
+import { UserRole } from '../entities/user';
+
 export interface TokenPayload {
   userId: string;
   email: string;
-  role: 'job_seeker' | 'employer';
+  role: UserRole;
 }
 
 export interface ITokenService {
