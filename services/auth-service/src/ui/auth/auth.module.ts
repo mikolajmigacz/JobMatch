@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { PassportModule } from '@nestjs/passport';
 import { IPasswordService } from '@domain/services/password.service';
 import { ITokenService } from '@domain/services/token.service';
 import { IUserRepository } from '@domain/repositories/user.repository';
@@ -15,12 +16,15 @@ import { GetCurrentUserUseCase } from '@application/use-cases/get-current-user.u
 import { ValidateTokenUseCase } from '@application/use-cases/validate-token.use-case';
 import { AuthenticationService } from '@application/authentication.service';
 import { AuthController } from './auth.controller';
+import { JwtStrategy } from '@infrastructure/strategies/jwt.strategy';
 
 @Module({
+  imports: [PassportModule.register({ defaultStrategy: 'jwt' })],
   controllers: [AuthController],
   providers: [
     S3ClientProvider,
     DynamoDbClientProvider,
+    JwtStrategy,
     {
       provide: IPasswordService,
       useClass: BcryptPasswordService,

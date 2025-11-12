@@ -7,18 +7,21 @@ import {
   UseInterceptors,
   UploadedFile,
   UsePipes,
+  UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthenticationService } from '@application/authentication.service';
 import {
-  InvalidTokenException,
   UserAlreadyExistsException,
   InvalidCredentialsException,
 } from '@shared/exceptions/auth.exceptions';
-import { HttpCode, HttpStatus, BadRequestException, Headers } from '@nestjs/common';
+import { HttpCode, HttpStatus, BadRequestException } from '@nestjs/common';
 import type { RegisterRequest, LoginRequest } from '@jobmatch/shared';
 import { RegisterDtoSchema, LoginDtoSchema } from '@jobmatch/shared';
 import { ZodValidationPipe } from '@shared/pipes/zod-validation.pipe';
+import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
+import { CurrentUser } from '@shared/decorators/current-user.decorator';
+import { TokenPayload } from '@domain/services/token.service';
 
 @Controller('auth')
 export class AuthController {
@@ -60,35 +63,14 @@ export class AuthController {
   }
 
   @Get('me')
-  async getCurrentUser(@Headers('authorization') authHeader: string) {
-    if (!authHeader) {
-      throw new UnauthorizedException('No authorization header');
-    }
-
-    const token = authHeader.split(' ')[1];
-    if (!token) {
-      throw new UnauthorizedException('Invalid authorization format');
-    }
-
-    try {
-      return await this.authService.getCurrentUser(token);
-    } catch (error) {
-      if (error instanceof InvalidTokenException) {
-        throw new UnauthorizedException(error.message);
-      }
-      throw error;
-    }
+  @UseGuards(JwtAuthGuard)
+  async getCurrentUser(@CurrentUser() user: TokenPayload) {
+    return user;
   }
 
   @Post('validate-token')
-  async validateToken(@Body() dto: { token: string }) {
-    try {
-      return await this.authService.validateToken(dto.token);
-    } catch (error) {
-      if (error instanceof InvalidTokenException) {
-        throw new UnauthorizedException(error.message);
-      }
-      throw error;
-    }
+  @UseGuards(JwtAuthGuard)
+  async validateToken(@CurrentUser() user: TokenPayload) {
+    return { valid: true, user };
   }
 }
