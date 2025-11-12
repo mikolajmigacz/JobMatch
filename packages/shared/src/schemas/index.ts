@@ -46,18 +46,13 @@ export const UserSchema = z.object({
 
 export const PublicUserSchema = UserSchema.omit({ password: true });
 
-export const RegisterDtoSchema = z
-  .object({
-    email: EmailSchema,
-    password: PasswordSchema,
-    role: UserRoleSchema,
-    name: z.string().min(2).max(100),
-    companyName: z.string().min(2).max(200).optional(),
-    companyLogo: z.instanceof(File).optional(), // File upload - required for employer
-  })
-  .refine((data) => data.role !== 'employer' || data.companyLogo !== undefined, {
-    message: 'Logo is required for employers',
-  });
+export const RegisterDtoSchema = z.object({
+  email: EmailSchema,
+  password: PasswordSchema,
+  role: UserRoleSchema,
+  name: z.string().min(2).max(100),
+  companyName: z.string().min(2).max(200).optional(),
+});
 
 export const LoginDtoSchema = z.object({
   email: EmailSchema,

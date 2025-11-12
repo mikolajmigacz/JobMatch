@@ -15,8 +15,11 @@ export class AuthenticationService {
     private validateTokenUseCase: ValidateTokenUseCase
   ) {}
 
-  async register(request: RegisterRequest): Promise<AuthResponse> {
-    return this.registerUseCase.execute(request);
+  async register(
+    request: RegisterRequest,
+    file?: { buffer: Buffer; mimetype: string }
+  ): Promise<AuthResponse> {
+    return this.registerUseCase.execute(request, file);
   }
 
   async login(request: LoginRequest): Promise<AuthResponse> {

@@ -1,27 +1,30 @@
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 
-const endpoint = process.env.DYNAMODB_ENDPOINT as string;
-const region = process.env.AWS_REGION as string;
-const accessKeyId = process.env.AWS_ACCESS_KEY_ID as string;
-const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY as string;
+@Injectable()
+export class DynamoDbClientProvider {
+  private readonly client: DynamoDBDocumentClient;
 
-export const dynamoClient = DynamoDBDocumentClient.from(
-  new DynamoDBClient({
-    endpoint,
-    region,
-    credentials: {
-      accessKeyId,
-      secretAccessKey,
-    },
-  }),
-  {
-    marshallOptions: {
-      removeUndefinedValues: true,
-      convertEmptyValues: false,
-    },
-    unmarshallOptions: {
-      wrapNumbers: false,
-    },
+  constructor(private configService: ConfigService) {
+    const dynamoDbClient = new DynamoDBClient({
+      endpoint: this.configService.getOrThrow('DYNAMODB_ENDPOINT'),
+      region: this.configService.getOrThrow('AWS_REGION'),
+      credentials: {
+        accessKeyId: this.configService.getOrThrow('AWS_ACCESS_KEY_ID'),
+        secretAccessKey: this.configService.getOrThrow('AWS_SECRET_ACCESS_KEY'),
+      },
+    });
+
+    this.client = DynamoDBDocumentClient.from(dynamoDbClient, {
+      marshallOptions: {
+        removeUndefinedValues: true,
+      },
+    });
   }
-);
+
+  get dynamoDb(): DynamoDBDocumentClient {
+    return this.client;
+  }
+}

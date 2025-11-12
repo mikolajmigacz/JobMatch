@@ -1,4 +1,15 @@
-import { Controller, Post, Body, Get, UnauthorizedException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  UnauthorizedException,
+  UseInterceptors,
+  UploadedFile,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthenticationService } from '@application/authentication.service';
 import {
   InvalidTokenException,
@@ -14,11 +25,19 @@ export class AuthController {
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
-  async register(@Body() dto: RegisterRequest) {
+  @UseInterceptors(FileInterceptor('companyLogo'))
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+  async register(
+    @Body() dto: RegisterRequest,
+    @UploadedFile() file?: { buffer: Buffer; mimetype: string }
+  ) {
     try {
-      return await this.authService.register(dto);
+      return await this.authService.register(dto, file);
     } catch (error) {
       if (error instanceof UserAlreadyExistsException) {
+        throw new BadRequestException(error.message);
+      }
+      if (error instanceof Error && error.message.includes('Logo is required')) {
         throw new BadRequestException(error.message);
       }
       throw error;

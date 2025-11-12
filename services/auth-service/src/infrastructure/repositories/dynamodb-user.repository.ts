@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { GetCommand, PutCommand, QueryCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
-import { dynamoClient } from '../dynamodb/client';
+import { DynamoDbClientProvider } from '../dynamodb/client';
 import { User, UserRole } from '@domain/entities/user';
 import { UserId } from '@domain/value-objects/user-id';
 import { IUserRepository } from '@domain/repositories/user.repository';
@@ -9,9 +9,11 @@ import { IUserRepository } from '@domain/repositories/user.repository';
 export class DynamoDbUserRepository implements IUserRepository {
   private readonly tableName = 'Users';
 
+  constructor(private dynamoDbClientProvider: DynamoDbClientProvider) {}
+
   async save(user: User): Promise<void> {
     const primitive = user.toPrimitive();
-    await dynamoClient.send(
+    await this.dynamoDbClientProvider.dynamoDb.send(
       new PutCommand({
         TableName: this.tableName,
         Item: {
@@ -30,7 +32,7 @@ export class DynamoDbUserRepository implements IUserRepository {
   }
 
   async findById(userId: UserId): Promise<User | null> {
-    const result = await dynamoClient.send(
+    const result = await this.dynamoDbClientProvider.dynamoDb.send(
       new GetCommand({
         TableName: this.tableName,
         Key: { userId: userId.value },
@@ -54,7 +56,7 @@ export class DynamoDbUserRepository implements IUserRepository {
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    const result = await dynamoClient.send(
+    const result = await this.dynamoDbClientProvider.dynamoDb.send(
       new QueryCommand({
         TableName: this.tableName,
         IndexName: 'email-index',
@@ -80,7 +82,7 @@ export class DynamoDbUserRepository implements IUserRepository {
   }
 
   async findAll(): Promise<User[]> {
-    const result = await dynamoClient.send(
+    const result = await this.dynamoDbClientProvider.dynamoDb.send(
       new QueryCommand({
         TableName: this.tableName,
       })
@@ -104,7 +106,7 @@ export class DynamoDbUserRepository implements IUserRepository {
   }
 
   async delete(userId: UserId): Promise<void> {
-    await dynamoClient.send(
+    await this.dynamoDbClientProvider.dynamoDb.send(
       new DeleteCommand({
         TableName: this.tableName,
         Key: { userId: userId.value },
