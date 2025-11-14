@@ -4,22 +4,28 @@ module.exports = {
   moduleFileExtensions: ['js', 'json', 'ts'],
   rootDir: 'src',
   testRegex: '.*\\.spec\\.ts$',
-  globals: {
-    'ts-jest': {
-      tsconfig: {
-        paths: {
-          '@domain/*': ['domain/*'],
-          '@application/*': ['application/*'],
-          '@infrastructure/*': ['infrastructure/*'],
-          '@ui/*': ['ui/*'],
-          '@shared/*': ['shared/*'],
-          '@config/*': ['config/*'],
-          '@jobmatch/shared': ['../../packages/shared/src'],
-          '@jobmatch/shared/*': ['../../packages/shared/src/*'],
+  setupFilesAfterEnv: ['<rootDir>/../test/setup/jest.setup.ts'],
+
+  transform: {
+    '^.+\\.tsx?$': [
+      'ts-jest',
+      {
+        tsconfig: {
+          paths: {
+            '@domain/*': ['domain/*'],
+            '@application/*': ['application/*'],
+            '@infrastructure/*': ['infrastructure/*'],
+            '@ui/*': ['ui/*'],
+            '@shared/*': ['shared/*'],
+            '@config/*': ['config/*'],
+            '@jobmatch/shared': ['../../packages/shared/src'],
+            '@jobmatch/shared/*': ['../../packages/shared/src/*'],
+          },
         },
       },
-    },
+    ],
   },
+
   moduleNameMapper: {
     '^@domain/(.*)$': '<rootDir>/domain/$1',
     '^@application/(.*)$': '<rootDir>/application/$1',
@@ -30,5 +36,6 @@ module.exports = {
     '^@jobmatch/shared$': '<rootDir>/../../../packages/shared/src/index.ts',
     '^@jobmatch/shared/(.*)$': '<rootDir>/../../../packages/shared/src/$1',
   },
+
   collectCoverageFrom: ['**/*.(t|j)s'],
 };
