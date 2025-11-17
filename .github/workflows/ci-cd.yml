@@ -1,0 +1,14 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  auth-service:
+    uses: ./.github/workflows/test-service.yml
+    with:
+      service_path: services/auth-service
+      service_name: auth-service

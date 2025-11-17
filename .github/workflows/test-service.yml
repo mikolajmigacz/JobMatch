@@ -1,0 +1,74 @@
+name: Test Service
+
+on:
+  workflow_call:
+    inputs:
+      service_path:
+        required: true
+        type: string
+        description: Path to service directory (e.g., services/auth-service)
+      service_name:
+        required: true
+        type: string
+        description: Service name (e.g., auth-service)
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      docker:
+        image: docker:dind
+        options: --privileged
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build ${{ inputs.service_name }}
+        working-directory: ${{ inputs.service_path }}
+        run: pnpm run build
+
+      - name: Run unit tests
+        working-directory: ${{ inputs.service_path }}
+        run: pnpm run test
+
+      - name: Run integration tests
+        working-directory: ${{ inputs.service_path }}
+        run: pnpm run test test/auth.integration.spec.ts --runInBand
+        timeout-minutes: 10
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint ${{ inputs.service_name }}
+        working-directory: ${{ inputs.service_path }}
+        run: pnpm run lint
