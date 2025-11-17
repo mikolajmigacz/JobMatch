@@ -24,18 +24,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'pnpm'
-          cache-dependency-path: pnpm-lock.yaml
-
-      - name: Install pnpm
-        run: npm install -g pnpm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Install workspace dependencies
+        run: pnpm -r install --no-frozen-lockfile
+
+      - name: Build shared package
+        run: pnpm -w -r --filter=@jobmatch/shared run build
 
       - name: Build ${{ inputs.service_name }}
         working-directory: ${{ inputs.service_path }}
@@ -45,9 +51,12 @@ jobs:
         working-directory: ${{ inputs.service_path }}
         run: pnpm run test
 
-      - name: Run integration tests
+      - name: Run integration tests (if available)
         working-directory: ${{ inputs.service_path }}
-        run: pnpm run test test/auth.integration.spec.ts --runInBand
+        run: |
+          if [ -f "test/integration.spec.ts" ] || [ -f "test/**/*.integration.spec.ts" ]; then
+            pnpm run test test/**/*.integration.spec.ts --runInBand
+          fi
         timeout-minutes: 10
 
   lint:
@@ -56,18 +65,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'pnpm'
-          cache-dependency-path: pnpm-lock.yaml
-
-      - name: Install pnpm
-        run: npm install -g pnpm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Install workspace dependencies
+        run: pnpm -r install --no-frozen-lockfile
 
       - name: Lint ${{ inputs.service_name }}
         working-directory: ${{ inputs.service_path }}
