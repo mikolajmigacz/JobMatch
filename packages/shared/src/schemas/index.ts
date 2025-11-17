@@ -46,20 +46,25 @@ export const UserSchema = z.object({
 
 export const PublicUserSchema = UserSchema.omit({ password: true });
 
+// Register schemas with role-specific variants
+export const JobSeekerRegisterSchema = z.object({
+  email: EmailSchema,
+  password: PasswordSchema,
+  role: z.literal(UserRoleSchema.Enum.job_seeker),
+  name: z.string().min(2).max(100),
+});
+
+export const EmployerRegisterSchema = z.object({
+  email: EmailSchema,
+  password: PasswordSchema,
+  role: z.literal(UserRoleSchema.Enum.employer),
+  name: z.string().min(2).max(100),
+  companyName: z.string().min(2).max(200),
+});
+
 export const RegisterDtoSchema = z.discriminatedUnion('role', [
-  z.object({
-    email: EmailSchema,
-    password: PasswordSchema,
-    role: z.literal(UserRoleSchema.Enum.job_seeker),
-    name: z.string().min(2).max(100),
-  }),
-  z.object({
-    email: EmailSchema,
-    password: PasswordSchema,
-    role: z.literal(UserRoleSchema.Enum.employer),
-    name: z.string().min(2).max(100),
-    companyName: z.string().min(2).max(200),
-  }),
+  JobSeekerRegisterSchema,
+  EmployerRegisterSchema,
 ]);
 
 export const LoginDtoSchema = z.object({

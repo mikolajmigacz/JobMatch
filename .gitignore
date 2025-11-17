@@ -13,6 +13,10 @@ src/**/*.js
 src/**/*.d.ts
 src/**/*.js.map
 src/**/*.d.ts.map
+packages/**/*.js
+packages/**/*.d.ts
+packages/**/*.js.map
+packages/**/*.d.ts.map
 
 # IDE
 .vscode/
@@ -38,6 +42,10 @@ pnpm-debug.log*
 # Testing
 coverage/
 .nyc_output/
+test-debug.js
+test-logo.png
+test-logo-upload.sh
+*.test-logo.png
 
 # Docker
 .dockerignore

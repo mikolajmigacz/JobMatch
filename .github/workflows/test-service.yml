@@ -16,11 +16,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    services:
-      docker:
-        image: docker:dind
-        options: --privileged
-
     steps:
       - uses: actions/checkout@v4
 
@@ -49,15 +44,46 @@ jobs:
 
       - name: Run unit tests
         working-directory: ${{ inputs.service_path }}
-        run: pnpm run test
+        run: pnpm run test:unit
 
-      - name: Run integration tests (if available)
-        working-directory: ${{ inputs.service_path }}
+      - name: Check if service requires Docker Compose
+        id: check_compose
         run: |
-          if [ -f "test/integration.spec.ts" ] || [ -f "test/**/*.integration.spec.ts" ]; then
-            pnpm run test test/**/*.integration.spec.ts --runInBand
+          if [ -f "${{ inputs.service_path }}/package.json" ] && grep -q "test:integration" "${{ inputs.service_path }}/package.json"; then
+            echo "needs_compose=true" >> $GITHUB_OUTPUT
+          else
+            echo "needs_compose=false" >> $GITHUB_OUTPUT
           fi
+
+      - name: Fix Docker entrypoint permissions
+        if: steps.check_compose.outputs.needs_compose == 'true'
+        run: chmod +x docker/localstack/entrypoint.sh
+
+      - name: Start Docker Compose services
+        if: steps.check_compose.outputs.needs_compose == 'true'
+        run: docker compose -f docker-compose.dev.yml up -d
+        timeout-minutes: 5
+
+      - name: Wait for services to be healthy
+        if: steps.check_compose.outputs.needs_compose == 'true'
+        run: |
+          echo "Waiting for LocalStack to be healthy..."
+          timeout 60s bash -c 'until docker compose -f docker-compose.dev.yml exec -T localstack curl -s http://localhost:4566/_localstack/health | grep -q available; do sleep 2; done' || {
+            echo "LocalStack health check failed"
+            docker compose -f docker-compose.dev.yml logs localstack
+            exit 1
+          }
+          echo "Services are ready"
+
+      - name: Run integration tests
+        if: steps.check_compose.outputs.needs_compose == 'true'
+        working-directory: ${{ inputs.service_path }}
+        run: pnpm run test:integration
         timeout-minutes: 10
+
+      - name: Stop Docker Compose services
+        if: always() && steps.check_compose.outputs.needs_compose == 'true'
+        run: docker compose -f docker-compose.dev.yml down
 
   lint:
     runs-on: ubuntu-latest

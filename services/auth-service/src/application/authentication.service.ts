@@ -1,25 +1,38 @@
 import { Injectable } from '@nestjs/common';
-import { RegisterUseCase } from './use-cases/register.use-case';
+
 import { LoginUseCase } from './use-cases/login.use-case';
 import { GetCurrentUserUseCase } from './use-cases/get-current-user.use-case';
 import { ValidateTokenUseCase } from './use-cases/validate-token.use-case';
 import { TokenPayload } from '@domain/services/token.service';
-import { RegisterRequest, LoginRequest, AuthResponse, PublicUser } from '@jobmatch/shared';
+import {
+  JobSeekerRegister,
+  EmployerRegister,
+  LoginRequest,
+  AuthResponse,
+  PublicUser,
+} from '@jobmatch/shared';
+import { RegisterJobSeekerUseCase } from './use-cases/register-job-seeker.use-case';
+import { RegisterEmployerUseCase } from './use-cases/register-employer.use-case';
 
 @Injectable()
 export class AuthenticationService {
   constructor(
-    private registerUseCase: RegisterUseCase,
+    private registerJobSeekerUseCase: RegisterJobSeekerUseCase,
+    private registerEmployerUseCase: RegisterEmployerUseCase,
     private loginUseCase: LoginUseCase,
     private getCurrentUserUseCase: GetCurrentUserUseCase,
     private validateTokenUseCase: ValidateTokenUseCase
   ) {}
 
-  async register(
-    request: RegisterRequest,
-    file?: { buffer: Buffer; mimetype: string }
+  async registerJobSeeker(request: JobSeekerRegister): Promise<AuthResponse> {
+    return this.registerJobSeekerUseCase.execute(request);
+  }
+
+  async registerEmployer(
+    request: EmployerRegister,
+    file: { buffer: Buffer; mimetype: string }
   ): Promise<AuthResponse> {
-    return this.registerUseCase.execute(request, file);
+    return this.registerEmployerUseCase.execute(request, file);
   }
 
   async login(request: LoginRequest): Promise<AuthResponse> {

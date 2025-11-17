@@ -3,11 +3,12 @@
     "target": "ES2020",
     "module": "commonjs",
     "lib": ["ES2020"],
-    "declaration": true,
-    "outDir": "./dist",
-    "rootDir": "./src",
+    "declaration": false,
+    "noEmit": true,
     "baseUrl": ".",
     "paths": {
+      "@jobmatch/shared": ["../../packages/shared/src"],
+      "@jobmatch/shared/*": ["../../packages/shared/src/*"],
       "@config/*": ["./src/config/*"],
       "@domain/*": ["./src/domain/*"],
       "@application/*": ["./src/application/*"],
@@ -22,7 +23,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "moduleResolution": "node10",
+    "moduleResolution": "node",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
@@ -34,5 +35,5 @@
     }
   },
   "include": ["src"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
+  "exclude": ["node_modules", "dist"]
 }

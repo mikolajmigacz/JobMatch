@@ -23,11 +23,11 @@ class DockerComposeManager {
       return;
     }
 
-    logger.log('🚀 Starting docker-compose services...');
+    logger.log('🚀 Starting docker compose services...');
     const composeFilePath = path.join(this.composeDir, this.composeFile);
 
     try {
-      await execAsync(`docker-compose -f "${composeFilePath}" up -d --remove-orphans`, {
+      await execAsync(`docker compose -f "${composeFilePath}" up -d --remove-orphans`, {
         cwd: this.composeDir,
       });
       await this.waitForHealthyServices();
@@ -35,8 +35,8 @@ class DockerComposeManager {
       this.isRunning = true;
       logger.log('✓ Docker services started and healthy');
     } catch (error) {
-      logger.error('✗ Failed to start docker-compose:', error);
-      throw new Error(`Failed to start docker-compose: ${error}`);
+      logger.error('✗ Failed to start docker compose:', error);
+      throw new Error(`Failed to start docker compose: ${error}`);
     }
   }
 
@@ -69,18 +69,18 @@ class DockerComposeManager {
       return;
     }
 
-    logger.log('🛑 Stopping docker-compose services...');
+    logger.log('🛑 Stopping docker compose services...');
     const composeFilePath = path.join(this.composeDir, this.composeFile);
 
     try {
-      await execAsync(`docker-compose -f "${composeFilePath}" down`, {
+      await execAsync(`docker compose -f "${composeFilePath}" down`, {
         cwd: this.composeDir,
       });
       this.isRunning = false;
       logger.log('✓ Docker services stopped');
     } catch (error) {
-      logger.error('✗ Failed to stop docker-compose:', error);
-      throw new Error(`Failed to stop docker-compose: ${error}`);
+      logger.error('✗ Failed to stop docker compose:', error);
+      throw new Error(`Failed to stop docker compose: ${error}`);
     }
   }
 
@@ -90,7 +90,7 @@ class DockerComposeManager {
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
         const { stdout } = await execAsync(
-          `docker-compose -f "${composeFilePath}" ps --services --filter "status=running"`,
+          `docker compose -f "${composeFilePath}" ps --services --filter "status=running"`,
           { cwd: this.composeDir }
         );
         const runningServices = stdout.trim().split('\n');

@@ -101,9 +101,8 @@ export class AuthApiHelper {
   async registerEmployer(overrides?: Partial<RegisterPayload>) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const payload = authTestData.createEmployerRegisterPayload(overrides as any);
-    const logoPath = '../../test-logo.png';
 
-    let request = this.agent.post('/auth/register');
+    let request = this.agent.post('/auth/register/employer');
 
     if (payload.email !== undefined) {
       request = request.field('email', payload.email);
@@ -121,7 +120,13 @@ export class AuthApiHelper {
       request = request.field('companyName', payload.companyName);
     }
 
-    return request.attach('companyLogo', logoPath);
+    // Create a minimal PNG buffer for testing (1x1 pixel)
+    const pngHex =
+      '89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000a49444154789c630001000005000101' +
+      '0d0a2db4000000004945 4e44ae426082';
+    const pngBuffer = Buffer.from(pngHex.replace(/\s/g, ''), 'hex');
+
+    return request.attach('companyLogo', pngBuffer, 'test-logo.png');
   }
 
   async registerJobSeeker(overrides?: Partial<RegisterPayload>) {
@@ -129,7 +134,7 @@ export class AuthApiHelper {
     const payload = authTestData.createJobSeekerRegisterPayload(overrides as any);
 
     return this.agent
-      .post('/auth/register')
+      .post('/auth/register/job-seeker')
       .field('email', payload.email)
       .field('password', payload.password)
       .field('role', payload.role)

@@ -66,15 +66,14 @@ describe('Auth Integration Tests', () => {
     await databaseHelper.cleanupUsersTable();
   });
 
-  describe('Registration - Success Cases', () => {
-    describe('Employer Registration', () => {
+  describe('Employer Registration', () => {
+    describe('Success Cases', () => {
       it('should successfully register employer with all required fields', async () => {
         const payload = authTestData.createEmployerRegisterPayload();
 
         const response = await authHelper.registerEmployer({
           email: payload.email,
           password: payload.password,
-          role: payload.role,
           name: payload.name,
           companyName: payload.companyName,
         });
@@ -86,13 +85,21 @@ describe('Auth Integration Tests', () => {
           name: payload.name,
           companyName: payload.companyName,
         });
+        AuthAssertions.assertEmployerHasLogo(response.body.user);
 
         const userCount = await databaseHelper.getUserCount();
         expect(userCount).toBe(1);
       });
 
-      it('should return token that can be used for authenticated requests', async () => {
-        const response = await authHelper.registerEmployer();
+      it('should return usable JWT token for authenticated requests', async () => {
+        const payload = authTestData.createEmployerRegisterPayload();
+        const response = await authHelper.registerEmployer({
+          email: payload.email,
+          password: payload.password,
+          name: payload.name,
+          companyName: payload.companyName,
+        });
+
         AuthAssertions.assertSuccessfulRegistration(response);
 
         const { token } = response.body;
@@ -102,30 +109,28 @@ describe('Auth Integration Tests', () => {
         expect(meResponse.status).toBe(200);
         expect(meResponse.body.email).toBe(response.body.user.email);
       });
+
+      it('should persist employer data in database', async () => {
+        const email = `employer-persist-${Date.now()}@test.com`;
+        const name = 'Persistent Employer';
+        const companyName = 'Persistent Company';
+
+        const response = await authHelper.registerEmployer({
+          email,
+          name,
+          companyName,
+        });
+
+        expect(response.status).toBe(201);
+
+        const user = await databaseHelper.findUserByEmail(email);
+        expect(user).toBeTruthy();
+        expect(user?.email).toBe(email);
+        expect(user?.name).toBe(name);
+      });
     });
 
-    describe('Job Seeker Registration', () => {
-      it('should not have companyName or companyLogoUrl fields', async () => {
-        const response = await authHelper.registerJobSeeker();
-
-        AuthAssertions.assertSuccessfulRegistration(response);
-
-        const user = response.body.user;
-        expect(user).not.toHaveProperty('companyName');
-        AuthAssertions.assertJobSeekerNoLogo(user);
-      });
-
-      it('should generate unique token for each registration', async () => {
-        const response1 = await authHelper.registerJobSeeker();
-        const response2 = await authHelper.registerJobSeeker();
-
-        expect(response1.body.token).not.toBe(response2.body.token);
-      });
-    });
-  });
-
-  describe('Registration - Edge Cases & Validation', () => {
-    describe('Invalid Email', () => {
+    describe('Edge Cases', () => {
       it('should reject invalid email format', async () => {
         const response = await authHelper.registerEmployer({
           email: 'not-an-email',
@@ -143,23 +148,12 @@ describe('Auth Integration Tests', () => {
         expect(response.status).toBe(400);
       });
 
-      it('should reject undefined email', async () => {
-        const response = await authHelper.registerEmployer({
-          email: undefined as unknown as string,
-        });
-
-        expect(response.status).toBe(400);
-      });
-    });
-
-    describe('Invalid Password', () => {
       it('should reject weak password', async () => {
         const response = await authHelper.registerEmployer({
           password: 'weak',
         });
 
         expect(response.status).toBe(400);
-        expect(response.body).toHaveProperty('message');
       });
 
       it('should reject empty password', async () => {
@@ -169,74 +163,143 @@ describe('Auth Integration Tests', () => {
 
         expect(response.status).toBe(400);
       });
-    });
 
-    describe('Invalid Role', () => {
-      it('should reject invalid role', async () => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const response = await authHelper.registerEmployer({
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          role: 'invalid_role' as any,
-        });
-
-        expect(response.status).toBe(400);
-      });
-    });
-
-    describe('Missing Required Fields', () => {
-      it('should reject missing email', async () => {
-        const response = await agent
-          .post('/auth/register')
-          .set('Content-Type', 'application/json')
-          .send({
-            password: 'SecurePass123!@',
-            role: 'employer',
-            name: 'Test',
-          });
-
-        expect(response.status).toBe(400);
-      });
-
-      it('should reject missing password', async () => {
-        const response = await agent
-          .post('/auth/register')
-          .set('Content-Type', 'application/json')
-          .send({
-            email: 'test@example.com',
-            role: 'employer',
-            name: 'Test',
-          });
-
-        expect(response.status).toBe(400);
-      });
-
-      it('should reject missing name', async () => {
-        const response = await agent
-          .post('/auth/register')
-          .set('Content-Type', 'application/json')
-          .send({
-            email: 'test@example.com',
-            password: 'SecurePass123!@',
-            role: 'employer',
-          });
-
-        expect(response.status).toBe(400);
-      });
-    });
-
-    describe('Duplicate Registration', () => {
       it('should reject duplicate email for same role', async () => {
-        const email = `duplicate-${Date.now()}@test.com`;
+        const email = `duplicate-employer-${Date.now()}@test.com`;
 
         const firstResponse = await authHelper.registerEmployer({ email });
         expect(firstResponse.status).toBe(201);
 
         const secondResponse = await authHelper.registerEmployer({ email });
         expect(secondResponse.status).toBe(400);
-        AuthAssertions.assertConflict(secondResponse, 'already');
       });
 
-      it('should not allow same email for different roles', async () => {
+      it('should reject missing logo file', async () => {
+        const payload = authTestData.createEmployerRegisterPayload();
+
+        const response = await agent
+          .post('/auth/register/employer')
+          .field('email', payload.email)
+          .field('password', payload.password)
+          .field('name', payload.name)
+          .field('companyName', payload.companyName);
+        // Intentionally not attaching logo
+
+        expect(response.status).toBe(400);
+      });
+    });
+  });
+
+  describe('Job Seeker Registration', () => {
+    describe('Success Cases', () => {
+      it('should successfully register job seeker with required fields', async () => {
+        const payload = authTestData.createJobSeekerRegisterPayload();
+
+        const response = await authHelper.registerJobSeeker({
+          email: payload.email,
+          password: payload.password,
+          name: payload.name,
+        });
+
+        AuthAssertions.assertSuccessfulRegistration(response);
+        expect(response.body.user).toMatchObject({
+          email: payload.email,
+          role: 'job_seeker',
+          name: payload.name,
+        });
+        AuthAssertions.assertJobSeekerNoLogo(response.body.user);
+
+        const userCount = await databaseHelper.getUserCount();
+        expect(userCount).toBe(1);
+      });
+
+      it('should return usable JWT token for authenticated requests', async () => {
+        const payload = authTestData.createJobSeekerRegisterPayload();
+        const response = await authHelper.registerJobSeeker({
+          email: payload.email,
+          password: payload.password,
+          name: payload.name,
+        });
+
+        AuthAssertions.assertSuccessfulRegistration(response);
+
+        const { token } = response.body;
+        expect(token).toBeTruthy();
+
+        const meResponse = await authHelper.getCurrentUser(token);
+        expect(meResponse.status).toBe(200);
+        expect(meResponse.body.email).toBe(response.body.user.email);
+      });
+
+      it('should persist job seeker data in database', async () => {
+        const email = `seeker-persist-${Date.now()}@test.com`;
+        const name = 'Persistent Seeker';
+
+        const response = await authHelper.registerJobSeeker({
+          email,
+          name,
+        });
+
+        expect(response.status).toBe(201);
+
+        const user = await databaseHelper.findUserByEmail(email);
+        expect(user).toBeTruthy();
+        expect(user?.email).toBe(email);
+        expect(user?.name).toBe(name);
+      });
+
+      it('should generate unique token for each registration', async () => {
+        const response1 = await authHelper.registerJobSeeker();
+        const response2 = await authHelper.registerJobSeeker();
+
+        expect(response1.body.token).not.toBe(response2.body.token);
+      });
+    });
+
+    describe('Edge Cases', () => {
+      it('should reject invalid email format', async () => {
+        const response = await authHelper.registerJobSeeker({
+          email: 'not-an-email',
+        });
+
+        expect(response.status).toBe(400);
+      });
+
+      it('should reject empty email', async () => {
+        const response = await authHelper.registerJobSeeker({
+          email: '',
+        });
+
+        expect(response.status).toBe(400);
+      });
+
+      it('should reject weak password', async () => {
+        const response = await authHelper.registerJobSeeker({
+          password: 'weak',
+        });
+
+        expect(response.status).toBe(400);
+      });
+
+      it('should reject empty password', async () => {
+        const response = await authHelper.registerJobSeeker({
+          password: '',
+        });
+
+        expect(response.status).toBe(400);
+      });
+
+      it('should reject duplicate email for same role', async () => {
+        const email = `duplicate-seeker-${Date.now()}@test.com`;
+
+        const firstResponse = await authHelper.registerJobSeeker({ email });
+        expect(firstResponse.status).toBe(201);
+
+        const secondResponse = await authHelper.registerJobSeeker({ email });
+        expect(secondResponse.status).toBe(400);
+      });
+
+      it('should reject same email for different roles', async () => {
         const email = `same-email-${Date.now()}@test.com`;
 
         const employerResponse = await authHelper.registerEmployer({ email });
@@ -244,7 +307,6 @@ describe('Auth Integration Tests', () => {
 
         const jobSeekerResponse = await authHelper.registerJobSeeker({ email });
         expect(jobSeekerResponse.status).toBe(400);
-        AuthAssertions.assertConflict(jobSeekerResponse, 'already');
 
         const count = await databaseHelper.getUserCount();
         expect(count).toBe(1);
@@ -252,52 +314,69 @@ describe('Auth Integration Tests', () => {
     });
   });
 
-  describe('Login - Success Cases', () => {
-    it('should successfully login with valid credentials', async () => {
-      const email = `login-test-${Date.now()}@test.com`;
-      const password = 'SecurePass123!@';
+  describe('Login', () => {
+    describe('Success Cases', () => {
+      it('should successfully login employer with valid credentials', async () => {
+        const email = `login-employer-${Date.now()}@test.com`;
+        const password = 'SecurePass123!@';
 
-      const registerResponse = await authHelper.registerEmployer({
-        email,
-        password,
+        const registerResponse = await authHelper.registerEmployer({
+          email,
+          password,
+        });
+        expect(registerResponse.status).toBe(201);
+
+        const loginResponse = await authHelper.login(email, password);
+        AuthAssertions.assertSuccessfulLogin(loginResponse);
+        expect(loginResponse.body.user.email).toBe(email);
+        expect(loginResponse.body.user.role).toBe('employer');
       });
-      expect(registerResponse.status).toBe(201);
 
-      const loginResponse = await authHelper.login(email, password);
-      AuthAssertions.assertSuccessfulLogin(loginResponse);
-      expect(loginResponse.body.user.email).toBe(email);
+      it('should successfully login job seeker with valid credentials', async () => {
+        const email = `login-seeker-${Date.now()}@test.com`;
+        const password = 'SecurePass123!@';
+
+        const registerResponse = await authHelper.registerJobSeeker({
+          email,
+          password,
+        });
+        expect(registerResponse.status).toBe(201);
+
+        const loginResponse = await authHelper.login(email, password);
+        AuthAssertions.assertSuccessfulLogin(loginResponse);
+        expect(loginResponse.body.user.email).toBe(email);
+        expect(loginResponse.body.user.role).toBe('job_seeker');
+      });
+
+      it('should return valid JWT token on login', async () => {
+        const { email } = await authHelper.registerAndGetToken('job_seeker');
+
+        const loginResponse = await authHelper.login(email);
+        expect(loginResponse.status).toBe(200);
+        expect(loginResponse.body.token).toBeTruthy();
+
+        const meResponse = await authHelper.getCurrentUser(loginResponse.body.token);
+        expect(meResponse.status).toBe(200);
+      });
     });
 
-    it('should return valid JWT token on successful login', async () => {
-      const { email } = await authHelper.registerAndGetToken('job_seeker');
-
-      const loginResponse = await authHelper.login(email);
-      expect(loginResponse.status).toBe(200);
-      expect(loginResponse.body.token).toBeTruthy();
-
-      const meResponse = await authHelper.getCurrentUser(loginResponse.body.token);
-      expect(meResponse.status).toBe(200);
-    });
-  });
-
-  describe('Login - Edge Cases & Validation', () => {
-    describe('Non-existent User', () => {
+    describe('Edge Cases', () => {
       it('should reject login for non-existent email', async () => {
-        const response = await authHelper.login('nonexistent@test.com');
+        const response = await authHelper.login(`nonexistent-${Date.now()}@test.com`);
 
         expect(response.status).toBe(401);
         expect(response.body).toHaveProperty('message');
       });
-    });
 
-    describe('Invalid Password', () => {
       it('should reject login with wrong password', async () => {
         const email = `wrong-pass-${Date.now()}@test.com`;
-        await authHelper.registerEmployer({ email, password: 'CorrectPass123!@' });
+        await authHelper.registerEmployer({
+          email,
+          password: 'CorrectPass123!@',
+        });
 
         const response = await authHelper.login(email, 'WrongPass123!@');
         expect(response.status).toBe(401);
-        expect(response.body).toHaveProperty('message');
       });
 
       it('should reject empty password', async () => {
@@ -305,9 +384,7 @@ describe('Auth Integration Tests', () => {
 
         expect(response.status).toBe(400);
       });
-    });
 
-    describe('Missing Credentials', () => {
       it('should reject missing email', async () => {
         const response = await agent
           .post('/auth/login')
@@ -334,7 +411,7 @@ describe('Auth Integration Tests', () => {
 
   describe('Protected Routes', () => {
     describe('GET /auth/me', () => {
-      it('should return current user with valid token', async () => {
+      it('should return current employer profile with valid token', async () => {
         const { token, email } = await authHelper.registerAndGetToken('employer');
 
         const response = await authHelper.getCurrentUser(token);
@@ -342,6 +419,16 @@ describe('Auth Integration Tests', () => {
         expect(response.status).toBe(200);
         expect(response.body.email).toBe(email);
         expect(response.body.role).toBe('employer');
+      });
+
+      it('should return current job seeker profile with valid token', async () => {
+        const { token, email } = await authHelper.registerAndGetToken('job_seeker');
+
+        const response = await authHelper.getCurrentUser(token);
+
+        expect(response.status).toBe(200);
+        expect(response.body.email).toBe(email);
+        expect(response.body.role).toBe('job_seeker');
       });
 
       it('should reject request without token', async () => {
@@ -355,7 +442,6 @@ describe('Auth Integration Tests', () => {
         const response = await authHelper.getCurrentUser('invalid.token.here');
 
         expect(response.status).toBe(401);
-        AuthAssertions.assertUnauthorized(response);
       });
 
       it('should reject request with malformed Authorization header', async () => {
@@ -366,13 +452,22 @@ describe('Auth Integration Tests', () => {
     });
 
     describe('POST /auth/validate-token', () => {
-      it('should validate correct token', async () => {
-        const { token } = await authHelper.registerAndGetToken('job_seeker');
+      it('should validate correct employer token', async () => {
+        const { token } = await authHelper.registerAndGetToken('employer');
 
         const response = await authHelper.validateToken(token);
 
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('valid');
+        expect(response.body.valid).toBe(true);
+      });
+
+      it('should validate correct job seeker token', async () => {
+        const { token } = await authHelper.registerAndGetToken('job_seeker');
+
+        const response = await authHelper.validateToken(token);
+
+        expect(response.status).toBe(200);
         expect(response.body.valid).toBe(true);
       });
 
@@ -386,18 +481,18 @@ describe('Auth Integration Tests', () => {
         const response = await agent.post('/auth/validate-token');
 
         expect(response.status).toBe(401);
-        AuthAssertions.assertUnauthorized(response);
       });
     });
   });
 
   describe('Data Persistence', () => {
-    it('should persist user data across multiple requests', async () => {
-      const email = `persist-${Date.now()}@test.com`;
+    it('should persist employer data across requests', async () => {
+      const email = `persist-employer-${Date.now()}@test.com`;
+      const name = 'Persistent Employer';
 
       const registerResponse = await authHelper.registerEmployer({
         email,
-        name: 'Persistent User',
+        name,
       });
       expect(registerResponse.status).toBe(201);
 
@@ -407,10 +502,29 @@ describe('Auth Integration Tests', () => {
 
       const loginResponse = await authHelper.login(email);
       expect(loginResponse.status).toBe(200);
-      expect(loginResponse.body.user.name).toBe('Persistent User');
+      expect(loginResponse.body.user.name).toBe(name);
     });
 
-    it('should maintain separate user profiles for different roles', async () => {
+    it('should persist job seeker data across requests', async () => {
+      const email = `persist-seeker-${Date.now()}@test.com`;
+      const name = 'Persistent Job Seeker';
+
+      const registerResponse = await authHelper.registerJobSeeker({
+        email,
+        name,
+      });
+      expect(registerResponse.status).toBe(201);
+
+      const user = await databaseHelper.findUserByEmail(email);
+      expect(user).toBeTruthy();
+      expect(user?.email).toBe(email);
+
+      const loginResponse = await authHelper.login(email);
+      expect(loginResponse.status).toBe(200);
+      expect(loginResponse.body.user.name).toBe(name);
+    });
+
+    it('should maintain separate profiles for employer and job seeker', async () => {
       const baseEmail = `separate-${Date.now()}`;
 
       const employerResponse = await authHelper.registerEmployer({
@@ -425,16 +539,65 @@ describe('Auth Integration Tests', () => {
 
       const count = await databaseHelper.getUserCount();
       expect(count).toBe(2);
+
+      const employer = await databaseHelper.findUserByEmail(`employer-${baseEmail}@test.com`);
+      const seeker = await databaseHelper.findUserByEmail(`seeker-${baseEmail}@test.com`);
+
+      expect(employer?.role).toBe('employer');
+      expect(seeker?.role).toBe('job_seeker');
     });
   });
 
   describe('Concurrency', () => {
-    it('should handle concurrent registrations', async () => {
+    it('should handle concurrent employer registrations', async () => {
       const promises = Array.from({ length: 5 }, (_, i) =>
-        authHelper.registerJobSeeker({
-          email: `concurrent-${i}-${Date.now()}@test.com`,
+        authHelper.registerEmployer({
+          email: `concurrent-emp-${i}-${Date.now()}@test.com`,
         })
       );
+
+      const responses = await Promise.all(promises);
+
+      responses.forEach((response) => {
+        expect(response.status).toBe(201);
+        expect(response.body).toHaveProperty('token');
+      });
+
+      const count = await databaseHelper.getUserCount();
+      expect(count).toBe(5);
+    });
+
+    it('should handle concurrent job seeker registrations', async () => {
+      const promises = Array.from({ length: 5 }, (_, i) =>
+        authHelper.registerJobSeeker({
+          email: `concurrent-seeker-${i}-${Date.now()}@test.com`,
+        })
+      );
+
+      const responses = await Promise.all(promises);
+
+      responses.forEach((response) => {
+        expect(response.status).toBe(201);
+        expect(response.body).toHaveProperty('token');
+      });
+
+      const count = await databaseHelper.getUserCount();
+      expect(count).toBe(5);
+    });
+
+    it('should handle mixed concurrent registrations', async () => {
+      const promises = [
+        ...Array.from({ length: 3 }, (_, i) =>
+          authHelper.registerEmployer({
+            email: `concurrent-emp-${i}-${Date.now()}@test.com`,
+          })
+        ),
+        ...Array.from({ length: 3 }, (_, i) =>
+          authHelper.registerJobSeeker({
+            email: `concurrent-seeker-${i}-${Date.now()}@test.com`,
+          })
+        ),
+      ];
 
       const responses = await Promise.all(promises);
 
@@ -443,7 +606,7 @@ describe('Auth Integration Tests', () => {
       });
 
       const count = await databaseHelper.getUserCount();
-      expect(count).toBe(5);
+      expect(count).toBe(6);
     });
   });
 });

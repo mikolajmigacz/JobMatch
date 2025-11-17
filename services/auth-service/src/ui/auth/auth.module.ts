@@ -10,7 +10,8 @@ import { S3FileStorageService } from '@infrastructure/services/s3-file-storage.s
 import { DynamoDbUserRepository } from '@infrastructure/repositories/dynamodb-user.repository';
 import { S3ClientProvider } from '@infrastructure/s3/client';
 import { DynamoDbClientProvider } from '@infrastructure/dynamodb/client';
-import { RegisterUseCase } from '@application/use-cases/register.use-case';
+import { RegisterJobSeekerUseCase } from '@application/use-cases/register-job-seeker.use-case';
+import { RegisterEmployerUseCase } from '@application/use-cases/register-employer.use-case';
 import { LoginUseCase } from '@application/use-cases/login.use-case';
 import { GetCurrentUserUseCase } from '@application/use-cases/get-current-user.use-case';
 import { ValidateTokenUseCase } from '@application/use-cases/validate-token.use-case';
@@ -41,7 +42,8 @@ import { JwtStrategy } from '@infrastructure/strategies/jwt.strategy';
       provide: IFileStorageService,
       useClass: S3FileStorageService,
     },
-    RegisterUseCase,
+    RegisterJobSeekerUseCase,
+    RegisterEmployerUseCase,
     LoginUseCase,
     GetCurrentUserUseCase,
     ValidateTokenUseCase,

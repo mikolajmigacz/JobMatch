@@ -45,11 +45,26 @@ export type Pagination = z.infer<typeof schemas.PaginationSchema>;
 export type PaginatedResponse<T extends Record<string, unknown> = Record<string, unknown>> =
   z.infer<typeof schemas.PaginatedResponseSchema> & { data: T[] };
 
+// Register request variants - role-specific
+export type JobSeekerRegister = z.infer<typeof schemas.JobSeekerRegisterSchema>;
+export type EmployerRegister = z.infer<typeof schemas.EmployerRegisterSchema>;
+
+// Type guards with proper narrowing
+export const isEmployerRegister = (request: RegisterRequest): request is EmployerRegister => {
+  return request.role === 'employer';
+};
+
+export const isJobSeekerRegister = (request: RegisterRequest): request is JobSeekerRegister => {
+  return request.role === 'job_seeker';
+};
+
 // Re-export main schemas - only public ones
 export {
   UserRoleSchema,
   EmailSchema,
   PublicUserSchema,
+  JobSeekerRegisterSchema,
+  EmployerRegisterSchema,
   RegisterDtoSchema,
   LoginDtoSchema,
   UpdateUserDtoSchema,
