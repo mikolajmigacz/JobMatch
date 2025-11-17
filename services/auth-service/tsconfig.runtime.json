@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@jobmatch/shared": ["../../packages/shared/dist"],
+      "@jobmatch/shared/*": ["../../packages/shared/dist/*"],
+      "@config/*": ["./dist/config/*"],
+      "@domain/*": ["./dist/domain/*"],
+      "@application/*": ["./dist/application/*"],
+      "@infrastructure/*": ["./dist/infrastructure/*"],
+      "@ui/*": ["./dist/ui/*"],
+      "@shared/*": ["./dist/shared/*"],
+      "@/*": ["./dist/*"]
+    }
+  }
+}

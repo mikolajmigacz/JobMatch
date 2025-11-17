@@ -33,7 +33,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "allowSyntheticDefaultImports": true,
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "incremental": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true

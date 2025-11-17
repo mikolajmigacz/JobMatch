@@ -5,11 +5,10 @@
     "lib": ["ES2020"],
     "declaration": true,
     "outDir": "./dist",
-    "rootDir": "./src",
     "baseUrl": ".",
     "paths": {
-      "@jobmatch/shared": ["../../packages/shared/dist"],
-      "@jobmatch/shared/*": ["../../packages/shared/dist/*"],
+      "@jobmatch/shared": ["../../packages/shared/src"],
+      "@jobmatch/shared/*": ["../../packages/shared/src/*"],
       "@config/*": ["./src/config/*"],
       "@domain/*": ["./src/domain/*"],
       "@application/*": ["./src/application/*"],
@@ -27,13 +26,6 @@
     "moduleResolution": "node",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
-  },
-  "ts-node": {
-    "esm": false,
-    "transpileOnly": true,
-    "compilerOptions": {
-      "module": "commonjs"
-    }
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]

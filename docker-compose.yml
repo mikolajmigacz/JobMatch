@@ -31,6 +31,42 @@ services:
     networks:
       - jobmatch-network
 
+  auth-service:
+    build:
+      context: .
+      dockerfile: services/auth-service/Dockerfile
+    container_name: jobmatch-auth-service
+    ports:
+      - '${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}'
+    volumes:
+      - ./.env:/app/.env:ro
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      AUTH_SERVICE_PORT: ${AUTH_SERVICE_PORT}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      S3_ENDPOINT: ${S3_ENDPOINT}
+      S3_BUCKET: ${S3_BUCKET}
+      DYNAMODB_ENDPOINT: ${DYNAMODB_ENDPOINT}
+      DYNAMODB_TABLE_USERS: ${DYNAMODB_TABLE_USERS}
+      AWS_REGION: ${AWS_REGION}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+    depends_on:
+      localstack:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3001/health']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      - jobmatch-network
+    restart: unless-stopped
+
   mailhog:
     image: mailhog/mailhog:latest
     container_name: jobmatch-mailhog

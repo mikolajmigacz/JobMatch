@@ -2,7 +2,8 @@ import * as Joi from 'joi';
 
 export const envValidationSchema = Joi.object({
   NODE_ENV: Joi.string().valid('development', 'production', 'test').default('development'),
-  PORT: Joi.number().default(3000),
+  AUTH_SERVICE_PORT: Joi.number().default(3001),
+  CORS_ORIGIN: Joi.string().default('http://localhost:3000'),
   S3_ENDPOINT: Joi.string().uri().required(),
   S3_BUCKET: Joi.string().required(),
   DYNAMODB_ENDPOINT: Joi.string().uri().required(),
