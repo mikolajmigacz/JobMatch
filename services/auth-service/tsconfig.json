@@ -22,7 +22,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "moduleResolution": "node",
+    "moduleResolution": "node10",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },

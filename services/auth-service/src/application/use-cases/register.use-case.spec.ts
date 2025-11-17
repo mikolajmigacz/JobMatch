@@ -24,10 +24,14 @@ describe('RegisterUseCase - Unit Tests', () => {
     };
 
     useCase = new RegisterUseCase(
-      mockUserRepository,
-      mockPasswordService,
-      mockTokenService,
-      mockFileStorageService
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      mockUserRepository as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      mockPasswordService as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      mockTokenService as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      mockFileStorageService as any
     );
   });
 

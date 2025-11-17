@@ -17,7 +17,14 @@ describe('LoginUseCase - Unit Tests', () => {
       generateToken: jest.fn(),
     };
 
-    useCase = new LoginUseCase(mockUserRepository, mockPasswordService, mockTokenService);
+    useCase = new LoginUseCase(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      mockUserRepository as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      mockPasswordService as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      mockTokenService as any
+    );
   });
 
   describe('execute - successful login', () => {

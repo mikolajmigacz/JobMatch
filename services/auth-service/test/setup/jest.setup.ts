@@ -1,6 +1,6 @@
 process.env.NODE_ENV = 'test';
 process.env.PORT = '3001';
-process.env.DYNAMODB_ENDPOINT = process.env.DYNAMODB_ENDPOINT || 'http://localhost:8000';
+process.env.DYNAMODB_ENDPOINT = process.env.DYNAMODB_ENDPOINT || 'http://localhost:4566';
 process.env.AWS_REGION = process.env.AWS_REGION || 'us-east-1';
 process.env.S3_ENDPOINT = process.env.S3_ENDPOINT || 'http://localhost:4566';
 process.env.S3_BUCKET = process.env.S3_BUCKET || 'test-jobmatch-bucket';

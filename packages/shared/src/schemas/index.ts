@@ -46,13 +46,21 @@ export const UserSchema = z.object({
 
 export const PublicUserSchema = UserSchema.omit({ password: true });
 
-export const RegisterDtoSchema = z.object({
-  email: EmailSchema,
-  password: PasswordSchema,
-  role: UserRoleSchema,
-  name: z.string().min(2).max(100),
-  companyName: z.string().min(2).max(200).optional(),
-});
+export const RegisterDtoSchema = z.discriminatedUnion('role', [
+  z.object({
+    email: EmailSchema,
+    password: PasswordSchema,
+    role: z.literal(UserRoleSchema.Enum.job_seeker),
+    name: z.string().min(2).max(100),
+  }),
+  z.object({
+    email: EmailSchema,
+    password: PasswordSchema,
+    role: z.literal(UserRoleSchema.Enum.employer),
+    name: z.string().min(2).max(100),
+    companyName: z.string().min(2).max(200),
+  }),
+]);
 
 export const LoginDtoSchema = z.object({
   email: EmailSchema,

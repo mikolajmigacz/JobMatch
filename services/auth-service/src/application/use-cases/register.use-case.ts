@@ -5,7 +5,7 @@ import { IPasswordService } from '@domain/services/password.service';
 import { ITokenService } from '@domain/services/token.service';
 import { IFileStorageService } from '@domain/services/file-storage.service';
 import { UserAlreadyExistsException } from '@shared/exceptions/auth.exceptions';
-import { RegisterRequest, AuthResponse } from '@jobmatch/shared';
+import { RegisterRequest, AuthResponse, PublicUser } from '@jobmatch/shared';
 
 @Injectable()
 export class RegisterUseCase {
@@ -20,7 +20,6 @@ export class RegisterUseCase {
     request: RegisterRequest,
     logoFile?: { buffer: Buffer; mimetype: string }
   ): Promise<AuthResponse> {
-    // Validate logo requirement for employers
     if (request.role === UserRole.EMPLOYER && !logoFile) {
       throw new Error('Logo is required for employers');
     }
@@ -59,18 +58,29 @@ export class RegisterUseCase {
       role: user.role,
     });
 
+    const userResponse = this.buildUserResponse(user);
+
     return {
       token,
-      user: {
-        userId: user.userId.value,
-        email: user.email,
-        role: user.role,
-        name: user.name,
-        companyName: user.companyName || null,
-        companyLogoUrl: user.companyLogoUrl || null,
-        createdAt: user.createdAt.toISOString(),
-        updatedAt: user.updatedAt.toISOString(),
-      },
+      user: userResponse,
     };
+  }
+
+  private buildUserResponse(user: User): PublicUser {
+    const response: PublicUser = {
+      userId: user.userId.value,
+      email: user.email,
+      role: user.role,
+      name: user.name,
+      createdAt: user.createdAt.toISOString(),
+      updatedAt: user.updatedAt.toISOString(),
+    };
+
+    if (user.role === UserRole.EMPLOYER) {
+      response.companyName = user.companyName || null;
+      response.companyLogoUrl = user.companyLogoUrl || null;
+    }
+
+    return response;
   }
 }

@@ -6,7 +6,6 @@ import {
   UnauthorizedException,
   UseInterceptors,
   UploadedFile,
-  UsePipes,
   UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -30,9 +29,8 @@ export class AuthController {
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   @UseInterceptors(FileInterceptor('companyLogo'))
-  @UsePipes(new ZodValidationPipe(RegisterDtoSchema))
   async register(
-    @Body() dto: RegisterRequest,
+    @Body(new ZodValidationPipe(RegisterDtoSchema)) dto: RegisterRequest,
     @UploadedFile() file?: { buffer: Buffer; mimetype: string }
   ) {
     try {
@@ -50,8 +48,7 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @UsePipes(new ZodValidationPipe(LoginDtoSchema))
-  async login(@Body() dto: LoginRequest) {
+  async login(@Body(new ZodValidationPipe(LoginDtoSchema)) dto: LoginRequest) {
     try {
       return await this.authService.login(dto);
     } catch (error) {
@@ -69,6 +66,7 @@ export class AuthController {
   }
 
   @Post('validate-token')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   async validateToken(@CurrentUser() user: TokenPayload) {
     return { valid: true, user };
