@@ -8,8 +8,6 @@
     "rootDir": "./src",
     "baseUrl": ".",
     "paths": {
-      "@jobmatch/shared": ["../../packages/shared/dist"],
-      "@jobmatch/shared/*": ["../../packages/shared/dist/*"],
       "@config/*": ["./src/config/*"],
       "@domain/*": ["./src/domain/*"],
       "@application/*": ["./src/application/*"],
