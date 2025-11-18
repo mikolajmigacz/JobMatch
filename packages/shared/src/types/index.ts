@@ -8,6 +8,10 @@ export type PublicUser = z.infer<typeof schemas.PublicUserSchema>;
 export type RegisterRequest = z.infer<typeof schemas.RegisterDtoSchema>;
 export type LoginRequest = z.infer<typeof schemas.LoginDtoSchema>;
 export type UpdateUserRequest = z.infer<typeof schemas.UpdateUserDtoSchema>;
+export type GetProfileRequest = z.infer<typeof schemas.GetProfileRequestSchema>;
+export type UpdateProfileRequest = z.infer<typeof schemas.UpdateProfileRequestSchema>;
+export type GetProfileResponse = PublicUser | null;
+export type UpdateProfileResponse = PublicUser | null;
 
 // Job types
 export type EmploymentType = z.infer<typeof schemas.EmploymentTypeSchema>;
@@ -68,6 +72,8 @@ export {
   RegisterDtoSchema,
   LoginDtoSchema,
   UpdateUserDtoSchema,
+  GetProfileRequestSchema,
+  UpdateProfileRequestSchema,
   EmploymentTypeSchema,
   JobStatusSchema,
   JobSchema,

@@ -82,6 +82,17 @@ export const UpdateUserDtoSchema = z
     message: 'At least one field must be provided for update',
   });
 
+export const GetProfileRequestSchema = z.object({
+  userId: z.string().uuid('Invalid user ID format'),
+});
+
+export const UpdateProfileRequestSchema = z.object({
+  userId: z.string().uuid('Invalid user ID format'),
+  name: z.string().min(2).max(100).optional(),
+  companyName: z.string().min(2).max(200).optional(),
+  companyLogoUrl: z.string().url().nullable().optional(),
+});
+
 // ============= JOB SCHEMAS =============
 
 export const EmploymentTypeSchema = z.enum(['full-time', 'part-time', 'contract', 'internship']);
