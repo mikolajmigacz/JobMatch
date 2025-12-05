@@ -10,8 +10,12 @@ export type LoginRequest = z.infer<typeof schemas.LoginDtoSchema>;
 export type UpdateUserRequest = z.infer<typeof schemas.UpdateUserDtoSchema>;
 export type GetProfileRequest = z.infer<typeof schemas.GetProfileRequestSchema>;
 export type UpdateProfileRequest = z.infer<typeof schemas.UpdateProfileRequestSchema>;
+export type UploadLogoRequest = z.infer<typeof schemas.UploadLogoRequestSchema>;
+export type DeleteUserRequest = z.infer<typeof schemas.DeleteUserRequestSchema>;
 export type GetProfileResponse = PublicUser | null;
 export type UpdateProfileResponse = PublicUser | null;
+export type UploadLogoResponse = PublicUser | null;
+export type DeleteUserResponse = void;
 
 // Job types
 export type EmploymentType = z.infer<typeof schemas.EmploymentTypeSchema>;
@@ -74,6 +78,8 @@ export {
   UpdateUserDtoSchema,
   GetProfileRequestSchema,
   UpdateProfileRequestSchema,
+  UploadLogoRequestSchema,
+  DeleteUserRequestSchema,
   EmploymentTypeSchema,
   JobStatusSchema,
   JobSchema,

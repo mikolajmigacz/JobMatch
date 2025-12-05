@@ -93,6 +93,15 @@ export const UpdateProfileRequestSchema = z.object({
   companyLogoUrl: z.string().url().nullable().optional(),
 });
 
+export const UploadLogoRequestSchema = z.object({
+  userId: z.string().uuid('Invalid user ID format'),
+  logoUrl: z.string().url('Invalid logo URL'),
+});
+
+export const DeleteUserRequestSchema = z.object({
+  userId: z.string().uuid('Invalid user ID format'),
+});
+
 // ============= JOB SCHEMAS =============
 
 export const EmploymentTypeSchema = z.enum(['full-time', 'part-time', 'contract', 'internship']);

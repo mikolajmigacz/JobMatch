@@ -1,5 +1,7 @@
-export { GetProfileUseCase } from './get-profile.use-case';
-export { UpdateProfileUseCase } from './update-profile.use-case';
+export * from './get-profile.use-case';
+export * from './update-profile.use-case';
+export * from './upload-logo.use-case';
+export * from './delete-user.use-case';
 export {
   type GetProfileRequest,
   type GetProfileResponse,

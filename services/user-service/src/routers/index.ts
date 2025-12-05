@@ -11,3 +11,4 @@ export const createAppRouter = (userRepository: UserRepository) => {
 };
 
 export type AppRouter = ReturnType<typeof createAppRouter>;
+export type UserRouter = ReturnType<typeof createUserRouter>;
