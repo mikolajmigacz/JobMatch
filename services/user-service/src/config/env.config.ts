@@ -6,6 +6,7 @@ export interface EnvConfig {
   AWS_REGION: string;
   AWS_ACCESS_KEY_ID: string;
   AWS_SECRET_ACCESS_KEY: string;
+  JWT_SECRET: string;
 }
 
 export function loadEnvConfig(): EnvConfig {
@@ -17,5 +18,6 @@ export function loadEnvConfig(): EnvConfig {
     AWS_REGION: process.env.AWS_REGION || 'us-east-1',
     AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID || 'test',
     AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY || 'test',
+    JWT_SECRET: process.env.JWT_SECRET || '',
   };
 }
