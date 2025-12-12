@@ -94,8 +94,8 @@ export const UpdateProfileRequestSchema = z.object({
 });
 
 export const UploadLogoRequestSchema = z.object({
-  userId: z.string().uuid('Invalid user ID format'),
-  logoUrl: z.string().url('Invalid logo URL'),
+  fileBuffer: z.instanceof(Buffer),
+  mimeType: z.string().regex(/^image\/(jpeg|jpg|png|gif|webp)$/, 'Invalid image mime type'),
 });
 
 export const DeleteUserRequestSchema = z.object({

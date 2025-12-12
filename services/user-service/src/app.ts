@@ -9,7 +9,7 @@ import { UserRepository } from '@domain/repositories/user.repository';
 
 export function createApp(config: EnvConfig, userRepository: UserRepository): Express {
   const app = express();
-  const appRouter = createAppRouter(userRepository);
+  const appRouter = createAppRouter(userRepository, config);
   const jwtMiddleware = createJwtMiddleware(config.JWT_SECRET);
 
   app.use(cors({ origin: config.CORS_ORIGIN }));

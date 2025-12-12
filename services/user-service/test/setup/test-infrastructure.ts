@@ -2,6 +2,8 @@ import { promisify } from 'util';
 import * as path from 'path';
 import { exec } from 'child_process';
 import { TestDatabaseSetup } from './database.setup';
+import { TestS3Setup } from './s3.setup';
+import type { EnvConfig } from '../../src/config/env.config';
 
 const execAsync = promisify(exec);
 
@@ -123,10 +125,12 @@ class DockerComposeManager {
  */
 export class TestInfrastructure {
   private readonly database: TestDatabaseSetup;
+  private readonly s3: TestS3Setup;
   private readonly docker: DockerComposeManager;
 
   constructor() {
     this.database = new TestDatabaseSetup();
+    this.s3 = new TestS3Setup();
     this.docker = new DockerComposeManager();
   }
 
@@ -136,6 +140,8 @@ export class TestInfrastructure {
       await this.docker.start();
       // Then setup database
       await this.database.createTable();
+      // Then setup S3
+      await this.s3.createBucket();
     } catch (error) {
       throw new Error(
         `Failed to initialize test infrastructure: ${
@@ -147,7 +153,9 @@ export class TestInfrastructure {
 
   async cleanup(): Promise<void> {
     try {
-      // Cleanup database first
+      // Cleanup S3 first
+      await this.s3.cleanup();
+      // Cleanup database second
       await this.database.cleanup();
       // Then stop Docker services
       await this.docker.stop();
@@ -158,6 +166,20 @@ export class TestInfrastructure {
 
   getDatabase(): TestDatabaseSetup {
     return this.database;
+  }
+
+  getConfig(): EnvConfig {
+    return {
+      JWT_SECRET: process.env.JWT_SECRET || 'test-secret-key-for-testing-only',
+      AWS_REGION: process.env.AWS_REGION || 'us-east-1',
+      AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID || 'test',
+      AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY || 'test',
+      DYNAMODB_ENDPOINT: process.env.DYNAMODB_ENDPOINT || 'http://localhost:4566',
+      S3_ENDPOINT: process.env.S3_ENDPOINT || 'http://localhost:4566',
+      S3_BUCKET: this.s3.getBucketName(),
+      CORS_ORIGIN: process.env.CORS_ORIGIN || '*',
+      NODE_ENV: 'test',
+    } as EnvConfig;
   }
 }
 

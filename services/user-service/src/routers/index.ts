@@ -1,12 +1,13 @@
 import { router } from '@infrastructure/trpc/trpc';
 import { UserRepository } from '@domain/repositories/user.repository';
+import { EnvConfig } from '@config/env.config';
 import { healthRouter } from '@routers/health.router';
 import { createUserRouter } from '@routers/user.router';
 
-export const createAppRouter = (userRepository: UserRepository) => {
+export const createAppRouter = (userRepository: UserRepository, config: EnvConfig) => {
   return router({
     health: healthRouter,
-    user: createUserRouter(userRepository),
+    user: createUserRouter(userRepository, config),
   });
 };
 

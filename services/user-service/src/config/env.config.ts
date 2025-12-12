@@ -7,6 +7,8 @@ export interface EnvConfig {
   AWS_ACCESS_KEY_ID: string;
   AWS_SECRET_ACCESS_KEY: string;
   JWT_SECRET: string;
+  S3_ENDPOINT: string;
+  S3_BUCKET: string;
 }
 
 export function loadEnvConfig(): EnvConfig {
@@ -19,5 +21,7 @@ export function loadEnvConfig(): EnvConfig {
     AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID || 'test',
     AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY || 'test',
     JWT_SECRET: process.env.JWT_SECRET || '',
+    S3_ENDPOINT: process.env.S3_ENDPOINT || 'http://localhost:4566',
+    S3_BUCKET: process.env.S3_BUCKET || 'jobmatch-bucket',
   };
 }
