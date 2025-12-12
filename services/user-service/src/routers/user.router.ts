@@ -19,8 +19,8 @@ import { S3FileStorageService } from '@infrastructure/services/s3-file-storage.s
 export const createUserRouter = (repository: UserRepository, config: EnvConfig) => {
   const getProfileUseCase = new GetProfileUseCase(repository);
   const updateProfileUseCase = new UpdateProfileUseCase(repository);
-  const deleteUserUseCase = new DeleteUserUseCase(repository);
   const s3Service = new S3FileStorageService(config);
+  const deleteUserUseCase = new DeleteUserUseCase(repository, s3Service);
   const uploadLogoUseCase = new UploadLogoUseCase(repository, s3Service);
 
   return router({
@@ -33,9 +33,14 @@ export const createUserRouter = (repository: UserRepository, config: EnvConfig) 
       return updateProfileUseCase.execute({ userId, ...updates });
     }),
 
-    deleteUser: protectedProcedure.input(DeleteUserRequestSchema).mutation(async ({ input }) => {
-      return deleteUserUseCase.execute(input);
-    }),
+    deleteUser: protectedProcedure
+      .input(DeleteUserRequestSchema)
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.userId !== input.userId) {
+          throw new Error('Unauthorized: Can only delete own account');
+        }
+        return deleteUserUseCase.execute(input);
+      }),
 
     uploadLogo: protectedProcedure
       .input(UploadLogoRequestSchema)
