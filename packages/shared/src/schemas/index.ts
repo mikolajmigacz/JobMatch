@@ -162,7 +162,6 @@ export const JobSchema = JobSchemaBase.refine(
 
 export const CreateJobDtoSchema = JobSchemaBase.omit({
   jobId: true,
-  employerId: true,
   createdAt: true,
   updatedAt: true,
   status: true,
@@ -173,7 +172,6 @@ export const CreateJobDtoSchema = JobSchemaBase.omit({
 
 const UpdateJobSchemaBase = JobSchemaBase.omit({
   jobId: true,
-  employerId: true,
   createdAt: true,
   updatedAt: true,
   status: true,
@@ -195,6 +193,41 @@ export const JobFilterSchema = z.object({
   limit: z.number().int().positive().max(100).default(10),
   sortBy: z.enum(['createdAt', 'title', 'salaryMax']).default('createdAt'),
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
+});
+
+export const GetMyJobsFilterSchema = z.object({
+  employerId: z.string().uuid('Invalid employer ID format'),
+  title: z.string().optional(),
+  location: z.string().optional(),
+  employmentType: z.array(EmploymentTypeSchema).optional(),
+  page: z.number().int().positive().default(1),
+  limit: z.number().int().positive().max(100).default(10),
+  sortBy: z.enum(['createdAt', 'title', 'salaryMax']).default('createdAt'),
+  sortOrder: z.enum(['asc', 'desc']).default('desc'),
+});
+
+export const UpdateJobRequestSchema = z
+  .object({
+    jobId: z.string().uuid('Invalid job ID format'),
+    employerId: z.string().uuid('Invalid employer ID format'),
+    title: z.string().min(5).max(200).optional(),
+    description: z.string().min(50).max(5000).optional(),
+    location: z.string().min(2).max(100).optional(),
+    salaryMin: z.number().int().positive().optional(),
+    salaryMax: z.number().int().positive().optional(),
+    employmentType: EmploymentTypeSchema.optional(),
+    skills: z.array(z.string().min(1).max(50)).max(20).optional(),
+    requirements: z.string().min(20).max(3000).optional(),
+    companyName: z.string().min(2).max(200).optional(),
+  })
+  .refine((data) => !data.salaryMin || !data.salaryMax || data.salaryMin <= data.salaryMax, {
+    message: 'Minimum salary must be less than or equal to maximum salary',
+    path: ['salaryMax'],
+  });
+
+export const DeleteJobRequestSchema = z.object({
+  jobId: z.string().uuid('Invalid job ID format'),
+  employerId: z.string().uuid('Invalid employer ID format'),
 });
 
 // ============= APPLICATION SCHEMAS =============

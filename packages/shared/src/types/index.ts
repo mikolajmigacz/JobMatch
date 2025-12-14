@@ -22,8 +22,34 @@ export type EmploymentType = z.infer<typeof schemas.EmploymentTypeSchema>;
 export type JobStatus = z.infer<typeof schemas.JobStatusSchema>;
 export type Job = z.infer<typeof schemas.JobSchema>;
 export type CreateJobRequest = z.infer<typeof schemas.CreateJobDtoSchema>;
-export type UpdateJobRequest = z.infer<typeof schemas.UpdateJobDtoSchema>;
-export type JobFilter = z.infer<typeof schemas.JobFilterSchema>;
+export type UpdateJobRequest = z.infer<typeof schemas.UpdateJobRequestSchema>;
+export type DeleteJobRequest = z.infer<typeof schemas.DeleteJobRequestSchema>;
+export type JobFilterRequest = z.infer<typeof schemas.JobFilterSchema>;
+export type GetMyJobsRequest = z.infer<typeof schemas.GetMyJobsFilterSchema>;
+
+export interface GetAllJobsResponse {
+  data: Job[];
+  total: number;
+  page: number;
+  limit: number;
+  hasMore: boolean;
+}
+
+export interface GetMyJobsResponse {
+  data: Job[];
+  total: number;
+  page: number;
+  limit: number;
+  hasMore: boolean;
+}
+
+export type GetJobResponse = Job | null;
+export type CreateJobResponse = Job;
+export type UpdateJobResponse = Job;
+export interface DeleteJobResponse {
+  success: boolean;
+  jobId: string;
+}
 
 // Application types
 export type ApplicationStatus = z.infer<typeof schemas.ApplicationStatusSchema>;
@@ -86,6 +112,9 @@ export {
   CreateJobDtoSchema,
   UpdateJobDtoSchema,
   JobFilterSchema,
+  GetMyJobsFilterSchema,
+  UpdateJobRequestSchema,
+  DeleteJobRequestSchema,
   ApplicationStatusSchema,
   ApplicationSchema,
   ApplyToJobDtoSchema,
