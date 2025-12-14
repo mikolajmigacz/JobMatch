@@ -1,12 +1,4 @@
-import { z } from 'zod';
-import { TRPCError } from '@trpc/server';
-import { router, publicProcedure, employerProcedure } from '@infrastructure/trpc/trpc';
-import {
-  CreateJobDtoSchema,
-  UpdateJobDtoSchema,
-  JobFilterSchema,
-  GetMyJobsFilterSchema,
-} from '@jobmatch/shared';
+import { router } from '@infrastructure/trpc/trpc';
 import {
   GetAllJobsUseCase,
   GetJobUseCase,
@@ -15,8 +7,16 @@ import {
   UpdateJobUseCase,
   DeleteJobUseCase,
 } from '@application/use-cases';
+import {
+  createGetAllJobsProcedure,
+  createGetJobProcedure,
+  createGetMyJobsProcedure,
+  createCreateJobProcedure,
+  createUpdateJobProcedure,
+  createDeleteJobProcedure,
+} from './procedures';
 
-interface JobRouterDependencies {
+export interface JobRouterDependencies {
   getAllJobsUseCase: GetAllJobsUseCase;
   getJobUseCase: GetJobUseCase;
   getMyJobsUseCase: GetMyJobsUseCase;
@@ -25,7 +25,7 @@ interface JobRouterDependencies {
   deleteJobUseCase: DeleteJobUseCase;
 }
 
-export function createJobRouter(deps: JobRouterDependencies) {
+export function createJobRouter(dependencies: JobRouterDependencies) {
   const {
     getAllJobsUseCase,
     getJobUseCase,
@@ -33,142 +33,15 @@ export function createJobRouter(deps: JobRouterDependencies) {
     createJobUseCase,
     updateJobUseCase,
     deleteJobUseCase,
-  } = deps;
+  } = dependencies;
 
   return router({
-    getAllJobs: publicProcedure.input(JobFilterSchema).query(async ({ input }) => {
-      try {
-        return await getAllJobsUseCase.execute(input);
-      } catch (error) {
-        console.error('Error getting all jobs:', error);
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to fetch jobs',
-        });
-      }
-    }),
-
-    getJob: publicProcedure
-      .input(z.object({ jobId: z.string().uuid() }))
-      .query(async ({ input }) => {
-        try {
-          const job = await getJobUseCase.execute(input);
-
-          if (!job) {
-            throw new TRPCError({
-              code: 'NOT_FOUND',
-              message: 'Job not found',
-            });
-          }
-
-          return job;
-        } catch (error) {
-          if (error instanceof TRPCError) throw error;
-          console.error('Error getting job:', error);
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to fetch job',
-          });
-        }
-      }),
-
-    getMyJobs: employerProcedure.input(GetMyJobsFilterSchema).query(async ({ ctx, input }) => {
-      try {
-        return await getMyJobsUseCase.execute({
-          ...input,
-          employerId: ctx.userId,
-        });
-      } catch (error) {
-        console.error('Error getting my jobs:', error);
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to fetch your jobs',
-        });
-      }
-    }),
-
-    createJob: employerProcedure.input(CreateJobDtoSchema).mutation(async ({ ctx, input }) => {
-      try {
-        return await createJobUseCase.execute({
-          ...input,
-          employerId: ctx.userId,
-        });
-      } catch (error) {
-        console.error('Error creating job:', error);
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to create job',
-        });
-      }
-    }),
-
-    updateJob: employerProcedure
-      .input(
-        z.object({
-          jobId: z.string().uuid(),
-          data: UpdateJobDtoSchema,
-        })
-      )
-      .mutation(async ({ ctx, input }) => {
-        try {
-          return await updateJobUseCase.execute({
-            jobId: input.jobId,
-            employerId: ctx.userId,
-            ...input.data,
-          });
-        } catch (error) {
-          if (error instanceof Error) {
-            if (error.message.includes('not found')) {
-              throw new TRPCError({
-                code: 'NOT_FOUND',
-                message: 'Job not found',
-              });
-            }
-            if (error.message.includes('Forbidden')) {
-              throw new TRPCError({
-                code: 'FORBIDDEN',
-                message: 'You can only update your own jobs',
-              });
-            }
-          }
-          console.error('Error updating job:', error);
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to update job',
-          });
-        }
-      }),
-
-    deleteJob: employerProcedure
-      .input(z.object({ jobId: z.string().uuid() }))
-      .mutation(async ({ ctx, input }) => {
-        try {
-          return await deleteJobUseCase.execute({
-            jobId: input.jobId,
-            employerId: ctx.userId,
-          });
-        } catch (error) {
-          if (error instanceof Error) {
-            if (error.message.includes('not found')) {
-              throw new TRPCError({
-                code: 'NOT_FOUND',
-                message: 'Job not found',
-              });
-            }
-            if (error.message.includes('Forbidden')) {
-              throw new TRPCError({
-                code: 'FORBIDDEN',
-                message: 'You can only delete your own jobs',
-              });
-            }
-          }
-          console.error('Error deleting job:', error);
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to delete job',
-          });
-        }
-      }),
+    getAllJobs: createGetAllJobsProcedure(getAllJobsUseCase),
+    getJob: createGetJobProcedure(getJobUseCase),
+    getMyJobs: createGetMyJobsProcedure(getMyJobsUseCase),
+    createJob: createCreateJobProcedure(createJobUseCase),
+    updateJob: createUpdateJobProcedure(updateJobUseCase),
+    deleteJob: createDeleteJobProcedure(deleteJobUseCase),
   });
 }
 
