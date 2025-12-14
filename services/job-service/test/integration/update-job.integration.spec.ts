@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
 import { testInfra } from '../setup/test-infrastructure';
 import { DynamoDbJobRepository } from '../../src/infrastructure/repositories/job.repository';
-import { UpdateJobUseCase, CreateJobUseCase, GetJobUseCase } from '../../src/application/use-cases';
+import { UpdateJobUseCase, CreateJobUseCase } from '../../src/application/use-cases';
 
 describe('UpdateJob Integration Tests', () => {
   let repository: DynamoDbJobRepository;
@@ -14,7 +14,6 @@ describe('UpdateJob Integration Tests', () => {
     repository = new DynamoDbJobRepository(documentClient);
     createJobUseCase = new CreateJobUseCase(repository);
     updateJobUseCase = new UpdateJobUseCase(repository);
-    getJobUseCase = new GetJobUseCase(repository);
   });
 
   afterAll(async () => {

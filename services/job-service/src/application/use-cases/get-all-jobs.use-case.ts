@@ -25,7 +25,7 @@ export class GetAllJobsUseCase {
 
     if (input.employmentType && input.employmentType.length > 0) {
       filtered = filtered.filter((job) =>
-        input.employmentType!.includes(job.employmentType as string)
+        (input.employmentType as string[]).includes(job.employmentType)
       );
     }
 

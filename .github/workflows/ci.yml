@@ -1,0 +1,355 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'services/**'
+      - 'packages/shared/**'
+      - 'pnpm-lock.yaml'
+      - 'docker-compose.yml'
+      - '.github/workflows/ci.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'services/**'
+      - 'packages/shared/**'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/ci.yml'
+
+jobs:
+  auth-service:
+    name: Test auth-service
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8.15.1
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Cache pnpm modules
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build auth-service
+        run: pnpm --filter auth-service build
+
+      - name: Lint auth-service
+        run: pnpm --filter auth-service lint
+
+      - name: Run unit tests - auth-service
+        run: pnpm --filter auth-service test:unit
+
+      - name: Start Docker services for integration tests
+        run: |
+          docker compose -f docker-compose.yml up -d localstack mailhog
+          sleep 10
+          docker compose -f docker-compose.yml exec -T localstack bash -c "awslocal dynamodb list-tables" || true
+        env:
+          NODE_ENV: test
+          AUTH_SERVICE_PORT: 3001
+          USER_SERVICE_PORT: 3002
+          JOB_SERVICE_PORT: 3003
+          CORS_ORIGIN: http://localhost:4000,http://localhost:4001,http://localhost:4002
+          DYNAMODB_ENDPOINT: http://localhost:4566
+          DYNAMODB_TABLE_USERS: Users
+          DYNAMODB_TABLE_JOBS: Jobs
+          AWS_REGION: us-east-1
+          AWS_ACCESS_KEY_ID: test
+          AWS_SECRET_ACCESS_KEY: test
+          S3_BUCKET: jobmatch-bucket
+          S3_ENDPOINT: http://localhost:4566
+          SMTP_HOST: localhost
+          SMTP_PORT: 1025
+          JWT_SECRET: test-jwt-secret-key-for-ci-testing-only-very-long-and-random
+
+      - name: Run integration tests - auth-service
+        run: pnpm --filter auth-service test:integration
+        env:
+          NODE_ENV: test
+          AUTH_SERVICE_PORT: 3001
+          USER_SERVICE_PORT: 3002
+          JOB_SERVICE_PORT: 3003
+          CORS_ORIGIN: http://localhost:4000,http://localhost:4001,http://localhost:4002
+          DYNAMODB_ENDPOINT: http://localhost:4566
+          DYNAMODB_TABLE_USERS: Users
+          DYNAMODB_TABLE_JOBS: Jobs
+          AWS_REGION: us-east-1
+          AWS_ACCESS_KEY_ID: test
+          AWS_SECRET_ACCESS_KEY: test
+          S3_BUCKET: jobmatch-bucket
+          S3_ENDPOINT: http://localhost:4566
+          SMTP_HOST: localhost
+          SMTP_PORT: 1025
+          JWT_SECRET: test-jwt-secret-key-for-ci-testing-only-very-long-and-random
+
+      - name: Build Docker image - auth-service
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push - auth-service
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: services/auth-service/Dockerfile
+          push: false
+          tags: jobmatch-auth-service:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Cleanup Docker
+        if: always()
+        run: docker compose -f docker-compose.yml down --volumes || true
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-auth-service
+          path: |
+            services/auth-service/coverage/
+            services/auth-service/.nyc_output/
+          retention-days: 7
+
+  user-service:
+    name: Test user-service
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8.15.1
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Cache pnpm modules
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build user-service
+        run: pnpm --filter user-service build
+
+      - name: Lint user-service
+        run: pnpm --filter user-service lint
+
+      - name: Run unit tests - user-service
+        run: pnpm --filter user-service test:unit
+
+      - name: Start Docker services for integration tests
+        run: |
+          docker compose -f docker-compose.yml up -d localstack mailhog
+          sleep 10
+          docker compose -f docker-compose.yml exec -T localstack bash -c "awslocal dynamodb list-tables" || true
+        env:
+          NODE_ENV: test
+          AUTH_SERVICE_PORT: 3001
+          USER_SERVICE_PORT: 3002
+          JOB_SERVICE_PORT: 3003
+          CORS_ORIGIN: http://localhost:4000,http://localhost:4001,http://localhost:4002
+          DYNAMODB_ENDPOINT: http://localhost:4566
+          DYNAMODB_TABLE_USERS: Users
+          DYNAMODB_TABLE_JOBS: Jobs
+          AWS_REGION: us-east-1
+          AWS_ACCESS_KEY_ID: test
+          AWS_SECRET_ACCESS_KEY: test
+          S3_BUCKET: jobmatch-bucket
+          S3_ENDPOINT: http://localhost:4566
+          SMTP_HOST: localhost
+          SMTP_PORT: 1025
+          JWT_SECRET: test-jwt-secret-key-for-ci-testing-only-very-long-and-random
+
+      - name: Run integration tests - user-service
+        run: pnpm --filter user-service test:integration
+        env:
+          NODE_ENV: test
+          AUTH_SERVICE_PORT: 3001
+          USER_SERVICE_PORT: 3002
+          JOB_SERVICE_PORT: 3003
+          CORS_ORIGIN: http://localhost:4000,http://localhost:4001,http://localhost:4002
+          DYNAMODB_ENDPOINT: http://localhost:4566
+          DYNAMODB_TABLE_USERS: Users
+          DYNAMODB_TABLE_JOBS: Jobs
+          AWS_REGION: us-east-1
+          AWS_ACCESS_KEY_ID: test
+          AWS_SECRET_ACCESS_KEY: test
+          S3_BUCKET: jobmatch-bucket
+          S3_ENDPOINT: http://localhost:4566
+          SMTP_HOST: localhost
+          SMTP_PORT: 1025
+          JWT_SECRET: test-jwt-secret-key-for-ci-testing-only-very-long-and-random
+
+      - name: Build Docker image - user-service
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push - user-service
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: services/user-service/Dockerfile
+          push: false
+          tags: jobmatch-user-service:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Cleanup Docker
+        if: always()
+        run: docker compose -f docker-compose.yml down --volumes || true
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-user-service
+          path: |
+            services/user-service/coverage/
+            services/user-service/.nyc_output/
+          retention-days: 7
+
+  job-service:
+    name: Test job-service
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8.15.1
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Cache pnpm modules
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build job-service
+        run: pnpm --filter job-service build
+
+      - name: Lint job-service
+        run: pnpm --filter job-service lint
+
+      - name: Run unit tests - job-service
+        run: pnpm --filter job-service test:unit
+
+      - name: Start Docker services for integration tests
+        run: |
+          docker compose -f docker-compose.yml up -d localstack mailhog
+          sleep 10
+          docker compose -f docker-compose.yml exec -T localstack bash -c "awslocal dynamodb list-tables" || true
+        env:
+          NODE_ENV: test
+          AUTH_SERVICE_PORT: 3001
+          USER_SERVICE_PORT: 3002
+          JOB_SERVICE_PORT: 3003
+          CORS_ORIGIN: http://localhost:4000,http://localhost:4001,http://localhost:4002
+          DYNAMODB_ENDPOINT: http://localhost:4566
+          DYNAMODB_TABLE_USERS: Users
+          DYNAMODB_TABLE_JOBS: Jobs
+          AWS_REGION: us-east-1
+          AWS_ACCESS_KEY_ID: test
+          AWS_SECRET_ACCESS_KEY: test
+          S3_BUCKET: jobmatch-bucket
+          S3_ENDPOINT: http://localhost:4566
+          SMTP_HOST: localhost
+          SMTP_PORT: 1025
+          JWT_SECRET: test-jwt-secret-key-for-ci-testing-only-very-long-and-random
+
+      - name: Run integration tests - job-service
+        run: pnpm --filter job-service test:integration
+        env:
+          NODE_ENV: test
+          AUTH_SERVICE_PORT: 3001
+          USER_SERVICE_PORT: 3002
+          JOB_SERVICE_PORT: 3003
+          CORS_ORIGIN: http://localhost:4000,http://localhost:4001,http://localhost:4002
+          DYNAMODB_ENDPOINT: http://localhost:4566
+          DYNAMODB_TABLE_USERS: Users
+          DYNAMODB_TABLE_JOBS: Jobs
+          AWS_REGION: us-east-1
+          AWS_ACCESS_KEY_ID: test
+          AWS_SECRET_ACCESS_KEY: test
+          S3_BUCKET: jobmatch-bucket
+          S3_ENDPOINT: http://localhost:4566
+          SMTP_HOST: localhost
+          SMTP_PORT: 1025
+          JWT_SECRET: test-jwt-secret-key-for-ci-testing-only-very-long-and-random
+
+      - name: Build Docker image - job-service
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push - job-service
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: services/job-service/Dockerfile
+          push: false
+          tags: jobmatch-job-service:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Cleanup Docker
+        if: always()
+        run: docker compose -f docker-compose.yml down --volumes || true
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-job-service
+          path: |
+            services/job-service/coverage/
+            services/job-service/.nyc_output/
+          retention-days: 7

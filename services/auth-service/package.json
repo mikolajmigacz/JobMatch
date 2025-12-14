@@ -9,7 +9,7 @@
     "test": "jest",
     "test:unit": "jest --testPathIgnorePatterns='.*\\.integration\\.spec\\.ts$'",
     "test:watch": "jest --watch",
-    "test:integration": "docker compose -f ../../docker-compose.dev.yml up -d && jest test/auth.integration.spec.ts --runInBand --forceExit; docker compose -f ../../docker-compose.dev.yml down",
+    "test:integration": "pnpm -w --filter @jobmatch/shared build && jest --testPathPatterns='.*\\.integration\\.spec\\.ts$' --runInBand --forceExit",
     "lint": "eslint src/ test/"
   },
   "keywords": [],

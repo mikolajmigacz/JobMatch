@@ -13,9 +13,9 @@ services:
       - DATA_DIR=/tmp/localstack
     volumes:
       - localstack_data:/tmp/localstack
-      - ./docker/localstack/entrypoint.sh:/app/docker-entrypoint.sh
       - /var/run/docker.sock:/var/run/docker.sock
-    entrypoint: /app/docker-entrypoint.sh
+    entrypoint: []
+    command: bash -c "chmod +x /usr/local/bin/docker-entrypoint.sh && /usr/local/bin/docker-entrypoint.sh"
     healthcheck:
       test:
         [
