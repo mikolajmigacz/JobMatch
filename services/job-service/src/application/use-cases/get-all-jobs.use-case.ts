@@ -9,6 +9,8 @@ export class GetAllJobsUseCase {
 
     let filtered = jobs.map((job) => job.toPrimitive());
 
+    filtered = filtered.filter((job) => job.status === 'active');
+
     if (input.title) {
       filtered = filtered.filter((job) =>
         job.title.toLowerCase().includes(input.title!.toLowerCase())

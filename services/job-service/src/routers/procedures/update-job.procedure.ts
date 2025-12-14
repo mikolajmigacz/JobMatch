@@ -11,6 +11,20 @@ export function createUpdateJobProcedure(updateJobUseCase: UpdateJobUseCase) {
         employerId: ctx.userId,
       });
     } catch (error) {
+      if (error instanceof Error) {
+        if (error.message.includes('not found')) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Job not found',
+          });
+        }
+        if (error.message.includes('Forbidden')) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'You can only update your own jobs',
+          });
+        }
+      }
       console.error('Error updating job:', error);
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
