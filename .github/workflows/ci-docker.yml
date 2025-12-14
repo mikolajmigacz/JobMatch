@@ -16,13 +16,9 @@ on:
       - '.github/workflows/ci-docker.yml'
 
 jobs:
-  build-docker-images:
-    name: Build Docker - ${{ matrix.service }}
+  build-auth-service:
+    name: Build Docker - auth-service
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        service: [auth-service, user-service, job-service]
-      fail-fast: false
 
     steps:
       - name: Checkout code
@@ -31,12 +27,54 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build ${{ matrix.service }} image
+      - name: Build auth-service image
         uses: docker/build-push-action@v5
         with:
-          context: .
-          dockerfile: services/${{ matrix.service }}/Dockerfile
+          context: services/auth-service
+          file: services/auth-service/Dockerfile
           push: false
-          tags: jobmatch-${{ matrix.service }}:latest
+          tags: jobmatch-auth-service:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-user-service:
+    name: Build Docker - user-service
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build user-service image
+        uses: docker/build-push-action@v5
+        with:
+          context: services/user-service
+          file: services/user-service/Dockerfile
+          push: false
+          tags: jobmatch-user-service:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-job-service:
+    name: Build Docker - job-service
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build job-service image
+        uses: docker/build-push-action@v5
+        with:
+          context: services/job-service
+          file: services/job-service/Dockerfile
+          push: false
+          tags: jobmatch-job-service:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max

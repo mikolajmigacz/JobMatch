@@ -25,7 +25,10 @@ export class UploadLogoUseCase {
       if (oldKey) {
         try {
           await this.s3Service.deleteFile(oldKey);
-        } catch {}
+        } catch (error) {
+          // Ignore error if file doesn't exist in S3
+          console.warn('Failed to delete old logo:', error);
+        }
       }
     }
 

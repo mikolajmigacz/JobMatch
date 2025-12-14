@@ -53,8 +53,8 @@ export class DynamoDbJobRepository implements IJobRepository {
         new Date(item.createdAt as string),
         new Date(item.updatedAt as string)
       );
-    } catch (error: any) {
-      if (error.name === 'ResourceNotFoundException') {
+    } catch (error: unknown) {
+      if (error instanceof Error && 'name' in error && error.name === 'ResourceNotFoundException') {
         return null;
       }
       throw error;
@@ -183,7 +183,7 @@ export class DynamoDbJobRepository implements IJobRepository {
     const primitive = job.toPrimitive();
     const updateExpressions: string[] = [];
     const expressionAttributeNames: Record<string, string> = {};
-    const expressionAttributeValues: Record<string, any> = {};
+    const expressionAttributeValues: Record<string, unknown> = {};
 
     const keysToSkip = ['jobId', 'createdAt'];
     let index = 0;

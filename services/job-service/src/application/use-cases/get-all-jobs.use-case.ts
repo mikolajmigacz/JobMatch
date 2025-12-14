@@ -25,7 +25,7 @@ export class GetAllJobsUseCase {
 
     if (input.employmentType && input.employmentType.length > 0) {
       filtered = filtered.filter((job) =>
-        input.employmentType!.includes(job.employmentType as any)
+        input.employmentType!.includes(job.employmentType as string)
       );
     }
 
@@ -52,16 +52,14 @@ export class GetAllJobsUseCase {
       const aValue =
         sortBy === 'createdAt'
           ? new Date(a.createdAt).getTime()
-          : (a[sortBy as keyof typeof a] as any);
+          : (a[sortBy as keyof typeof a] as string | number);
       const bValue =
         sortBy === 'createdAt'
           ? new Date(b.createdAt).getTime()
-          : (b[sortBy as keyof typeof b] as any);
+          : (b[sortBy as keyof typeof b] as string | number);
 
-      if (typeof aValue === 'string') {
-        return sortOrder === 'asc'
-          ? aValue.localeCompare(bValue as string)
-          : (bValue as string).localeCompare(aValue);
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        return sortOrder === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
       }
       return sortOrder === 'asc'
         ? (aValue as number) - (bValue as number)

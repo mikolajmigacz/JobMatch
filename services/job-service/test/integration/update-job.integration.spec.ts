@@ -7,7 +7,6 @@ describe('UpdateJob Integration Tests', () => {
   let repository: DynamoDbJobRepository;
   let createJobUseCase: CreateJobUseCase;
   let updateJobUseCase: UpdateJobUseCase;
-  let getJobUseCase: GetJobUseCase;
 
   beforeAll(async () => {
     await testInfra.initialize();

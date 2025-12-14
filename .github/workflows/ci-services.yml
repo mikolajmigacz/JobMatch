@@ -57,17 +57,20 @@ jobs:
       - name: Build ${{ matrix.service }}
         run: pnpm --filter ${{ matrix.service }} build
 
+      - name: Lint ${{ matrix.service }}
+        run: pnpm --filter ${{ matrix.service }} lint
+
       - name: Run unit tests - ${{ matrix.service }}
-        run: pnpm --filter ${{ matrix.service }} test --passWithNoTests
+        run: pnpm --filter ${{ matrix.service }} test:unit
 
       - name: Start Docker services for integration tests
         run: |
-          docker-compose -f docker-compose.yml up -d localstack mailhog
+          docker compose -f docker-compose.yml up -d localstack mailhog
           sleep 10
-          docker-compose -f docker-compose.yml exec -T localstack bash -c "awslocal dynamodb list-tables" || true
+          docker compose -f docker-compose.yml exec -T localstack bash -c "awslocal dynamodb list-tables" || true
 
       - name: Run integration tests - ${{ matrix.service }}
-        run: pnpm --filter ${{ matrix.service }} test:integration --passWithNoTests
+        run: pnpm --filter ${{ matrix.service }} test:integration
         env:
           DYNAMODB_ENDPOINT: http://localhost:4566
           AWS_REGION: us-east-1
@@ -76,11 +79,11 @@ jobs:
 
       - name: Cleanup Docker
         if: always()
-        run: docker-compose -f docker-compose.yml down --volumes || true
+        run: docker compose -f docker-compose.yml down --volumes || true
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-results-${{ matrix.service }}
           path: |

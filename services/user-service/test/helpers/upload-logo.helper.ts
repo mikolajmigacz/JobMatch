@@ -45,7 +45,7 @@ export const uploadLogoTestData = {
 };
 
 export class UploadLogoAssertions {
-  static assertValidUploadResult(result: any): void {
+  static assertValidUploadResult(result: unknown): void {
     expect(result).toBeDefined();
     expect(result?.companyLogoUrl).toBeTruthy();
     expect(result?.companyLogoUrl).toContain('s3://');

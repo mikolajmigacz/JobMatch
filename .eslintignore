@@ -1,0 +1,6 @@
+node_modules/
+dist/
+build/
+packages/**/*.d.ts
+services/**/*.d.ts
+coverage/
