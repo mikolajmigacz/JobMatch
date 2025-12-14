@@ -189,7 +189,7 @@ export class DynamoDbJobRepository implements IJobRepository {
     let index = 0;
 
     for (const [key, value] of Object.entries(primitive)) {
-      if (!keysToSkip.includes(key)) {
+      if (!keysToSkip.includes(key) && value !== undefined) {
         const placeholder = `:val${index}`;
         updateExpressions.push(`#${key} = ${placeholder}`);
         expressionAttributeNames[`#${key}`] = key;
