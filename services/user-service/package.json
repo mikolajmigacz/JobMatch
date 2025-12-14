@@ -9,6 +9,7 @@
     "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
     "test": "jest",
     "test:unit": "jest --testPathIgnorePatterns='.*\\.integration\\.spec\\.ts$'",
+    "test:integration": "jest --testPathPattern='.*\\.integration\\.spec\\.ts$' --runInBand --forceExit",
     "test:watch": "jest --watch",
     "lint": "eslint src/ test/"
   },
