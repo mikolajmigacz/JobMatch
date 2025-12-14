@@ -23,7 +23,7 @@ jobs:
       matrix:
         service: [auth-service, user-service, job-service]
       fail-fast: false
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
