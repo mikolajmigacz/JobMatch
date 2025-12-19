@@ -1,6 +1,10 @@
 {
-  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "lib": ["ES2020"],
+    "declaration": true,
+    "outDir": "./dist",
     "baseUrl": ".",
     "paths": {
       "@jobmatch/shared": ["../../packages/shared/src"],
@@ -12,14 +16,16 @@
       "@routers/*": ["./src/routers/*"],
       "@shared/*": ["./src/shared/*"],
       "@/*": ["./src/*"]
-    }
-  },
-  "ts-node": {
-    "esm": false,
-    "transpileOnly": true,
-    "compilerOptions": {
-      "module": "commonjs"
-    }
+    },
+    "removeComments": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "isolatedModules": true,
+    "allowJs": true
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]

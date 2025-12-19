@@ -17,6 +17,14 @@ export type UpdateProfileResponse = PublicUser | null;
 export type UploadLogoResponse = PublicUser | null;
 export type DeleteUserResponse = void;
 
+// Inter-service User DTO (for service-to-service communication)
+export interface UserDetails {
+  userId: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+}
+
 // Job types
 export type EmploymentType = z.infer<typeof schemas.EmploymentTypeSchema>;
 export type JobStatus = z.infer<typeof schemas.JobStatusSchema>;
@@ -49,6 +57,15 @@ export type UpdateJobResponse = Job;
 export interface DeleteJobResponse {
   success: boolean;
   jobId: string;
+}
+
+// Inter-service Job DTO (for service-to-service communication)
+export interface JobDetails {
+  jobId: string;
+  title: string;
+  status: JobStatus;
+  employerId: string;
+  companyName: string;
 }
 
 // Application types

@@ -353,3 +353,119 @@ jobs:
             services/job-service/coverage/
             services/job-service/.nyc_output/
           retention-days: 7
+
+  application-service:
+    name: Test application-service
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8.15.1
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Cache pnpm modules
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build application-service
+        run: pnpm --filter application-service build
+
+      - name: Lint application-service
+        run: pnpm --filter application-service lint
+
+      - name: Run unit tests - application-service
+        run: pnpm --filter application-service test:unit
+
+      - name: Start Docker services for integration tests
+        run: |
+          docker compose -f docker-compose.yml up -d localstack mailhog
+          sleep 10
+          docker compose -f docker-compose.yml exec -T localstack bash -c "awslocal dynamodb list-tables" || true
+        env:
+          NODE_ENV: test
+          AUTH_SERVICE_PORT: 3001
+          USER_SERVICE_PORT: 3002
+          JOB_SERVICE_PORT: 3003
+          APPLICATION_SERVICE_PORT: 3004
+          CORS_ORIGIN: http://localhost:4000,http://localhost:4001,http://localhost:4002
+          DYNAMODB_ENDPOINT: http://localhost:4566
+          DYNAMODB_TABLE_USERS: Users
+          DYNAMODB_TABLE_JOBS: Jobs
+          DYNAMODB_TABLE_APPLICATIONS: Applications
+          AWS_REGION: us-east-1
+          AWS_ACCESS_KEY_ID: test
+          AWS_SECRET_ACCESS_KEY: test
+          S3_BUCKET: jobmatch-bucket
+          S3_ENDPOINT: http://localhost:4566
+          SMTP_HOST: localhost
+          SMTP_PORT: 1025
+          JWT_SECRET: test-jwt-secret-key-for-ci-testing-only-very-long-and-random
+
+      - name: Run integration tests - application-service
+        run: pnpm --filter application-service test:integration
+        env:
+          NODE_ENV: test
+          AUTH_SERVICE_PORT: 3001
+          USER_SERVICE_PORT: 3002
+          JOB_SERVICE_PORT: 3003
+          APPLICATION_SERVICE_PORT: 3004
+          CORS_ORIGIN: http://localhost:4000,http://localhost:4001,http://localhost:4002
+          DYNAMODB_ENDPOINT: http://localhost:4566
+          DYNAMODB_TABLE_USERS: Users
+          DYNAMODB_TABLE_JOBS: Jobs
+          DYNAMODB_TABLE_APPLICATIONS: Applications
+          AWS_REGION: us-east-1
+          AWS_ACCESS_KEY_ID: test
+          AWS_SECRET_ACCESS_KEY: test
+          S3_BUCKET: jobmatch-bucket
+          S3_ENDPOINT: http://localhost:4566
+          SMTP_HOST: localhost
+          SMTP_PORT: 1025
+          JWT_SECRET: test-jwt-secret-key-for-ci-testing-only-very-long-and-random
+
+      - name: Build Docker image - application-service
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push - application-service
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: services/application-service/Dockerfile
+          push: false
+          tags: jobmatch-application-service:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Cleanup Docker
+        if: always()
+        run: docker compose -f docker-compose.yml down --volumes || true
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-application-service
+          path: |
+            services/application-service/coverage/
+            services/application-service/.nyc_output/
+          retention-days: 7

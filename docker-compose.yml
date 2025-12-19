@@ -129,6 +129,38 @@ services:
       - jobmatch-network
     restart: unless-stopped
 
+  application-service:
+    build:
+      context: .
+      dockerfile: services/application-service/Dockerfile
+    container_name: jobmatch-application-service
+    ports:
+      - '${APPLICATION_SERVICE_PORT}:${APPLICATION_SERVICE_PORT}'
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      APPLICATION_SERVICE_PORT: ${APPLICATION_SERVICE_PORT}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      DYNAMODB_ENDPOINT: ${DYNAMODB_ENDPOINT}
+      DYNAMODB_TABLE_APPLICATIONS: ${DYNAMODB_TABLE_APPLICATIONS}
+      AWS_REGION: ${AWS_REGION}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+      SQS_ENDPOINT: ${SQS_ENDPOINT}
+      SQS_QUEUE_URL: ${SQS_QUEUE_URL}
+    depends_on:
+      localstack:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:${APPLICATION_SERVICE_PORT}/health']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      - jobmatch-network
+    restart: unless-stopped
+
   mailhog:
     image: mailhog/mailhog:latest
     container_name: jobmatch-mailhog

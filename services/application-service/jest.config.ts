@@ -1,0 +1,21 @@
+export default {
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  roots: ['<rootDir>/src', '<rootDir>/test'],
+  testMatch: ['**/__tests__/**/*.ts', '**/?(*.)+(spec|test).ts', 'test/**/*.spec.ts'],
+  testTimeout: 30000,
+  maxWorkers: 1,
+  forceExit: true,
+  detectOpenHandles: false,
+  moduleNameMapper: {
+    '^@config/(.*)$': '<rootDir>/src/config/$1',
+    '^@domain/(.*)$': '<rootDir>/src/domain/$1',
+    '^@application/(.*)$': '<rootDir>/src/application/$1',
+    '^@infrastructure/(.*)$': '<rootDir>/src/infrastructure/$1',
+    '^@routers/(.*)$': '<rootDir>/src/routers/$1',
+    '^@shared/(.*)$': '<rootDir>/src/shared/$1',
+    '^@jobmatch/shared$': '<rootDir>/../../packages/shared/src',
+    '^@jobmatch/shared/(.*)$': '<rootDir>/../../packages/shared/src/$1',
+  },
+  collectCoverageFrom: ['src/**/*.ts', '!src/**/*.d.ts', '!src/main.ts'],
+};
