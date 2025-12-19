@@ -70,10 +70,12 @@ jobs:
           AUTH_SERVICE_PORT: 3001
           USER_SERVICE_PORT: 3002
           JOB_SERVICE_PORT: 3003
+          APPLICATION_SERVICE_PORT: 3004
           CORS_ORIGIN: http://localhost:4000,http://localhost:4001,http://localhost:4002
           DYNAMODB_ENDPOINT: http://localhost:4566
           DYNAMODB_TABLE_USERS: Users
           DYNAMODB_TABLE_JOBS: Jobs
+          DYNAMODB_TABLE_APPLICATIONS: Applications
           AWS_REGION: us-east-1
           AWS_ACCESS_KEY_ID: test
           AWS_SECRET_ACCESS_KEY: test
@@ -82,6 +84,8 @@ jobs:
           SMTP_HOST: localhost
           SMTP_PORT: 1025
           JWT_SECRET: test-jwt-secret-key-for-ci-testing-only-very-long-and-random
+          SQS_ENDPOINT: http://localhost:4566
+          SQS_QUEUE_URL: http://localhost:4566/000000000000/jobmatch-queue
 
       - name: Run integration tests - auth-service
         run: pnpm --filter auth-service test:integration
@@ -90,10 +94,12 @@ jobs:
           AUTH_SERVICE_PORT: 3001
           USER_SERVICE_PORT: 3002
           JOB_SERVICE_PORT: 3003
+          APPLICATION_SERVICE_PORT: 3004
           CORS_ORIGIN: http://localhost:4000,http://localhost:4001,http://localhost:4002
           DYNAMODB_ENDPOINT: http://localhost:4566
           DYNAMODB_TABLE_USERS: Users
           DYNAMODB_TABLE_JOBS: Jobs
+          DYNAMODB_TABLE_APPLICATIONS: Applications
           AWS_REGION: us-east-1
           AWS_ACCESS_KEY_ID: test
           AWS_SECRET_ACCESS_KEY: test
@@ -182,10 +188,12 @@ jobs:
           AUTH_SERVICE_PORT: 3001
           USER_SERVICE_PORT: 3002
           JOB_SERVICE_PORT: 3003
+          APPLICATION_SERVICE_PORT: 3004
           CORS_ORIGIN: http://localhost:4000,http://localhost:4001,http://localhost:4002
           DYNAMODB_ENDPOINT: http://localhost:4566
           DYNAMODB_TABLE_USERS: Users
           DYNAMODB_TABLE_JOBS: Jobs
+          DYNAMODB_TABLE_APPLICATIONS: Applications
           AWS_REGION: us-east-1
           AWS_ACCESS_KEY_ID: test
           AWS_SECRET_ACCESS_KEY: test
@@ -194,6 +202,8 @@ jobs:
           SMTP_HOST: localhost
           SMTP_PORT: 1025
           JWT_SECRET: test-jwt-secret-key-for-ci-testing-only-very-long-and-random
+          SQS_ENDPOINT: http://localhost:4566
+          SQS_QUEUE_URL: http://localhost:4566/000000000000/jobmatch-queue
 
       - name: Run integration tests - user-service
         run: pnpm --filter user-service test:integration
@@ -202,10 +212,12 @@ jobs:
           AUTH_SERVICE_PORT: 3001
           USER_SERVICE_PORT: 3002
           JOB_SERVICE_PORT: 3003
+          APPLICATION_SERVICE_PORT: 3004
           CORS_ORIGIN: http://localhost:4000,http://localhost:4001,http://localhost:4002
           DYNAMODB_ENDPOINT: http://localhost:4566
           DYNAMODB_TABLE_USERS: Users
           DYNAMODB_TABLE_JOBS: Jobs
+          DYNAMODB_TABLE_APPLICATIONS: Applications
           AWS_REGION: us-east-1
           AWS_ACCESS_KEY_ID: test
           AWS_SECRET_ACCESS_KEY: test
@@ -294,10 +306,12 @@ jobs:
           AUTH_SERVICE_PORT: 3001
           USER_SERVICE_PORT: 3002
           JOB_SERVICE_PORT: 3003
+          APPLICATION_SERVICE_PORT: 3004
           CORS_ORIGIN: http://localhost:4000,http://localhost:4001,http://localhost:4002
           DYNAMODB_ENDPOINT: http://localhost:4566
           DYNAMODB_TABLE_USERS: Users
           DYNAMODB_TABLE_JOBS: Jobs
+          DYNAMODB_TABLE_APPLICATIONS: Applications
           AWS_REGION: us-east-1
           AWS_ACCESS_KEY_ID: test
           AWS_SECRET_ACCESS_KEY: test
@@ -306,6 +320,8 @@ jobs:
           SMTP_HOST: localhost
           SMTP_PORT: 1025
           JWT_SECRET: test-jwt-secret-key-for-ci-testing-only-very-long-and-random
+          SQS_ENDPOINT: http://localhost:4566
+          SQS_QUEUE_URL: http://localhost:4566/000000000000/jobmatch-queue
 
       - name: Run integration tests - job-service
         run: pnpm --filter job-service test:integration
@@ -314,10 +330,12 @@ jobs:
           AUTH_SERVICE_PORT: 3001
           USER_SERVICE_PORT: 3002
           JOB_SERVICE_PORT: 3003
+          APPLICATION_SERVICE_PORT: 3004
           CORS_ORIGIN: http://localhost:4000,http://localhost:4001,http://localhost:4002
           DYNAMODB_ENDPOINT: http://localhost:4566
           DYNAMODB_TABLE_USERS: Users
           DYNAMODB_TABLE_JOBS: Jobs
+          DYNAMODB_TABLE_APPLICATIONS: Applications
           AWS_REGION: us-east-1
           AWS_ACCESS_KEY_ID: test
           AWS_SECRET_ACCESS_KEY: test
