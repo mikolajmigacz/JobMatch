@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .email-content {
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+      }
+      .footer {
+        margin-top: 30px;
+        padding-top: 15px;
+        border-top: 1px solid #ddd;
+        font-size: 12px;
+        color: #666;
+      }
+      h1 {
+        color: #007bff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class='container'>
+      <div class='email-content'>
+        <div class='header'>
+          <h1>JobMatch</h1>
+        </div>
+
+        <p>Hello,</p>
+        <p>You have received a new application for the position of
+          <strong>{{jobTitle}}</strong>.</p>
+
+        <p><strong>Applicant:</strong> {{applicantName}}</p>
+        <p><strong>Email:</strong> {{applicantEmail}}</p>
+
+        {{#if coverLetter}}
+          <p><strong>Cover Letter:</strong></p>
+          <p>{{coverLetter}}</p>
+        {{/if}}
+
+        <p>Please review the application and respond accordingly.</p>
+
+        <div class='footer'>
+          <p>© 2025 JobMatch. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -376,7 +376,7 @@ export const EmailEventSchema = z.union([
 export const EmailLogSchema = z.object({
   emailId: z.string().uuid('Invalid email ID format'),
   recipientEmail: z.string().email('Invalid recipient email'),
-  recipientUserId: z.string().uuid('Invalid recipient user ID'),
+  recipientUserId: z.string().uuid('Invalid recipient user ID').nullable().optional(),
   subject: z.string().min(1).max(255, 'Subject must be at most 255 characters'),
   htmlContent: z
     .string()

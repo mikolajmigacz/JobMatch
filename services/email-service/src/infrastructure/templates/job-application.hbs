@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang='pl'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f4f4f4;
+      }
+      .email-content {
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        border-bottom: 2px solid #28a745;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+      }
+      .job-info {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 20px 0;
+      }
+      .job-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #007bff;
+      }
+      .job-detail {
+        margin: 8px 0;
+        padding: 5px 0;
+      }
+      .label {
+        font-weight: bold;
+        display: inline-block;
+        width: 100px;
+      }
+      .footer {
+        margin-top: 30px;
+        padding-top: 15px;
+        border-top: 1px solid #ddd;
+        font-size: 12px;
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <div class='container'>
+      <div class='email-content'>
+        <div class='header'>
+          <h1>JobMatch - Potwierdzenie aplikacji</h1>
+        </div>
+
+        <p>Witaj {{candidateName}},</p>
+
+        <p>Gratulujemy! Twoja aplikacja do pracy została pomyślnie przesłana.</p>
+
+        <div class='job-info'>
+          <div class='job-title'>{{jobTitle}}</div>
+          <div class='job-detail'>
+            <span class='label'>Pracodawca:</span>
+            {{companyName}}
+          </div>
+          <div class='job-detail'>
+            <span class='label'>Lokalizacja:</span>
+            {{location}}
+          </div>
+          <div class='job-detail'>
+            <span class='label'>Data aplikacji:</span>
+            {{applicationDate}}
+          </div>
+        </div>
+
+        <p>Pracodawca przejrzy Twoją aplikację w ciągu kilku dni. Powiadomimy Cię, gdy będą
+          wiadomości.</p>
+
+        <p>Powodzenia!</p>
+
+        <div class='footer'>
+          <p>Wiadomość wysłana przez JobMatch - Platform do podziału ofert pracy</p>
+          <p>&copy; 2024 JobMatch. Wszystkie prawa zastrzeżone.</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

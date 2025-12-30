@@ -71,11 +71,13 @@ jobs:
           USER_SERVICE_PORT: 3002
           JOB_SERVICE_PORT: 3003
           APPLICATION_SERVICE_PORT: 3004
+          EMAIL_SERVICE_PORT: 3005
           CORS_ORIGIN: http://localhost:4000,http://localhost:4001,http://localhost:4002
           DYNAMODB_ENDPOINT: http://localhost:4566
           DYNAMODB_TABLE_USERS: Users
           DYNAMODB_TABLE_JOBS: Jobs
           DYNAMODB_TABLE_APPLICATIONS: Applications
+          DYNAMODB_TABLE_EMAILS: Emails
           AWS_REGION: us-east-1
           AWS_ACCESS_KEY_ID: test
           AWS_SECRET_ACCESS_KEY: test
@@ -83,6 +85,8 @@ jobs:
           S3_ENDPOINT: http://localhost:4566
           SMTP_HOST: localhost
           SMTP_PORT: 1025
+          SMTP_SECURE: false
+          SMTP_FROM: test@jobmatch.com
           JWT_SECRET: test-jwt-secret-key-for-ci-testing-only-very-long-and-random
           SQS_ENDPOINT: http://localhost:4566
           SQS_QUEUE_URL: http://localhost:4566/000000000000/jobmatch-queue
@@ -95,11 +99,13 @@ jobs:
           USER_SERVICE_PORT: 3002
           JOB_SERVICE_PORT: 3003
           APPLICATION_SERVICE_PORT: 3004
+          EMAIL_SERVICE_PORT: 3005
           CORS_ORIGIN: http://localhost:4000,http://localhost:4001,http://localhost:4002
           DYNAMODB_ENDPOINT: http://localhost:4566
           DYNAMODB_TABLE_USERS: Users
           DYNAMODB_TABLE_JOBS: Jobs
           DYNAMODB_TABLE_APPLICATIONS: Applications
+          DYNAMODB_TABLE_EMAILS: Emails
           AWS_REGION: us-east-1
           AWS_ACCESS_KEY_ID: test
           AWS_SECRET_ACCESS_KEY: test
@@ -107,6 +113,8 @@ jobs:
           S3_ENDPOINT: http://localhost:4566
           SMTP_HOST: localhost
           SMTP_PORT: 1025
+          SMTP_SECURE: false
+          SMTP_FROM: test@jobmatch.com
           JWT_SECRET: test-jwt-secret-key-for-ci-testing-only-very-long-and-random
 
       - name: Build Docker image - auth-service
@@ -189,11 +197,13 @@ jobs:
           USER_SERVICE_PORT: 3002
           JOB_SERVICE_PORT: 3003
           APPLICATION_SERVICE_PORT: 3004
+          EMAIL_SERVICE_PORT: 3005
           CORS_ORIGIN: http://localhost:4000,http://localhost:4001,http://localhost:4002
           DYNAMODB_ENDPOINT: http://localhost:4566
           DYNAMODB_TABLE_USERS: Users
           DYNAMODB_TABLE_JOBS: Jobs
           DYNAMODB_TABLE_APPLICATIONS: Applications
+          DYNAMODB_TABLE_EMAILS: Emails
           AWS_REGION: us-east-1
           AWS_ACCESS_KEY_ID: test
           AWS_SECRET_ACCESS_KEY: test
@@ -201,6 +211,8 @@ jobs:
           S3_ENDPOINT: http://localhost:4566
           SMTP_HOST: localhost
           SMTP_PORT: 1025
+          SMTP_SECURE: false
+          SMTP_FROM: test@jobmatch.com
           JWT_SECRET: test-jwt-secret-key-for-ci-testing-only-very-long-and-random
           SQS_ENDPOINT: http://localhost:4566
           SQS_QUEUE_URL: http://localhost:4566/000000000000/jobmatch-queue
@@ -213,11 +225,13 @@ jobs:
           USER_SERVICE_PORT: 3002
           JOB_SERVICE_PORT: 3003
           APPLICATION_SERVICE_PORT: 3004
+          EMAIL_SERVICE_PORT: 3005
           CORS_ORIGIN: http://localhost:4000,http://localhost:4001,http://localhost:4002
           DYNAMODB_ENDPOINT: http://localhost:4566
           DYNAMODB_TABLE_USERS: Users
           DYNAMODB_TABLE_JOBS: Jobs
           DYNAMODB_TABLE_APPLICATIONS: Applications
+          DYNAMODB_TABLE_EMAILS: Emails
           AWS_REGION: us-east-1
           AWS_ACCESS_KEY_ID: test
           AWS_SECRET_ACCESS_KEY: test
@@ -307,11 +321,13 @@ jobs:
           USER_SERVICE_PORT: 3002
           JOB_SERVICE_PORT: 3003
           APPLICATION_SERVICE_PORT: 3004
+          EMAIL_SERVICE_PORT: 3005
           CORS_ORIGIN: http://localhost:4000,http://localhost:4001,http://localhost:4002
           DYNAMODB_ENDPOINT: http://localhost:4566
           DYNAMODB_TABLE_USERS: Users
           DYNAMODB_TABLE_JOBS: Jobs
           DYNAMODB_TABLE_APPLICATIONS: Applications
+          DYNAMODB_TABLE_EMAILS: Emails
           AWS_REGION: us-east-1
           AWS_ACCESS_KEY_ID: test
           AWS_SECRET_ACCESS_KEY: test
@@ -319,6 +335,8 @@ jobs:
           S3_ENDPOINT: http://localhost:4566
           SMTP_HOST: localhost
           SMTP_PORT: 1025
+          SMTP_SECURE: false
+          SMTP_FROM: test@jobmatch.com
           JWT_SECRET: test-jwt-secret-key-for-ci-testing-only-very-long-and-random
           SQS_ENDPOINT: http://localhost:4566
           SQS_QUEUE_URL: http://localhost:4566/000000000000/jobmatch-queue
@@ -331,11 +349,13 @@ jobs:
           USER_SERVICE_PORT: 3002
           JOB_SERVICE_PORT: 3003
           APPLICATION_SERVICE_PORT: 3004
+          EMAIL_SERVICE_PORT: 3005
           CORS_ORIGIN: http://localhost:4000,http://localhost:4001,http://localhost:4002
           DYNAMODB_ENDPOINT: http://localhost:4566
           DYNAMODB_TABLE_USERS: Users
           DYNAMODB_TABLE_JOBS: Jobs
           DYNAMODB_TABLE_APPLICATIONS: Applications
+          DYNAMODB_TABLE_EMAILS: Emails
           AWS_REGION: us-east-1
           AWS_ACCESS_KEY_ID: test
           AWS_SECRET_ACCESS_KEY: test
@@ -343,6 +363,8 @@ jobs:
           S3_ENDPOINT: http://localhost:4566
           SMTP_HOST: localhost
           SMTP_PORT: 1025
+          SMTP_SECURE: false
+          SMTP_FROM: test@jobmatch.com
           JWT_SECRET: test-jwt-secret-key-for-ci-testing-only-very-long-and-random
 
       - name: Build Docker image - job-service
@@ -425,11 +447,13 @@ jobs:
           USER_SERVICE_PORT: 3002
           JOB_SERVICE_PORT: 3003
           APPLICATION_SERVICE_PORT: 3004
+          EMAIL_SERVICE_PORT: 3005
           CORS_ORIGIN: http://localhost:4000,http://localhost:4001,http://localhost:4002
           DYNAMODB_ENDPOINT: http://localhost:4566
           DYNAMODB_TABLE_USERS: Users
           DYNAMODB_TABLE_JOBS: Jobs
           DYNAMODB_TABLE_APPLICATIONS: Applications
+          DYNAMODB_TABLE_EMAILS: Emails
           AWS_REGION: us-east-1
           AWS_ACCESS_KEY_ID: test
           AWS_SECRET_ACCESS_KEY: test
@@ -437,7 +461,11 @@ jobs:
           S3_ENDPOINT: http://localhost:4566
           SMTP_HOST: localhost
           SMTP_PORT: 1025
+          SMTP_SECURE: false
+          SMTP_FROM: test@jobmatch.com
           JWT_SECRET: test-jwt-secret-key-for-ci-testing-only-very-long-and-random
+          SQS_ENDPOINT: http://localhost:4566
+          SQS_QUEUE_URL: http://localhost:4566/000000000000/jobmatch-queue
 
       - name: Run integration tests - application-service
         run: pnpm --filter application-service test:integration
@@ -447,11 +475,13 @@ jobs:
           USER_SERVICE_PORT: 3002
           JOB_SERVICE_PORT: 3003
           APPLICATION_SERVICE_PORT: 3004
+          EMAIL_SERVICE_PORT: 3005
           CORS_ORIGIN: http://localhost:4000,http://localhost:4001,http://localhost:4002
           DYNAMODB_ENDPOINT: http://localhost:4566
           DYNAMODB_TABLE_USERS: Users
           DYNAMODB_TABLE_JOBS: Jobs
           DYNAMODB_TABLE_APPLICATIONS: Applications
+          DYNAMODB_TABLE_EMAILS: Emails
           AWS_REGION: us-east-1
           AWS_ACCESS_KEY_ID: test
           AWS_SECRET_ACCESS_KEY: test
@@ -459,7 +489,11 @@ jobs:
           S3_ENDPOINT: http://localhost:4566
           SMTP_HOST: localhost
           SMTP_PORT: 1025
+          SMTP_SECURE: false
+          SMTP_FROM: test@jobmatch.com
           JWT_SECRET: test-jwt-secret-key-for-ci-testing-only-very-long-and-random
+          SQS_ENDPOINT: http://localhost:4566
+          SQS_QUEUE_URL: http://localhost:4566/000000000000/jobmatch-queue
 
       - name: Build Docker image - application-service
         uses: docker/setup-buildx-action@v3
@@ -486,4 +520,138 @@ jobs:
           path: |
             services/application-service/coverage/
             services/application-service/.nyc_output/
+          retention-days: 7
+
+  email-service:
+    name: Test email-service
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8.15.1
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Cache pnpm modules
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build email-service
+        run: pnpm --filter email-service build
+
+      - name: Lint email-service
+        run: pnpm --filter email-service lint
+
+      - name: Run unit tests - email-service
+        run: pnpm --filter email-service test:unit
+
+      - name: Start Docker services for integration tests
+        run: |
+          docker compose -f docker-compose.yml up -d localstack mailhog
+          sleep 10
+          docker compose -f docker-compose.yml exec -T localstack bash -c "awslocal dynamodb list-tables" || true
+        env:
+          NODE_ENV: test
+          AUTH_SERVICE_PORT: 3001
+          USER_SERVICE_PORT: 3002
+          JOB_SERVICE_PORT: 3003
+          APPLICATION_SERVICE_PORT: 3004
+          EMAIL_SERVICE_PORT: 3005
+          CORS_ORIGIN: http://localhost:4000,http://localhost:4001,http://localhost:4002
+          DYNAMODB_ENDPOINT: http://localhost:4566
+          DYNAMODB_TABLE_USERS: Users
+          DYNAMODB_TABLE_JOBS: Jobs
+          DYNAMODB_TABLE_APPLICATIONS: Applications
+          DYNAMODB_TABLE_EMAILS: Emails
+          AWS_REGION: us-east-1
+          AWS_ACCESS_KEY_ID: test
+          AWS_SECRET_ACCESS_KEY: test
+          S3_BUCKET: jobmatch-bucket
+          S3_ENDPOINT: http://localhost:4566
+          SMTP_HOST: localhost
+          SMTP_PORT: 1025
+          SMTP_SECURE: false
+          SMTP_USER: test
+          SMTP_PASSWORD: test
+          SMTP_FROM: test@jobmatch.com
+          JWT_SECRET: test-jwt-secret-key-for-ci-testing-only-very-long-and-random
+          SQS_ENDPOINT: http://localhost:4566
+          SQS_QUEUE_URL: http://localhost:4566/000000000000/email-queue
+          LOG_LEVEL: info
+
+      - name: Run integration tests - email-service
+        run: pnpm --filter email-service test:integration
+        env:
+          NODE_ENV: test
+          AUTH_SERVICE_PORT: 3001
+          USER_SERVICE_PORT: 3002
+          JOB_SERVICE_PORT: 3003
+          APPLICATION_SERVICE_PORT: 3004
+          EMAIL_SERVICE_PORT: 3005
+          CORS_ORIGIN: http://localhost:4000,http://localhost:4001,http://localhost:4002
+          DYNAMODB_ENDPOINT: http://localhost:4566
+          DYNAMODB_TABLE_USERS: Users
+          DYNAMODB_TABLE_JOBS: Jobs
+          DYNAMODB_TABLE_APPLICATIONS: Applications
+          DYNAMODB_TABLE_EMAILS: Emails
+          AWS_REGION: us-east-1
+          AWS_ACCESS_KEY_ID: test
+          AWS_SECRET_ACCESS_KEY: test
+          S3_BUCKET: jobmatch-bucket
+          S3_ENDPOINT: http://localhost:4566
+          SMTP_HOST: localhost
+          SMTP_PORT: 1025
+          SMTP_SECURE: false
+          SMTP_USER: test
+          SMTP_PASSWORD: test
+          SMTP_FROM: test@jobmatch.com
+          JWT_SECRET: test-jwt-secret-key-for-ci-testing-only-very-long-and-random
+          SQS_ENDPOINT: http://localhost:4566
+          SQS_QUEUE_URL: http://localhost:4566/000000000000/email-queue
+          LOG_LEVEL: info
+
+      - name: Build Docker image - email-service
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push - email-service
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: services/email-service/Dockerfile
+          push: false
+          tags: jobmatch-email-service:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Cleanup Docker
+        if: always()
+        run: docker compose -f docker-compose.yml down --volumes || true
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-email-service
+          path: |
+            services/email-service/coverage/
+            services/email-service/.nyc_output/
           retention-days: 7
