@@ -25,7 +25,7 @@ export class JwtValidationMiddleware implements NestMiddleware {
     next();
   }
 
-  private extractPath(req: any): string {
+  private extractPath(req: RequestWithUser): string {
     const originalUrl = req.originalUrl || req.url || '';
     return originalUrl.split('?')[0];
   }

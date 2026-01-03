@@ -25,9 +25,10 @@ describe('Proxy Integration Tests', () => {
       expect(response.status).toBe(200);
       expect(response.data).toHaveProperty('status', 'ok');
       expect(response.data).toHaveProperty('service', 'user-service');
-    } catch (error: any) {
-      if (error.response?.status === 503) {
-        console.log('User service not running - skipping integration test');
+    } catch (error: unknown) {
+      const axiosError = error as Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+      if (axiosError?.response?.status === 503) {
+        // User service not running - skipping integration test
       } else {
         throw error;
       }

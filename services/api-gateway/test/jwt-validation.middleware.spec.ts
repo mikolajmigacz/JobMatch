@@ -8,7 +8,6 @@ import { sign } from 'jsonwebtoken';
 
 describe('JwtValidationMiddleware', () => {
   let middleware: JwtValidationMiddleware;
-  let configService: ConfigService;
   const JWT_SECRET = 'test-secret-key';
 
   beforeEach(async () => {
@@ -25,13 +24,12 @@ describe('JwtValidationMiddleware', () => {
     }).compile();
 
     middleware = module.get<JwtValidationMiddleware>(JwtValidationMiddleware);
-    configService = module.get<ConfigService>(ConfigService);
   });
 
   const createMockRequest = (
     method: string,
     path: string,
-    authHeader?: string,
+    authHeader?: string
   ): RequestWithUser => {
     return {
       method,
@@ -87,41 +85,31 @@ describe('JwtValidationMiddleware', () => {
   describe('Protected Routes', () => {
     it('should reject GET /api/users without token', () => {
       const req = createMockRequest('GET', '/api/users');
-      expect(() => middleware.use(req, mockResponse, mockNext)).toThrow(
-        UnauthorizedException,
-      );
+      expect(() => middleware.use(req, mockResponse, mockNext)).toThrow(UnauthorizedException);
       expect(mockNext).not.toHaveBeenCalled();
     });
 
     it('should reject POST /api/jobs without token', () => {
       const req = createMockRequest('POST', '/api/jobs');
-      expect(() => middleware.use(req, mockResponse, mockNext)).toThrow(
-        UnauthorizedException,
-      );
+      expect(() => middleware.use(req, mockResponse, mockNext)).toThrow(UnauthorizedException);
       expect(mockNext).not.toHaveBeenCalled();
     });
 
     it('should reject PUT /api/jobs/:jobId without token', () => {
       const req = createMockRequest('PUT', '/api/jobs/123');
-      expect(() => middleware.use(req, mockResponse, mockNext)).toThrow(
-        UnauthorizedException,
-      );
+      expect(() => middleware.use(req, mockResponse, mockNext)).toThrow(UnauthorizedException);
       expect(mockNext).not.toHaveBeenCalled();
     });
 
     it('should reject DELETE /api/jobs/:jobId without token', () => {
       const req = createMockRequest('DELETE', '/api/jobs/123');
-      expect(() => middleware.use(req, mockResponse, mockNext)).toThrow(
-        UnauthorizedException,
-      );
+      expect(() => middleware.use(req, mockResponse, mockNext)).toThrow(UnauthorizedException);
       expect(mockNext).not.toHaveBeenCalled();
     });
 
     it('should reject GET /api/applications without token', () => {
       const req = createMockRequest('GET', '/api/applications');
-      expect(() => middleware.use(req, mockResponse, mockNext)).toThrow(
-        UnauthorizedException,
-      );
+      expect(() => middleware.use(req, mockResponse, mockNext)).toThrow(UnauthorizedException);
       expect(mockNext).not.toHaveBeenCalled();
     });
   });
@@ -147,7 +135,7 @@ describe('JwtValidationMiddleware', () => {
       const req = createMockRequest('GET', '/api/users', `Bearer ${token}`);
 
       expect(() => middleware.use(req, mockResponse, mockNext)).toThrow(
-        new UnauthorizedException('Token has expired'),
+        new UnauthorizedException('Token has expired')
       );
       expect(mockNext).not.toHaveBeenCalled();
     });
@@ -156,7 +144,7 @@ describe('JwtValidationMiddleware', () => {
       const req = createMockRequest('GET', '/api/users', 'Bearer invalid-token');
 
       expect(() => middleware.use(req, mockResponse, mockNext)).toThrow(
-        new UnauthorizedException('Invalid token'),
+        new UnauthorizedException('Invalid token')
       );
       expect(mockNext).not.toHaveBeenCalled();
     });
@@ -167,7 +155,7 @@ describe('JwtValidationMiddleware', () => {
       const req = createMockRequest('GET', '/api/users', `Bearer ${token}`);
 
       expect(() => middleware.use(req, mockResponse, mockNext)).toThrow(
-        new UnauthorizedException('Invalid token'),
+        new UnauthorizedException('Invalid token')
       );
       expect(mockNext).not.toHaveBeenCalled();
     });
@@ -176,7 +164,7 @@ describe('JwtValidationMiddleware', () => {
       const req = createMockRequest('GET', '/api/users', 'InvalidFormat token');
 
       expect(() => middleware.use(req, mockResponse, mockNext)).toThrow(
-        new UnauthorizedException('Missing or invalid authorization header'),
+        new UnauthorizedException('Missing or invalid authorization header')
       );
       expect(mockNext).not.toHaveBeenCalled();
     });
@@ -187,7 +175,7 @@ describe('JwtValidationMiddleware', () => {
       const req = createMockRequest('GET', '/api/users', token);
 
       expect(() => middleware.use(req, mockResponse, mockNext)).toThrow(
-        new UnauthorizedException('Missing or invalid authorization header'),
+        new UnauthorizedException('Missing or invalid authorization header')
       );
       expect(mockNext).not.toHaveBeenCalled();
     });
@@ -201,11 +189,13 @@ describe('JwtValidationMiddleware', () => {
 
       middleware.use(req, mockResponse, mockNext);
 
-      expect(req.user).toEqual(expect.objectContaining({
-        sub: 'user-456',
-        email: 'employer@example.com',
-        role: 'employer',
-      }));
+      expect(req.user).toEqual(
+        expect.objectContaining({
+          sub: 'user-456',
+          email: 'employer@example.com',
+          role: 'employer',
+        })
+      );
     });
 
     it('should not attach user data for public routes', () => {

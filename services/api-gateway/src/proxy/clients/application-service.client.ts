@@ -4,6 +4,7 @@ import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { firstValueFrom } from 'rxjs';
 import { ProxyErrorHandler } from '@proxy/interceptors/error-handler.interceptor';
 import { httpClientConfig } from '@proxy/config/http-client.config';
+import { HttpClientError } from '@proxy/types/http-client.types';
 
 @Injectable()
 export class ApplicationServiceClient {
@@ -22,11 +23,11 @@ export class ApplicationServiceClient {
       timeout: this.config.timeout,
     };
 
-    let lastError: any;
+    let lastError: HttpClientError | undefined;
     for (let attempt = 0; attempt <= this.config.maxRetries; attempt++) {
       try {
         return await firstValueFrom(this.httpService.request<T>(requestConfig));
-      } catch (error: any) {
+      } catch (error: HttpClientError) {
         lastError = error;
         if (attempt < this.config.maxRetries) {
           await this.delay(this.config.retryDelay * (attempt + 1));

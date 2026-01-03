@@ -13,7 +13,15 @@ import { AuthProxyController } from './controllers/auth-proxy.controller';
 import { CvAnalysisProxyController } from './controllers/cv-analysis-proxy.controller';
 import { REST_SERVICES } from './config/service.constants';
 
-const clientMapping: Record<string, any> = {
+const clientMapping: Record<
+  string,
+  | typeof AuthServiceClient
+  | typeof UserServiceClient
+  | typeof JobServiceClient
+  | typeof ApplicationServiceClient
+  | typeof EmailServiceClient
+  | typeof CvAnalysisServiceClient
+> = {
   auth: AuthServiceClient,
   user: UserServiceClient,
   job: JobServiceClient,
@@ -22,8 +30,10 @@ const clientMapping: Record<string, any> = {
 };
 
 const genericControllers = SERVICES_CONFIG.filter(
-  (config) => !REST_SERVICES.includes(config.name as any)
-).map((config) => createProxyController(config, clientMapping[config.name]));
+  (config) => !REST_SERVICES.includes(config.name as 'auth' | 'cvAnalysis')
+).map((config) =>
+  createProxyController(config, clientMapping[config.name] as typeof AuthServiceClient)
+);
 
 const clients = [
   AuthServiceClient,

@@ -13,7 +13,11 @@ describe('API Gateway Integration Tests', () => {
   let app: INestApplication;
   let httpService: HttpService;
   const JWT_SECRET = 'test-secret-key';
-  const mockToken = sign({ sub: 'user-123', email: 'test@example.com', role: 'job_seeker' }, JWT_SECRET, { expiresIn: '1h' });
+  const mockToken = sign(
+    { sub: 'user-123', email: 'test@example.com', role: 'job_seeker' },
+    JWT_SECRET,
+    { expiresIn: '1h' }
+  );
 
   beforeAll(async () => {
     process.env.NODE_ENV = 'test';
@@ -30,7 +34,17 @@ describe('API Gateway Integration Tests', () => {
     process.env.RATE_LIMIT_MAX = '100';
 
     const mockHttpService = {
-      request: jest.fn().mockReturnValue(of({ data: {}, status: 200, statusText: 'OK', headers: {}, config: {} as any })),
+      request: jest
+        .fn()
+        .mockReturnValue(
+          of({
+            data: {},
+            status: 200,
+            statusText: 'OK',
+            headers: {},
+            config: {} as Record<string, unknown>,
+          })
+        ),
     };
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -42,7 +56,7 @@ describe('API Gateway Integration Tests', () => {
 
     app = moduleFixture.createNestApplication();
     httpService = moduleFixture.get<HttpService>(HttpService);
-    
+
     configureMiddleware(app);
     configureCors(app);
     await app.init();
@@ -63,7 +77,7 @@ describe('API Gateway Integration Tests', () => {
         status: 200,
         statusText: 'OK',
         headers: {},
-        config: {} as any,
+        config: { headers: {} } as Record<string, unknown>,
       };
 
       jest.spyOn(httpService, 'request').mockReturnValue(of(mockResponse));
@@ -83,19 +97,16 @@ describe('API Gateway Integration Tests', () => {
         status: 200,
         statusText: 'OK',
         headers: {},
-        config: {} as any,
+        config: { headers: {} } as Record<string, unknown>,
       };
 
       jest.spyOn(httpService, 'request').mockReturnValue(of(mockResponse));
 
-      const response = await request(app.getHttpServer())
-        .get('/api/jobs/123')
-        .expect(200);
+      const response = await request(app.getHttpServer()).get('/api/jobs/123').expect(200);
 
       expect(httpService.request).toHaveBeenCalled();
       expect(response.body).toEqual({ id: 'job-123', title: 'Software Engineer' });
     });
-
   });
 
   describe('Public Routes - No Auth Required', () => {
@@ -105,7 +116,7 @@ describe('API Gateway Integration Tests', () => {
         status: 201,
         statusText: 'Created',
         headers: {},
-        config: {} as any,
+        config: { headers: {} } as Record<string, unknown>,
       };
 
       jest.spyOn(httpService, 'request').mockReturnValue(of(mockResponse));
@@ -122,7 +133,7 @@ describe('API Gateway Integration Tests', () => {
         status: 200,
         statusText: 'OK',
         headers: {},
-        config: {} as any,
+        config: { headers: {} } as Record<string, unknown>,
       };
 
       jest.spyOn(httpService, 'request').mockReturnValue(of(mockResponse));
@@ -139,13 +150,12 @@ describe('API Gateway Integration Tests', () => {
         status: 200,
         statusText: 'OK',
         headers: {},
-        config: {} as any,
+        config: { headers: {} } as Record<string, unknown>,
       };
 
       jest.spyOn(httpService, 'request').mockReturnValue(of(mockResponse));
 
-      const response = await request(app.getHttpServer())
-        .get('/api/jobs');
+      const response = await request(app.getHttpServer()).get('/api/jobs');
 
       expect([200, 404]).toContain(response.status);
       if (response.status === 200) {
@@ -159,28 +169,22 @@ describe('API Gateway Integration Tests', () => {
         status: 200,
         statusText: 'OK',
         headers: {},
-        config: {} as any,
+        config: { headers: {} } as Record<string, unknown>,
       };
 
       jest.spyOn(httpService, 'request').mockReturnValue(of(mockResponse));
 
-      await request(app.getHttpServer())
-        .get('/api/jobs/123')
-        .expect(200);
+      await request(app.getHttpServer()).get('/api/jobs/123').expect(200);
     });
 
     it('should allow GET /health without token', async () => {
-      await request(app.getHttpServer())
-        .get('/health')
-        .expect(200);
+      await request(app.getHttpServer()).get('/health').expect(200);
     });
   });
 
   describe('Protected Routes - Auth Required', () => {
     it('should reject GET /api/users without token', async () => {
-      await request(app.getHttpServer())
-        .get('/api/users')
-        .expect(HttpStatus.UNAUTHORIZED);
+      await request(app.getHttpServer()).get('/api/users').expect(HttpStatus.UNAUTHORIZED);
     });
 
     it('should reject POST /api/jobs without token', async () => {
@@ -198,21 +202,21 @@ describe('API Gateway Integration Tests', () => {
     });
 
     it('should reject DELETE /api/jobs/:id without token', async () => {
-      await request(app.getHttpServer())
-        .delete('/api/jobs/123')
-        .expect(HttpStatus.UNAUTHORIZED);
+      await request(app.getHttpServer()).delete('/api/jobs/123').expect(HttpStatus.UNAUTHORIZED);
     });
 
     it('should reject GET /api/applications without token', async () => {
-      await request(app.getHttpServer())
-        .get('/api/applications')
-        .expect(HttpStatus.UNAUTHORIZED);
+      await request(app.getHttpServer()).get('/api/applications').expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
   describe('Invalid Token - Rejected', () => {
     it('should reject expired token', async () => {
-      const expiredToken = sign({ sub: 'user-123', email: 'test@example.com', role: 'job_seeker' }, JWT_SECRET, { expiresIn: '-1h' });
+      const expiredToken = sign(
+        { sub: 'user-123', email: 'test@example.com', role: 'job_seeker' },
+        JWT_SECRET,
+        { expiresIn: '-1h' }
+      );
 
       await request(app.getHttpServer())
         .get('/api/users')
@@ -228,7 +232,11 @@ describe('API Gateway Integration Tests', () => {
     });
 
     it('should reject token with wrong secret', async () => {
-      const wrongToken = sign({ sub: 'user-123', email: 'test@example.com', role: 'job_seeker' }, 'wrong-secret', { expiresIn: '1h' });
+      const wrongToken = sign(
+        { sub: 'user-123', email: 'test@example.com', role: 'job_seeker' },
+        'wrong-secret',
+        { expiresIn: '1h' }
+      );
 
       await request(app.getHttpServer())
         .get('/api/users')
@@ -258,7 +266,7 @@ describe('API Gateway Integration Tests', () => {
         status: 200,
         statusText: 'OK',
         headers: {},
-        config: {} as any,
+        config: { headers: {} } as Record<string, unknown>,
       };
 
       jest.spyOn(httpService, 'request').mockReturnValue(of(mockResponse));
@@ -295,7 +303,6 @@ describe('API Gateway Integration Tests', () => {
     });
   });
 
-
   describe('Request Forwarding - Headers, Body, Params', () => {
     it('should forward correct path with prefix for auth service', async () => {
       const mockResponse: AxiosResponse = {
@@ -303,7 +310,7 @@ describe('API Gateway Integration Tests', () => {
         status: 200,
         statusText: 'OK',
         headers: {},
-        config: {} as any,
+        config: { headers: {} } as Record<string, unknown>,
       };
 
       const requestSpy = jest.spyOn(httpService, 'request').mockReturnValue(of(mockResponse));
@@ -321,4 +328,3 @@ describe('API Gateway Integration Tests', () => {
     });
   });
 });
-

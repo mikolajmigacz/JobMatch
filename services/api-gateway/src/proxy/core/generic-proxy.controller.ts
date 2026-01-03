@@ -1,9 +1,13 @@
-import { All, Inject, Req, Res } from '@nestjs/common';
+import { All, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { ALLOWED_HEADERS } from '@/shared/constants/headers.constants';
 
+export interface ProxyClient {
+  request<T>(config: Record<string, unknown>): Promise<{ status: number; data: T }>;
+}
+
 export abstract class GenericProxyController {
-  protected abstract readonly client: any;
+  protected abstract readonly client: ProxyClient;
   protected abstract readonly pathPrefix?: string;
 
   @All('*path')
@@ -24,12 +28,15 @@ export abstract class GenericProxyController {
     res.status(response.status).send(response.data);
   }
 
-  private filterHeaders(headers: any): Record<string, string> {
+  private filterHeaders(
+    headers: Record<string, string | string[] | undefined>
+  ): Record<string, string> {
     const filtered: Record<string, string> = {};
 
     for (const key of ALLOWED_HEADERS) {
-      if (headers[key]) {
-        filtered[key] = headers[key] as string;
+      const value = headers[key];
+      if (value) {
+        filtered[key] = Array.isArray(value) ? value[0] : value;
       }
     }
 

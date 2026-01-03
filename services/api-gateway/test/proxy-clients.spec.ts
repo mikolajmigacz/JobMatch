@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpModule, HttpService } from '@nestjs/axios';
+import { AxiosResponse } from 'axios';
 import { of, throwError } from 'rxjs';
 import { AuthServiceClient } from '@proxy/clients/auth-service.client';
 import { ProxyErrorHandler } from '@proxy/interceptors/error-handler.interceptor';
@@ -22,8 +23,15 @@ describe('AuthServiceClient', () => {
   });
 
   it('should make successful request', async () => {
-    const mockResponse = { data: { message: 'success' }, status: 200 };
-    jest.spyOn(httpService, 'request').mockReturnValue(of(mockResponse as any));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const mockResponse: AxiosResponse = {
+      data: { message: 'success' },
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config: { headers: {} } as any,
+    };
+    jest.spyOn(httpService, 'request').mockReturnValue(of(mockResponse));
 
     const result = await client.request({ method: 'GET', url: '/test' });
 
@@ -31,11 +39,18 @@ describe('AuthServiceClient', () => {
   });
 
   it('should retry on failure and succeed', async () => {
-    const mockResponse = { data: { message: 'success' }, status: 200 };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const mockResponse: AxiosResponse = {
+      data: { message: 'success' },
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config: { headers: {} } as any,
+    };
     jest
       .spyOn(httpService, 'request')
       .mockReturnValueOnce(throwError(() => new Error('Network error')))
-      .mockReturnValueOnce(of(mockResponse as any));
+      .mockReturnValueOnce(of(mockResponse));
 
     const result = await client.request({ method: 'GET', url: '/test' });
 
@@ -43,7 +58,7 @@ describe('AuthServiceClient', () => {
   });
 
   it('should handle errors after max retries', async () => {
-    const axiosError: any = {
+    const axiosError: Record<string, unknown> = {
       code: 'ECONNREFUSED',
       response: undefined,
     };

@@ -4,11 +4,11 @@ export interface ProxyRequest {
   method: string;
   url: string;
   headers: Record<string, string>;
-  data?: any;
-  params?: any;
+  data?: unknown;
+  params?: Record<string, unknown>;
 }
 
-export interface ProxyResponse<T = any> {
+export interface ProxyResponse<T = unknown> {
   status: number;
   data: T;
 }

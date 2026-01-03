@@ -1,21 +1,24 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { AxiosError } from 'axios';
+import { HttpClientError } from '@proxy/types/http-client.types';
 
 @Injectable()
 export class ProxyErrorHandler {
-  handle(error: AxiosError, serviceName: string): never {
-    if (error.response) {
+  handle(error: HttpClientError, serviceName: string): never {
+    const axiosError = error as AxiosError;
+
+    if (axiosError?.response) {
       throw new HttpException(
         {
-          message: error.response.data || 'Service error',
+          message: axiosError.response.data || 'Service error',
           service: serviceName,
-          statusCode: error.response.status,
+          statusCode: axiosError.response.status,
         },
-        error.response.status
+        axiosError.response.status
       );
     }
 
-    if (error.code === 'ECONNREFUSED') {
+    if (axiosError?.code === 'ECONNREFUSED') {
       throw new HttpException(
         {
           message: `${serviceName} is unavailable`,
@@ -25,7 +28,7 @@ export class ProxyErrorHandler {
       );
     }
 
-    if (error.code === 'ETIMEDOUT' || error.code === 'ECONNABORTED') {
+    if (axiosError?.code === 'ETIMEDOUT' || axiosError?.code === 'ECONNABORTED') {
       throw new HttpException(
         {
           message: `${serviceName} request timeout`,

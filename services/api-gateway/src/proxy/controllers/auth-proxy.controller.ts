@@ -27,12 +27,15 @@ export class AuthProxyController {
     res.status(response.status).send(response.data);
   }
 
-  private filterHeaders(headers: any): Record<string, string> {
+  private filterHeaders(
+    headers: Record<string, string | string[] | undefined>
+  ): Record<string, string> {
     const filtered: Record<string, string> = {};
 
     for (const key of ALLOWED_HEADERS) {
-      if (headers[key]) {
-        filtered[key] = headers[key] as string;
+      const value = headers[key];
+      if (value) {
+        filtered[key] = Array.isArray(value) ? value[0] : value;
       }
     }
 

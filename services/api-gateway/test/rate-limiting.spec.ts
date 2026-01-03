@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, HttpStatus } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard } from '@/guards/throttler.guard';
@@ -64,7 +64,7 @@ describe('Rate Limiting', () => {
 
   describe('ThrottlerGuard', () => {
     it('should be defined', () => {
-      const guard = new ThrottlerGuard({} as any, {} as any, {} as any);
+      const guard = new ThrottlerGuard({} as any, {} as any, {} as any); // eslint-disable-line @typescript-eslint/no-explicit-any
       expect(guard).toBeDefined();
     });
   });
