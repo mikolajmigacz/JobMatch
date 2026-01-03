@@ -1,109 +1,55 @@
 # JobMatch
 
-> A modern job matching platform built with microservices architecture and microfrontends, demonstrating enterprise-level full-stack development practices.
+> A production-grade job matching platform demonstrating modern microservices architecture, microfrontends, and enterprise-level full-stack development practices.
 
-[![Under Development](https://img.shields.io/badge/status-under%20development-yellow)](https://github.com/yourusername/jobmatch)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)](https://www.typescriptlang.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-20.x-green)](https://nodejs.org/)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-
----
-
-## 📖 Overview
-
-JobMatch is a full-featured job matching platform that connects job seekers with employers. Built as a portfolio project, it showcases modern software architecture, cloud-native development, and best practices in distributed systems.
-
-**Key Features:**
-
-- 🔍 Smart job search with advanced filtering
-- 📄 AI-powered CV analysis (Google Gemini)
-- 💼 Complete application management for both job seekers and employers
-- 🎯 "It's a Match!" notification system
-- 📧 Automated email notifications
-- 🔐 Secure authentication and authorization
+[![Status](https://img.shields.io/badge/status-under%20development-yellow?style=flat-square)](https://github.com)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178c6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?style=flat-square&logo=node.js)](https://nodejs.org/)
+[![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 
 ---
 
-## 🎯 What This Project Demonstrates
+## 🎯 Quick Overview
 
-This project showcases expertise in:
+JobMatch connects **job seekers** with **employers** through a modern, scalable platform. Job seekers browse positions and apply with their CV; employers manage job postings and review candidates. The system includes AI-powered CV analysis, smart notifications, and role-based access control.
 
-- **Microservices Architecture** – Independent, scalable services with clear boundaries
-- **Microfrontend Pattern** – Module Federation for independently deployable UI components
-- **Event-Driven Design** – Asynchronous communication using AWS SQS
-- **Cloud Integration** – AWS services (S3, DynamoDB, SQS) via LocalStack
-- **Type Safety** – End-to-end type safety with TypeScript, tRPC, and Zod
-- **AI Integration** – CV analysis using Google Gemini API
-- **DevOps Practices** – Docker containerization, CI/CD with GitHub Actions
-- **Security** – JWT authentication, role-based access control, bcrypt encryption
+**Core Features:**
 
----
-
-## 🏗️ Architecture
-
-### System Overview
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     API Gateway (tRPC)                      │
-└────────────────┬────────────────────────────────────────────┘
-                 │
-    ┌────────────┼────────────┬──────────────┬────────────┐
-    │            │            │              │            │
-┌───▼────┐  ┌───▼────┐  ┌───▼─────┐  ┌─────▼────┐  ┌───▼──────┐
-│  Auth  │  │  User  │  │   Job   │  │Application│  │CV Analysis│
-│Service │  │Service │  │ Service │  │  Service  │  │  Service │
-└────────┘  └────────┘  └─────────┘  └─────┬─────┘  └──────────┘
-                                            │
-                                    ┌───────▼────────┐
-                                    │ Email Service  │
-                                    │   (via SQS)    │
-                                    └────────────────┘
-```
-
-### Technology Stack
-
-#### Backend
-
-- **NestJS** – Auth service with enterprise patterns
-- **Express.js** – Lightweight microservices
-- **tRPC** – Type-safe API communication
-- **Zod** – Runtime validation and type inference
-- **DynamoDB Toolbox** – Type-safe ORM for DynamoDB
-
-#### Frontend
-
-- **React 18** with TypeScript
-- **Webpack 5 Module Federation** – Microfrontend architecture
-- **TanStack Query** – Server state management
-- **styled-components** – Component-scoped styling
-
-#### Infrastructure
-
-- **DynamoDB** – NoSQL database (via LocalStack)
-- **AWS S3** – File storage for CVs and company logos
-- **AWS SQS** – Message queue for async operations
-- **Docker & Docker Compose** – Containerization
-- **MailHog** – Email testing in development
+- ✅ Smart job search with filters (location, salary, skills, employment type)
+- ✅ AI-powered CV analysis using Google Gemini API
+- ✅ Complete application tracking for both users and employers
+- ✅ Automated email notifications on important events
+- ✅ Secure JWT-based authentication with role separation
+- ✅ Real-time "It's a Match!" notifications for accepted applications
 
 ---
 
-## 🚀 Quick Start
+## 🏗️ Architecture at a Glance
+
+**Microservices Backend** – 7 independent services handling authentication, jobs, applications, CV analysis, and email notifications
+
+**Microfrontend Frontend** – Webpack 5 Module Federation for independently deployable UI components (Job Seeker & Employer modules)
+
+**AWS Integration** – DynamoDB for data, S3 for file storage, SQS for async messaging (via LocalStack in dev)
+
+**Type Safety** – End-to-end type safety with TypeScript, tRPC, Zod, and DynamoDB Toolbox
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js 20.x or higher
-- pnpm 8.x or higher
-- Docker and Docker Compose
+```
+Node.js 20.x | pnpm 8.x | Docker & Docker Compose
+```
 
-### Installation
+### Installation & Running
 
 ```bash
-# Clone the repository
+# Clone and install
 git clone https://github.com/yourusername/jobmatch.git
 cd jobmatch
-
-# Install dependencies
 pnpm install
 
 # Start infrastructure (LocalStack, MailHog, databases)
@@ -113,122 +59,250 @@ docker-compose up -d
 pnpm dev
 ```
 
-### Access Points
+**Access Points:**
 
-- **Frontend (Job Seekers):** http://localhost:3001
-- **Frontend (Employers):** http://localhost:3002
-- **API Gateway:** http://localhost:4000
-- **MailHog UI:** http://localhost:8025
-
----
-
-## 📸 Screenshots & Demo
-
-> **Note:** Screenshots and video demos will be added as the application reaches production-ready status.
+- Frontend (Job Seekers): http://localhost:4001
+- Frontend (Employers): http://localhost:4002
+- API Gateway: http://localhost:3000
+- MailHog UI: http://localhost:8025
 
 ---
 
-## 🎨 Key Features in Detail
+## 📚 Want to Dive Deeper?
 
-### For Job Seekers
+### [Architecture & Design](#architecture--design-principles)
 
-- **Smart Job Search** – Filter by location, salary range, employment type, and required skills
-- **One-Click Applications** – Apply to jobs with your stored profile
-- **CV Upload & Analysis** – AI-powered CV parsing and skill extraction
-- **Application Tracking** – Monitor application status in real-time
-- **Match Notifications** – Get notified when employers accept your application
+Learn about the microservices design, DDD patterns, and why each architectural decision was made.
 
-### For Employers
+### [Technology Stack](#technology-stack)
 
-- **Job Posting Management** – Create, edit, and manage job listings
-- **Applicant Review** – Review candidate profiles and CVs
-- **Application Management** – Accept or reject applications
-- **Automated Notifications** – Receive alerts for new applications
-- **Company Branding** – Upload company logo and customize job postings
+Detailed breakdown of backend, frontend, database, and infrastructure technologies.
+
+### [Development Guide](#development-guide)
+
+Setup, testing, code quality, and contribution guidelines.
 
 ---
 
-## 🧩 Microservices
-
-| Service                 | Technology | Purpose                                    |
-| ----------------------- | ---------- | ------------------------------------------ |
-| **Auth Service**        | NestJS     | User authentication, JWT token management  |
-| **User Service**        | Express.js | User profile management                    |
-| **Job Service**         | Express.js | Job posting CRUD operations                |
-| **Application Service** | Express.js | Job application workflows                  |
-| **CV Analysis Service** | Express.js | AI-powered CV parsing (Gemini API)         |
-| **Email Service**       | Express.js | Asynchronous email notifications via SQS   |
-| **API Gateway**         | Express.js | Request routing, authentication middleware |
+## 🏗️ Architecture & Design Principles
 
 ---
 
-## 🔐 Security Features
+## System Architecture
 
-- **JWT Authentication** – Secure token-based authentication
-- **Role-Based Access Control (RBAC)** – Separate permissions for job seekers and employers
-- **Password Encryption** – bcrypt hashing for secure password storage
-- **Input Validation** – Zod schemas for request/response validation
-- **CORS Configuration** – Controlled cross-origin requests
-- **Rate Limiting** – Protection against abuse (planned)
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    FRONTEND (React + Module Federation)          │
+├────────────────┬─────────────────────────────┬──────────────────┤
+│  Job Seeker UI │  Shell (Layout & Routing)   │  Employer UI     │
+│  (Port 4001)   │  (Port 4000)                │  (Port 4002)     │
+└────────────────┴──────────────────┬──────────┴──────────────────┘
+                                    │
+                      ┌─────────────▼──────────────┐
+                      │   API Gateway (NestJS)     │
+                      │   - JWT Validation         │
+                      │   - Rate Limiting          │
+                      │   - Request Routing        │
+                      └────────────┬───────────────┘
+                                   │
+        ┌──────────────┬───────────┼──────────┬─────────────┐
+        │              │           │          │             │
+    ┌───▼────┐   ┌────▼────┐ ┌───▼────┐ ┌──▼────┐  ┌──────▼──────┐
+    │ Auth   │   │  User   │ │  Job   │ │ App  │  │ CV Analysis│
+    │Service │   │ Service │ │Service │ │Service│  │ Service    │
+    │ (3001) │   │ (3002)  │ │(3003)  │ │(3004)│  │  (3006)    │
+    └────────┘   └─────────┘ └────────┘ └──────┘  └──────┬──────┘
+                                                          │
+                                        ┌─────────────────▼────────────┐
+                                        │ AWS SQS Queue (LocalStack)   │
+                                        │ - Application Events        │
+                                        │ - Email Notifications       │
+                                        └─────────────────┬────────────┘
+                                                          │
+                                        ┌─────────────────▼────────────┐
+                                        │  Email Service (3005)        │
+                                        │  - Nodemailer + MailHog      │
+                                        │  - Email Templates           │
+                                        └──────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────┐
+│                 AWS SERVICES (LocalStack in Development)             │
+├──────────────────┬──────────────────┬──────────────────┐             │
+│   DynamoDB       │      S3          │      SQS         │             │
+│  - Users         │  - CV PDFs       │  - Email Queue   │             │
+│  - Jobs          │  - Logos         │                  │             │
+│  - Applications  │                  │                  │             │
+│  - CV Analysis   │                  │                  │             │
+└──────────────────┴──────────────────┴──────────────────┘             │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+### Design Principles
+
+**Microservices**: Each service has a single responsibility and can be scaled independently.
+
+**Event-Driven**: Services communicate asynchronously via SQS, reducing tight coupling.
+
+**Type Safety**: End-to-end type safety from database to UI using TypeScript, tRPC, and Zod.
+
+**Domain-Driven Design**: Services organized into Domain, Application, Infrastructure, and UI layers.
+
+**Scalability**: Stateless services designed for horizontal scaling.
 
 ---
 
-## 🧪 Testing Strategy
+## 🛠️ Technology Stack
+
+#### Backend
+
+| Layer          | Technology         | Purpose                          |
+| -------------- | ------------------ | -------------------------------- |
+| **Services**   | NestJS, Express.js | Microservice implementations     |
+| **API**        | tRPC               | Type-safe RPC communication      |
+| **Database**   | DynamoDB, Toolbox  | Type-safe NoSQL queries          |
+| **Validation** | Zod                | Runtime schema validation        |
+| **Auth**       | JWT, bcrypt        | Token-based authentication       |
+| **Messaging**  | AWS SQS            | Event-driven async communication |
+
+#### Frontend
+
+| Layer          | Technology        | Purpose                         |
+| -------------- | ----------------- | ------------------------------- |
+| **Framework**  | React 18          | UI components                   |
+| **Module Fed** | Webpack 5         | Microfrontend architecture      |
+| **Routing**    | React Router v6   | Client-side navigation          |
+| **State**      | TanStack Query    | Server state management         |
+| **API**        | tRPC Client       | Type-safe backend communication |
+| **Styling**    | styled-components | Component-scoped CSS            |
+
+#### Infrastructure
+
+| Component            | Technology          | Purpose                        |
+| -------------------- | ------------------- | ------------------------------ |
+| **Database**         | DynamoDB            | NoSQL primary datastore        |
+| **File Storage**     | AWS S3              | CVs, company logos             |
+| **Message Queue**    | AWS SQS             | Email notifications            |
+| **Email**            | Nodemailer, MailHog | SMTP server (dev)              |
+| **Containerization** | Docker, Compose     | Local development environment  |
+| **Cloud Emulation**  | LocalStack          | AWS services in development    |
+| **CI/CD**            | GitHub Actions      | Automated testing & deployment |
+
+---
+
+## 🔐 Security & Type Safety
+
+### Authentication & Authorization
+
+- **JWT Tokens**: Stateless, signed authentication tokens
+- **Role-Based Access Control (RBAC)**: Separate permissions for job seekers and employers
+- **Password Security**: bcrypt hashing with salt rounds
+- **Protected Routes**: Middleware validation on all protected endpoints
+
+### Type Safety Strategy
+
+**Single Source of Truth**: Define data schemas once in Zod, generate TypeScript types automatically.
+
+```typescript
+// Shared schema (packages/shared)
+export const JobSchema = z.object({
+  jobId: z.string().uuid(),
+  title: z.string().min(5).max(200),
+  location: z.string(),
+  salaryMin: z.number().optional(),
+  salaryMax: z.number().optional(),
+  // ... more fields
+});
+
+// Auto-generated TypeScript types
+type Job = z.infer<typeof JobSchema>;
+
+// Used in backend (validation) and frontend (form)
+```
+
+**Benefits:**
+
+- ✅ Runtime validation on input/output
+- ✅ Compile-time type checking
+- ✅ No duplicated type definitions
+- ✅ Automatic error messages
+- ✅ Full IDE autocomplete
+
+---
+
+## 📦 Microservices Overview
+
+| Service                 | Tech       | Port | Responsibility                                 |
+| ----------------------- | ---------- | ---- | ---------------------------------------------- |
+| **Auth Service**        | NestJS     | 3001 | User registration, login, JWT token management |
+| **User Service**        | Express.js | 3002 | User profile management, company logos         |
+| **Job Service**         | Express.js | 3003 | Job CRUD, search with filters                  |
+| **Application Service** | Express.js | 3004 | Job applications, acceptance/rejection         |
+| **CV Analysis Service** | Express.js | 3006 | AI-powered CV parsing, Gemini integration      |
+| **Email Service**       | Express.js | 3005 | Async email notifications via SQS              |
+| **API Gateway**         | NestJS     | 3000 | Request routing, auth validation, rate limit   |
+
+**Each service has:**
+
+- Independent database schema (DynamoDB tables)
+- Complete separation of concerns
+- tRPC procedures for type-safe endpoints
+- Can be deployed and scaled separately
+
+---
+
+## 📋 Use Cases
+
+### Job Seeker Flow
+
+1. **Register** → Login with email/password
+2. **Search** → Find jobs with filters (location, salary, skills)
+3. **Apply** → Submit application with optional cover letter
+4. **Upload CV** → Get AI-powered analysis and feedback
+5. **Track** → Monitor application status
+6. **Match Notification** → Receive email when employer accepts
+
+### Employer Flow
+
+1. **Register** → Setup company profile with logo
+2. **Post Jobs** → Create job listings with requirements
+3. **Review Apps** → See candidate profiles and CVs
+4. **Accept/Reject** → Approve candidates for next steps
+5. **Notifications** → Get alerted on new applications
+6. **Match Alert** → Notify candidate when accepted
+
+---
+
+## 🚀 Development Guide
+
+### Setup
 
 ```bash
-# Run all tests
-pnpm test
+# Install dependencies
+pnpm install
 
-# Run tests in watch mode
-pnpm test:watch
+# Start infrastructure (LocalStack)
+docker-compose up -d
 
-# Run integration tests
-pnpm test:integration
+# Run all services
+pnpm dev
+
+# Run specific service
+pnpm --filter auth-service dev
 ```
 
-- **Unit Tests** – Individual service logic testing
-- **Integration Tests** – API endpoint and database interaction tests
-- **Infrastructure Tests** – LocalStack connectivity validation
-- **Type Safety** – Compile-time type checking with TypeScript
-
----
-
-## 📦 Project Structure
-
-```
-jobmatch/
-├── services/               # Backend microservices
-│   ├── auth-service/      # NestJS authentication service
-│   ├── user-service/      # User management
-│   ├── job-service/       # Job postings
-│   ├── application-service/ # Application workflows
-│   ├── cv-analysis-service/ # AI CV parsing
-│   ├── email-service/     # Email notifications
-│   └── api-gateway/       # API routing
-│
-├── frontend/              # Microfrontend modules
-│   ├── shell/            # Application shell
-│   ├── job-seeker-module/ # Job seeker UI
-│   └── employer-module/   # Employer UI
-│
-├── packages/             # Shared packages
-│   └── shared/          # Common types, schemas, utilities
-│
-└── docker/              # Docker configurations
-    └── localstack/      # AWS services emulation
-```
-
----
-
-## 🛠️ Development Tools
+### Commands
 
 ```bash
-# Type checking
-pnpm type-check
-
 # Linting
 pnpm lint
 pnpm lint:fix
+
+# Type checking
+pnpm type-check
+
+# Testing
+pnpm test
+pnpm test:integration
 
 # Code formatting
 pnpm format
@@ -240,155 +314,191 @@ pnpm clean
 
 ---
 
-## 🌐 Environment Variables
+## 🧪 Testing
 
-Create a `.env` file in the root directory:
+The project includes unit and integration tests for all services:
 
-```env
-# AWS LocalStack
-AWS_REGION=us-east-1
-AWS_ACCESS_KEY_ID=test
-AWS_SECRET_ACCESS_KEY=test
-DYNAMODB_ENDPOINT=http://localhost:4566
-S3_ENDPOINT=http://localhost:4566
-SQS_ENDPOINT=http://localhost:4566
+```bash
+# Run all tests
+pnpm test
 
-# Google Gemini API
-GEMINI_API_KEY=your_api_key_here
+# Run tests for specific service
+pnpm --filter api-gateway test
 
-# JWT
-JWT_SECRET=your_secret_key_here
-JWT_EXPIRES_IN=7d
+# Run integration tests
+pnpm --filter job-service test:integration
 
-# Email (MailHog)
-SMTP_HOST=localhost
-SMTP_PORT=1025
+# Watch mode
+pnpm test:watch
+```
+
+**CI/CD Pipeline** automatically runs tests on every commit via GitHub Actions.
+
+---
+
+## 📂 Project Structure
+
+```
+jobmatch/
+├── services/
+│   ├── auth-service/          # Authentication & JWT validation
+│   ├── user-service/          # User profile management
+│   ├── job-service/           # Job postings & search
+│   ├── application-service/   # Application workflows & notifications
+│   ├── cv-analysis-service/   # AI-powered CV parsing
+│   ├── email-service/         # Email notifications via SQS
+│   └── api-gateway/           # Request routing & rate limiting
+│
+├── frontend/
+│   ├── shell/                 # App shell (layout, routing)
+│   ├── job-seeker-module/     # Remote module for job seekers
+│   └── employer-module/       # Remote module for employers
+│
+├── packages/shared/           # Shared types, schemas, utilities
+│
+└── docker/localstack/         # LocalStack configuration for local AWS
 ```
 
 ---
 
-## 📚 Technical Deep Dive
+## 🛠️ Architecture Highlights
 
-### Why Microservices?
-
-This architecture was chosen to demonstrate:
-
-- **Scalability** – Individual services can be scaled independently
-- **Maintainability** – Clear service boundaries and separation of concerns
-- **Technology Flexibility** – Mix NestJS and Express.js based on service needs
-- **Team Autonomy** – Services can be developed and deployed independently
-- **Fault Isolation** – Service failures don't cascade
-
-### Type Safety Implementation
-
-**End-to-end type safety** is achieved through:
-
-1. **Zod Schemas** – Define runtime-validated types once, use everywhere
-2. **tRPC** – Automatically infer types from backend to frontend
-3. **DynamoDB Toolbox** – Type-safe database operations
-4. **Shared Package** – Common types across all services
+### Type Safety End-to-End
 
 ```typescript
-// Define once in @jobmatch/shared
+// Define once with Zod
 export const JobSchema = z.object({
   jobId: z.string().uuid(),
   title: z.string().min(5).max(200),
-  // ... more fields
+  salary: z.number().positive(),
 });
 
-// Use everywhere with full type safety
+// Use everywhere with full type inference
 type Job = z.infer<typeof JobSchema>;
 ```
 
-### Event-Driven Communication
+- Zod for runtime validation
+- tRPC for automatic type inference from backend to frontend
+- TypeScript strict mode enforced
+- ESLint + Prettier for code consistency
 
-Services communicate asynchronously via AWS SQS:
+### Event-Driven Communication
 
 ```
 Application Service → SQS Queue → Email Service → SMTP
 ```
 
-**Benefits:**
+Services communicate asynchronously via AWS SQS, enabling:
 
-- Decoupled services
-- Improved reliability (retry logic)
-- Better performance (non-blocking operations)
-- Scalable message processing
+- Decoupled architecture
+- Improved resilience (automatic retries)
+- Better scalability (batch processing)
 
-### AI Integration
+### Microservices Benefits
 
-CV Analysis Service uses **Google Gemini 1.5 Flash** for:
-
-- Extracting candidate information from PDFs
-- Identifying skills and experience
-- Matching candidates to job requirements
-
----
-
-## 🚀 Deployment (Planned)
-
-This project is designed for cloud deployment with:
-
-- **AWS ECS/EKS** – Container orchestration
-- **AWS RDS** – Production database (DynamoDB)
-- **AWS S3** – Production file storage
-- **AWS SQS** – Production message queue
-- **CloudFront** – CDN for frontend
-- **GitHub Actions** – Automated CI/CD pipeline
+| Feature                    | Benefit                                            |
+| -------------------------- | -------------------------------------------------- |
+| **Independent Scaling**    | Each service scales based on its load              |
+| **Technology Flexibility** | Mix NestJS (CPU-intensive) and Express (I/O-heavy) |
+| **Clear Boundaries**       | Each service owns its data                         |
+| **Fault Isolation**        | Service outages don't cascade                      |
+| **Team Autonomy**          | Teams develop independently                        |
 
 ---
 
-## 📝 Future Enhancements
+## 🌍 Deployment
 
-- [ ] Real-time notifications with WebSockets
-- [ ] Advanced search with Elasticsearch
-- [ ] Chat system between employers and candidates
-- [ ] Video interview scheduling
-- [ ] Analytics dashboard for employers
-- [ ] Mobile applications (React Native)
-- [ ] GraphQL API alternative
-- [ ] Kubernetes deployment manifests
+### Local Development
+
+Uses **LocalStack** to emulate AWS services:
+
+- DynamoDB for data persistence
+- S3 for file storage
+- SQS for message queues
+- All running in Docker
+
+```bash
+docker-compose up -d
+```
+
+### Production Deployment
+
+The project is cloud-ready. Switch to production by:
+
+1. Replace LocalStack with real AWS services
+2. Update environment variables
+3. Configure GitHub Actions secrets
+4. Deploy via GitHub Actions or manual Docker push
+
+Recommended platforms:
+
+- **AWS ECS** – Managed container orchestration
+- **AWS EKS** – Kubernetes for complex deployments
+- **AWS App Runner** – Simplified container deployment
+
+---
+
+## 🔄 How Data Flows
+
+### Request Flow
+
+```
+User → API Gateway (auth) → Service → Database
+          ↓
+      (JWT validation, rate limiting, routing)
+```
+
+### Async Notifications
+
+```
+Employer accepts candidate → Application Service
+→ SQS message → Email Service
+→ SMTP → Candidate inbox
+```
+
+---
+
+## ✨ Key Features
+
+- **JWT Authentication** – Secure token-based auth with role-based access
+- **AI CV Analysis** – Google Gemini extracts skills and matches jobs
+- **Async Email Notifications** – Decoupled via SQS
+- **Microservices** – Independent, scalable services
+- **Type Safe** – TypeScript + Zod throughout
+- **Production Ready** – Docker, GitHub Actions CI/CD, comprehensive tests
+
+---
+
+## 📋 Future Enhancements
+
+- Real-time notifications with WebSockets
+- Advanced search with Elasticsearch
+- Chat system between employers and candidates
+- Video interview scheduling
+- Analytics dashboard for employers
+- Mobile applications (React Native)
 
 ---
 
 ## 🤝 Contributing
 
-This is a portfolio project, but feedback and suggestions are welcome! Feel free to open an issue or submit a pull request.
+This is an open-source portfolio project. Contributions are welcome:
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
 
 ---
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 👤 Author
-
-**Your Name**
-
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [Your LinkedIn](https://linkedin.com/in/yourprofile)
-- Portfolio: [your-portfolio.com](https://your-portfolio.com)
-
----
-
-## 🙏 Acknowledgments
-
-Built as a demonstration of modern full-stack development practices, incorporating industry-standard tools and architectural patterns.
-
-**Technologies Used:**
-
-- NestJS, Express.js, React, TypeScript
-- AWS Services (via LocalStack)
-- Google Gemini API
-- Docker, GitHub Actions
-- tRPC, Zod, TanStack Query
+MIT License - see [LICENSE](LICENSE) for details.
 
 ---
 
 <div align="center">
 
-**⭐ Star this repository if you find it helpful! ⭐**
+**Built with modern full-stack technologies | Type-safe from frontend to database**
 
 </div>
