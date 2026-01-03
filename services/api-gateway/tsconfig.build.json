@@ -3,8 +3,8 @@
     "target": "ES2020",
     "module": "commonjs",
     "lib": ["ES2020"],
-    "declaration": false,
-    "noEmit": true,
+    "declaration": true,
+    "outDir": "./dist",
     "baseUrl": ".",
     "paths": {
       "@jobmatch/shared": ["../../packages/shared/src"],
@@ -26,13 +26,6 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "ts-node": {
-    "esm": false,
-    "transpileOnly": true,
-    "compilerOptions": {
-      "module": "commonjs"
-    }
-  },
   "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
 }
