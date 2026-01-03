@@ -1,23 +1,44 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigService } from '@nestjs/config';
 import { UnauthorizedException } from '@nestjs/common';
 import { Response, NextFunction } from 'express';
 import { JwtValidationMiddleware } from '@/middleware/jwt-validation.middleware';
 import { RequestWithUser } from '@/shared/interfaces/request-with-user.interface';
-import { sign } from 'jsonwebtoken';
+import { JwtValidator } from '@/shared/domain/jwt';
+import { PublicRouteDetector } from '@/proxy/infrastructure/route-detection';
+import { sign, verify } from 'jsonwebtoken';
 
 describe('JwtValidationMiddleware', () => {
   let middleware: JwtValidationMiddleware;
-  const JWT_SECRET = 'test-secret-key';
+  const JWT_SECRET = 'test-secret-key-for-testing-only';
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         JwtValidationMiddleware,
         {
-          provide: ConfigService,
+          provide: JwtValidator,
           useValue: {
-            get: jest.fn().mockReturnValue(JWT_SECRET),
+            validate: jest.fn((token: string) => {
+              try {
+                return verify(token, JWT_SECRET) as any;
+              } catch (error: any) {
+                if (error.name === 'TokenExpiredError') {
+                  throw new UnauthorizedException('Token has expired');
+                }
+                throw new UnauthorizedException('Invalid token');
+              }
+            }),
+          },
+        },
+        {
+          provide: PublicRouteDetector,
+          useValue: {
+            isPublicRoute: jest.fn((path: string) => {
+              if (path === '/health') return true;
+              if (path === '/api/auth/register') return true;
+              if (path === '/api/auth/login') return true;
+              return false;
+            }),
           },
         },
       ],
@@ -33,9 +54,10 @@ describe('JwtValidationMiddleware', () => {
   ): RequestWithUser => {
     return {
       method,
-      path,
+      originalUrl: path,
+      url: path,
       headers: authHeader ? { authorization: authHeader } : {},
-    } as RequestWithUser;
+    } as unknown as RequestWithUser;
   };
 
   const mockResponse = {} as Response;
@@ -46,6 +68,13 @@ describe('JwtValidationMiddleware', () => {
   });
 
   describe('Public Routes', () => {
+    it('should allow GET /health without token', () => {
+      const req = createMockRequest('GET', '/health');
+      middleware.use(req, mockResponse, mockNext);
+      expect(mockNext).toHaveBeenCalled();
+      expect(req.user).toBeUndefined();
+    });
+
     it('should allow POST /api/auth/register without token', () => {
       const req = createMockRequest('POST', '/api/auth/register');
       middleware.use(req, mockResponse, mockNext);
@@ -59,32 +88,23 @@ describe('JwtValidationMiddleware', () => {
       expect(mockNext).toHaveBeenCalled();
       expect(req.user).toBeUndefined();
     });
-
-    it('should allow GET /api/jobs without token', () => {
-      const req = createMockRequest('GET', '/api/jobs');
-      middleware.use(req, mockResponse, mockNext);
-      expect(mockNext).toHaveBeenCalled();
-      expect(req.user).toBeUndefined();
-    });
-
-    it('should allow GET /api/jobs/:jobId without token', () => {
-      const req = createMockRequest('GET', '/api/jobs/123');
-      middleware.use(req, mockResponse, mockNext);
-      expect(mockNext).toHaveBeenCalled();
-      expect(req.user).toBeUndefined();
-    });
-
-    it('should allow GET /health without token', () => {
-      const req = createMockRequest('GET', '/health');
-      middleware.use(req, mockResponse, mockNext);
-      expect(mockNext).toHaveBeenCalled();
-      expect(req.user).toBeUndefined();
-    });
   });
 
   describe('Protected Routes', () => {
     it('should reject GET /api/users without token', () => {
       const req = createMockRequest('GET', '/api/users');
+      expect(() => middleware.use(req, mockResponse, mockNext)).toThrow(UnauthorizedException);
+      expect(mockNext).not.toHaveBeenCalled();
+    });
+
+    it('should reject GET /api/jobs without token', () => {
+      const req = createMockRequest('GET', '/api/jobs');
+      expect(() => middleware.use(req, mockResponse, mockNext)).toThrow(UnauthorizedException);
+      expect(mockNext).not.toHaveBeenCalled();
+    });
+
+    it('should reject GET /api/jobs/:jobId without token', () => {
+      const req = createMockRequest('GET', '/api/jobs/123');
       expect(() => middleware.use(req, mockResponse, mockNext)).toThrow(UnauthorizedException);
       expect(mockNext).not.toHaveBeenCalled();
     });
@@ -199,7 +219,7 @@ describe('JwtValidationMiddleware', () => {
     });
 
     it('should not attach user data for public routes', () => {
-      const req = createMockRequest('GET', '/api/jobs');
+      const req = createMockRequest('POST', '/api/auth/login');
 
       middleware.use(req, mockResponse, mockNext);
 

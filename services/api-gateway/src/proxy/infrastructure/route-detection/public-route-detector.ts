@@ -3,7 +3,11 @@ import { PUBLIC_ROUTES } from '@/shared/constants/auth.constants';
 
 @Injectable()
 export class PublicRouteDetector {
-  private readonly publicRoutes: string[] = [PUBLIC_ROUTES.HEALTH];
+  private readonly publicRoutes: string[] = [
+    PUBLIC_ROUTES.HEALTH,
+    PUBLIC_ROUTES.AUTH_REGISTER,
+    PUBLIC_ROUTES.AUTH_LOGIN,
+  ];
   private readonly healthCheckPatterns = ['/health.check', '/health'];
 
   isPublicRoute(path: string): boolean {
@@ -19,6 +23,10 @@ export class PublicRouteDetector {
     }
 
     if (cleanPath.includes('/public/')) {
+      return true;
+    }
+
+    if (cleanPath.startsWith('/api/auth/')) {
       return true;
     }
 

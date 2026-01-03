@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, HttpStatus } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { of } from 'rxjs';
-import { AxiosResponse } from 'axios';
+import { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import request from 'supertest';
 import { sign } from 'jsonwebtoken';
 import { AppModule } from '@/app.module';
@@ -12,7 +12,7 @@ import { configureCors } from '@config/cors.config';
 describe('API Gateway Integration Tests', () => {
   let app: INestApplication;
   let httpService: HttpService;
-  const JWT_SECRET = 'test-secret-key';
+  const JWT_SECRET = 'test-secret-key-for-testing-only';
   const mockToken = sign(
     { sub: 'user-123', email: 'test@example.com', role: 'job_seeker' },
     JWT_SECRET,
@@ -34,17 +34,19 @@ describe('API Gateway Integration Tests', () => {
     process.env.RATE_LIMIT_MAX = '100';
 
     const mockHttpService = {
-      request: jest
-        .fn()
-        .mockReturnValue(
-          of({
-            data: {},
-            status: 200,
-            statusText: 'OK',
+      request: jest.fn().mockReturnValue(
+        of({
+          data: {},
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+          config: {
             headers: {},
-            config: {} as Record<string, unknown>,
-          })
-        ),
+            url: 'http://localhost:3000/api',
+            method: 'GET',
+          } as unknown as InternalAxiosRequestConfig,
+        })
+      ),
     };
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -77,7 +79,11 @@ describe('API Gateway Integration Tests', () => {
         status: 200,
         statusText: 'OK',
         headers: {},
-        config: { headers: {} } as Record<string, unknown>,
+        config: {
+          headers: {},
+          url: 'http://localhost:3001/auth/login',
+          method: 'POST',
+        } as unknown as InternalAxiosRequestConfig,
       };
 
       jest.spyOn(httpService, 'request').mockReturnValue(of(mockResponse));
@@ -97,12 +103,19 @@ describe('API Gateway Integration Tests', () => {
         status: 200,
         statusText: 'OK',
         headers: {},
-        config: { headers: {} } as Record<string, unknown>,
+        config: {
+          headers: {},
+          url: 'http://localhost:3003/jobs',
+          method: 'GET',
+        } as unknown as InternalAxiosRequestConfig,
       };
 
       jest.spyOn(httpService, 'request').mockReturnValue(of(mockResponse));
 
-      const response = await request(app.getHttpServer()).get('/api/jobs/123').expect(200);
+      const response = await request(app.getHttpServer())
+        .get('/api/jobs/123')
+        .set('Authorization', `Bearer ${mockToken}`)
+        .expect(200);
 
       expect(httpService.request).toHaveBeenCalled();
       expect(response.body).toEqual({ id: 'job-123', title: 'Software Engineer' });
@@ -116,7 +129,11 @@ describe('API Gateway Integration Tests', () => {
         status: 201,
         statusText: 'Created',
         headers: {},
-        config: { headers: {} } as Record<string, unknown>,
+        config: {
+          headers: {},
+          url: 'http://localhost:3000',
+          method: 'GET',
+        } as unknown as InternalAxiosRequestConfig,
       };
 
       jest.spyOn(httpService, 'request').mockReturnValue(of(mockResponse));
@@ -133,7 +150,11 @@ describe('API Gateway Integration Tests', () => {
         status: 200,
         statusText: 'OK',
         headers: {},
-        config: { headers: {} } as Record<string, unknown>,
+        config: {
+          headers: {},
+          url: 'http://localhost:3000',
+          method: 'GET',
+        } as unknown as InternalAxiosRequestConfig,
       };
 
       jest.spyOn(httpService, 'request').mockReturnValue(of(mockResponse));
@@ -144,37 +165,40 @@ describe('API Gateway Integration Tests', () => {
         .expect(200);
     });
 
-    it('should allow GET /api/jobs without token', async () => {
+    it('should reject GET /api/jobs without token', async () => {
       const mockResponse: AxiosResponse = {
         data: [{ id: 'job-1' }, { id: 'job-2' }],
         status: 200,
         statusText: 'OK',
         headers: {},
-        config: { headers: {} } as Record<string, unknown>,
+        config: {
+          headers: {},
+          url: 'http://localhost:3000',
+          method: 'GET',
+        } as unknown as InternalAxiosRequestConfig,
       };
 
       jest.spyOn(httpService, 'request').mockReturnValue(of(mockResponse));
 
-      const response = await request(app.getHttpServer()).get('/api/jobs');
-
-      expect([200, 404]).toContain(response.status);
-      if (response.status === 200) {
-        expect(httpService.request).toHaveBeenCalled();
-      }
+      await request(app.getHttpServer()).get('/api/jobs').expect(HttpStatus.UNAUTHORIZED);
     });
 
-    it('should allow GET /api/jobs/:id without token', async () => {
+    it('should reject GET /api/jobs/:id without token', async () => {
       const mockResponse: AxiosResponse = {
         data: { id: 'job-123', title: 'Software Engineer' },
         status: 200,
         statusText: 'OK',
         headers: {},
-        config: { headers: {} } as Record<string, unknown>,
+        config: {
+          headers: {},
+          url: 'http://localhost:3000',
+          method: 'GET',
+        } as unknown as InternalAxiosRequestConfig,
       };
 
       jest.spyOn(httpService, 'request').mockReturnValue(of(mockResponse));
 
-      await request(app.getHttpServer()).get('/api/jobs/123').expect(200);
+      await request(app.getHttpServer()).get('/api/jobs/123').expect(HttpStatus.UNAUTHORIZED);
     });
 
     it('should allow GET /health without token', async () => {
@@ -266,7 +290,11 @@ describe('API Gateway Integration Tests', () => {
         status: 200,
         statusText: 'OK',
         headers: {},
-        config: { headers: {} } as Record<string, unknown>,
+        config: {
+          headers: {},
+          url: 'http://localhost:3000',
+          method: 'GET',
+        } as unknown as InternalAxiosRequestConfig,
       };
 
       jest.spyOn(httpService, 'request').mockReturnValue(of(mockResponse));
@@ -310,7 +338,11 @@ describe('API Gateway Integration Tests', () => {
         status: 200,
         statusText: 'OK',
         headers: {},
-        config: { headers: {} } as Record<string, unknown>,
+        config: {
+          headers: {},
+          url: 'http://localhost:3000',
+          method: 'GET',
+        } as unknown as InternalAxiosRequestConfig,
       };
 
       const requestSpy = jest.spyOn(httpService, 'request').mockReturnValue(of(mockResponse));

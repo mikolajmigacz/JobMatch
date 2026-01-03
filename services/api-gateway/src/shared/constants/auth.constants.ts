@@ -1,5 +1,7 @@
 export const PUBLIC_ROUTES = {
   HEALTH: '/health',
+  AUTH_REGISTER: '/api/auth/register',
+  AUTH_LOGIN: '/api/auth/login',
 } as const;
 
 export const ERROR_MESSAGES = {
