@@ -23,7 +23,6 @@ packages/**/*.d.ts.map
 *.swp
 *.swo
 *~
-.DS_Store
 
 # Environment
 .env
@@ -49,10 +48,15 @@ test-logo-upload.sh
 # Docker
 .dockerignore
 
+# Markdown files (except root README)
+*.md
+!README.md
+
 # OS
 .DS_Store
 Thumbs.db
 
-# Custom
-PROJECT_SPECIFICATION.md
-
+frontend/shell/src/ui/README.md
+frontend/shell/src/application/README.md
+frontend/shell/README.md
+frontend/shell/public/README.md

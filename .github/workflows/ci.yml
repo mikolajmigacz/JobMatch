@@ -6,6 +6,7 @@ on:
     paths:
       - 'services/**'
       - 'packages/shared/**'
+      - 'frontend/**'
       - 'pnpm-lock.yaml'
       - 'docker-compose.yml'
       - '.github/workflows/ci.yml'
@@ -14,6 +15,7 @@ on:
     paths:
       - 'services/**'
       - 'packages/shared/**'
+      - 'frontend/**'
       - 'pnpm-lock.yaml'
       - '.github/workflows/ci.yml'
 
@@ -839,3 +841,70 @@ jobs:
           tags: jobmatch-api-gateway:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  frontend-shell:
+    name: Test Frontend Shell
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8.15.1
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Cache pnpm modules
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build frontend
+        run: pnpm --filter shell build
+
+      - name: Lint frontend
+        run: pnpm --filter shell lint
+
+      - name: Run unit tests
+        run: pnpm --filter shell test
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps
+
+      - name: Run E2E tests
+        run: pnpm --filter shell test:e2e
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: |
+            frontend/shell/coverage/
+          retention-days: 7
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-test-results
+          path: |
+            frontend/shell/test-results/
+            frontend/shell/playwright-report/
+          retention-days: 7

@@ -1,0 +1,44 @@
+{
+  "name": "shell",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 4000",
+    "build": "next build",
+    "start": "next start -p 4000",
+    "lint": "next lint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "@tanstack/react-query": "^5",
+    "@trpc/client": "^10",
+    "@trpc/react-query": "^10",
+    "@trpc/server": "^10",
+    "next": "14.2.24",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-hook-form": "^7.71.1",
+    "styled-components": "^6"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@types/node": "^20.10.6",
+    "@types/react": "^19.2.8",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/coverage-v8": "^4.0.18",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "jsdom": "^25.0.1",
+    "prettier": "^3.1.0",
+    "typescript": "^5.3.3",
+    "vitest": "^2.1.8"
+  }
+}

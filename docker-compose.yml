@@ -288,6 +288,30 @@ services:
     networks:
       - jobmatch-network
 
+  shell-frontend:
+    build:
+      context: .
+      dockerfile: frontend/shell/Dockerfile
+    container_name: jobmatch-shell-frontend
+    ports:
+      - '4000:4000'
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      NEXT_PUBLIC_API_URL: http://api-gateway:3000
+      NEXT_PUBLIC_WS_URL: ws://api-gateway:3000
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:4000/']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - jobmatch-network
+    restart: unless-stopped
+
 networks:
   jobmatch-network:
     driver: bridge
