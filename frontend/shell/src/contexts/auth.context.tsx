@@ -81,120 +81,122 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async (credentials: LoginRequest) => {
       const validation = validateLogin(credentials);
 
-    if (!validation.success) {
-      throw new Error(Object.values(validation.errors || {}).join(', '));
-    }
-
-    setState((prev) => ({ ...prev, isLoading: true }));
-
-    const apiUrl = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
-    if (!apiUrl) {
-      throw new Error('API Gateway URL not configured');
-    }
-
-    try {
-      const response = await fetch(`${apiUrl}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(validation.data),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Login failed');
+      if (!validation.success) {
+        throw new Error(Object.values(validation.errors || {}).join(', '));
       }
 
-      const data: AuthResponse = await response.json();
+      setState((prev) => ({ ...prev, isLoading: true }));
 
-      localStorage.setItem(TOKEN_KEY, data.token);
-      localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+      const apiUrl = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
+      if (!apiUrl) {
+        throw new Error('API Gateway URL not configured');
+      }
 
-      setState({
-        user: data.user,
-        token: data.token,
-        isAuthenticated: true,
-        isLoading: false,
-      });
-      return data;
-    } catch (error) {
-      setState((prev) => ({ ...prev, isLoading: false }));
-      throw error;
-    }
-  },
+      try {
+        const response = await fetch(`${apiUrl}/api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(validation.data),
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || 'Login failed');
+        }
+
+        const data: AuthResponse = await response.json();
+
+        localStorage.setItem(TOKEN_KEY, data.token);
+        localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+
+        setState({
+          user: data.user,
+          token: data.token,
+          isAuthenticated: true,
+          isLoading: false,
+        });
+        return data;
+      } catch (error) {
+        setState((prev) => ({ ...prev, isLoading: false }));
+        throw error;
+      }
+    },
     [validateLogin]
   );
 
   const register = useCallback(
     async (data: RegisterRequest, logoFile?: File) => {
       const validation =
-      data.role === 'job_seeker' ? validateJobSeekerRegister(data) : validateEmployerRegister(data);
+        data.role === 'job_seeker'
+          ? validateJobSeekerRegister(data)
+          : validateEmployerRegister(data);
 
-    if (!validation.success || !validation.data) {
-      throw new Error(Object.values(validation.errors || {}).join(', '));
-    }
-
-    setState((prev) => ({ ...prev, isLoading: true }));
-
-    const apiUrl = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
-    if (!apiUrl) {
-      throw new Error('API Gateway URL not configured');
-    }
-
-    try {
-      const endpoint =
-        validation.data.role === 'job_seeker'
-          ? '/api/auth/register/job-seeker'
-          : '/api/auth/register/employer';
-
-      let response: Response;
-      if (validation.data.role === 'employer' && logoFile) {
-        const formData = new FormData();
-        formData.append('email', validation.data.email);
-        formData.append('password', validation.data.password);
-        formData.append('name', validation.data.name);
-        formData.append('role', validation.data.role);
-        formData.append('companyName', validation.data.companyName);
-        formData.append('companyLogo', logoFile);
-        response = await fetch(`${apiUrl}${endpoint}`, {
-          method: 'POST',
-          body: formData,
-        });
-      } else if (validation.data.role === 'job_seeker') {
-        response = await fetch(`${apiUrl}${endpoint}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(validation.data),
-        });
-      } else {
-        response = await fetch(`${apiUrl}${endpoint}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(validation.data),
-        });
+      if (!validation.success || !validation.data) {
+        throw new Error(Object.values(validation.errors || {}).join(', '));
       }
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Registration failed');
+      setState((prev) => ({ ...prev, isLoading: true }));
+
+      const apiUrl = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
+      if (!apiUrl) {
+        throw new Error('API Gateway URL not configured');
       }
 
-      const authData: AuthResponse = await response.json();
+      try {
+        const endpoint =
+          validation.data.role === 'job_seeker'
+            ? '/api/auth/register/job-seeker'
+            : '/api/auth/register/employer';
 
-      localStorage.setItem(TOKEN_KEY, authData.token);
-      localStorage.setItem(USER_KEY, JSON.stringify(authData.user));
+        let response: Response;
+        if (validation.data.role === 'employer' && logoFile) {
+          const formData = new FormData();
+          formData.append('email', validation.data.email);
+          formData.append('password', validation.data.password);
+          formData.append('name', validation.data.name);
+          formData.append('role', validation.data.role);
+          formData.append('companyName', validation.data.companyName);
+          formData.append('companyLogo', logoFile);
+          response = await fetch(`${apiUrl}${endpoint}`, {
+            method: 'POST',
+            body: formData,
+          });
+        } else if (validation.data.role === 'job_seeker') {
+          response = await fetch(`${apiUrl}${endpoint}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(validation.data),
+          });
+        } else {
+          response = await fetch(`${apiUrl}${endpoint}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(validation.data),
+          });
+        }
 
-      setState({
-        user: authData.user,
-        token: authData.token,
-        isAuthenticated: true,
-        isLoading: false,
-      });
-      return authData;
-    } catch (error) {
-      setState((prev) => ({ ...prev, isLoading: false }));
-      throw error;
-    }
-  },
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || 'Registration failed');
+        }
+
+        const authData: AuthResponse = await response.json();
+
+        localStorage.setItem(TOKEN_KEY, authData.token);
+        localStorage.setItem(USER_KEY, JSON.stringify(authData.user));
+
+        setState({
+          user: authData.user,
+          token: authData.token,
+          isAuthenticated: true,
+          isLoading: false,
+        });
+        return authData;
+      } catch (error) {
+        setState((prev) => ({ ...prev, isLoading: false }));
+        throw error;
+      }
+    },
     [validateJobSeekerRegister, validateEmployerRegister]
   );
 

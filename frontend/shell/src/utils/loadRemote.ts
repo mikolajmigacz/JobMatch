@@ -40,9 +40,7 @@ export const loadRemote = async (remoteKey: RemoteKey, moduleKey: ModuleKey) => 
 
   const container = (window as unknown as Record<string, Container>)[remote.scope];
   if (!container) {
-    throw new Error(
-      `Remote ${remoteKey} not found. Ensure ${url} is accessible.`
-    );
+    throw new Error(`Remote ${remoteKey} not found. Ensure ${url} is accessible.`);
   }
 
   await container.init(__webpack_share_scopes__.default);

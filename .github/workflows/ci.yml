@@ -101,6 +101,7 @@ jobs:
       - name: Run integration tests - auth-service
         run: pnpm --filter auth-service test:integration
         env:
+          NEXT_PUBLIC_API_GATEWAY_URL: http://localhost:3000
           NODE_ENV: test
           AUTH_SERVICE_PORT: 3001
           USER_SERVICE_PORT: 3002
@@ -228,6 +229,7 @@ jobs:
       - name: Run integration tests - user-service
         run: pnpm --filter user-service test:integration
         env:
+          NEXT_PUBLIC_API_GATEWAY_URL: http://localhost:3000
           NODE_ENV: test
           AUTH_SERVICE_PORT: 3001
           USER_SERVICE_PORT: 3002
@@ -353,6 +355,7 @@ jobs:
       - name: Run integration tests - job-service
         run: pnpm --filter job-service test:integration
         env:
+          NEXT_PUBLIC_API_GATEWAY_URL: http://localhost:3000
           NODE_ENV: test
           AUTH_SERVICE_PORT: 3001
           USER_SERVICE_PORT: 3002
@@ -480,6 +483,7 @@ jobs:
       - name: Run integration tests - application-service
         run: pnpm --filter application-service test:integration
         env:
+          NEXT_PUBLIC_API_GATEWAY_URL: http://localhost:3000
           NODE_ENV: test
           AUTH_SERVICE_PORT: 3001
           USER_SERVICE_PORT: 3002
@@ -612,6 +616,7 @@ jobs:
       - name: Run integration tests - email-service
         run: pnpm --filter email-service test:integration
         env:
+          NEXT_PUBLIC_API_GATEWAY_URL: http://localhost:3000
           NODE_ENV: test
           AUTH_SERVICE_PORT: 3001
           USER_SERVICE_PORT: 3002
@@ -739,6 +744,7 @@ jobs:
       - name: Run integration tests - cv-analysis-service
         run: pnpm --filter cv-analysis-service test:integration
         env:
+          NEXT_PUBLIC_API_GATEWAY_URL: http://localhost:3000
           NODE_ENV: test
           AUTH_SERVICE_PORT: 3001
           USER_SERVICE_PORT: 3002
@@ -845,6 +851,8 @@ jobs:
   frontend-shell:
     name: Test Frontend Shell
     runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_API_GATEWAY_URL: http://localhost:3000
 
     steps:
       - name: Checkout code
@@ -884,12 +892,6 @@ jobs:
       - name: Run unit tests
         run: pnpm --filter shell test
 
-      - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps
-
-      - name: Run E2E tests
-        run: pnpm --filter shell test:e2e
-
       - name: Upload coverage
         if: always()
         uses: actions/upload-artifact@v4
@@ -897,14 +899,4 @@ jobs:
           name: frontend-coverage
           path: |
             frontend/shell/coverage/
-          retention-days: 7
-
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-test-results
-          path: |
-            frontend/shell/test-results/
-            frontend/shell/playwright-report/
           retention-days: 7

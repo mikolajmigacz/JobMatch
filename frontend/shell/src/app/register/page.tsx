@@ -138,14 +138,8 @@ export default function RegisterPage() {
           {isEmployer && (
             <>
               <div>
-                <Input
-                  {...registerField('companyName')}
-                  type="text"
-                  placeholder="Company Name"
-                />
-                {errors.companyName && (
-                  <ErrorText>{errors.companyName.message}</ErrorText>
-                )}
+                <Input {...registerField('companyName')} type="text" placeholder="Company Name" />
+                {errors.companyName && <ErrorText>{errors.companyName.message}</ErrorText>}
               </div>
               <div>
                 <Label>Company Logo (optional)</Label>
