@@ -40,8 +40,6 @@ export default function RegisterPage() {
     }
   }, [isLoading, isAuthenticated, user, router]);
 
-  if (!isLoading && isAuthenticated) return null;
-
   const {
     register: registerField,
     handleSubmit,
@@ -59,6 +57,8 @@ export default function RegisterPage() {
       companyName: '',
     },
   });
+
+  if (!isLoading && isAuthenticated) return null;
 
   const role = watch('role');
   const isEmployer = role === 'employer';

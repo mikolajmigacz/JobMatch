@@ -28,8 +28,6 @@ export default function LoginPage() {
     }
   }, [isLoading, isAuthenticated, user, router]);
 
-  if (!isLoading && isAuthenticated) return null;
-
   const {
     register: registerField,
     handleSubmit,
@@ -39,6 +37,8 @@ export default function LoginPage() {
     resolver: zodResolver(LoginDtoSchema),
     defaultValues: { email: '', password: '' },
   });
+
+  if (!isLoading && isAuthenticated) return null;
 
   const onSubmit = async (data: LoginRequest) => {
     try {

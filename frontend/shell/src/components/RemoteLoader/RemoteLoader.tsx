@@ -35,11 +35,11 @@ export function RemoteLoader({ remoteKey, moduleKey, remoteProps, fallbackMessag
       setError(err instanceof Error ? err.message : 'Failed to load module');
       setComponent(null);
     }
-  }, [remoteKey, moduleKey, retryCount]);
+  }, [remoteKey, moduleKey]);
 
   useEffect(() => {
     load();
-  }, [load]);
+  }, [load, retryCount]);
 
   const handleRetry = useCallback(() => {
     setComponent(null);
