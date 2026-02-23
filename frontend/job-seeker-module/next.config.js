@@ -12,12 +12,14 @@ const nextConfig = {
       config.plugins.push(
         new container.ModuleFederationPlugin({
           name: 'jobSeeker',
-          filename: 'remoteEntry.js',
+          filename: 'static/chunks/remoteEntry.js',
           exposes: {
             './JobSeekerApp': './src/app/index.ts',
-            './JobList': './src/components/JobList/index.ts',
-            './MyApplications': './src/components/MyApplications/index.ts',
-            './CVAnalysis': './src/components/CVAnalysis/index.ts',
+            './JobsPage': './src/exports/JobsPage.ts',
+            './JobDetailPage': './src/exports/JobDetailPage.ts',
+            './ApplicationsPage': './src/exports/ApplicationsPage.ts',
+            './CVAnalysisPage': './src/exports/CVAnalysisPage.ts',
+            './ProfilePage': './src/exports/ProfilePage.ts',
           },
           shared: {
             react: { singleton: true, strictVersion: false },

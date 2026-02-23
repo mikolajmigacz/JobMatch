@@ -5,8 +5,12 @@ import {
 } from '@/config/module-federation';
 
 const REMOTE_URLS: Record<RemoteKey, string> = {
-  jobSeeker: process.env.NEXT_PUBLIC_JOB_SEEKER_REMOTE ?? 'http://localhost:4001/remoteEntry.js',
-  employer: process.env.NEXT_PUBLIC_EMPLOYER_REMOTE ?? 'http://localhost:4002/remoteEntry.js',
+  jobSeeker:
+    process.env.NEXT_PUBLIC_JOB_SEEKER_REMOTE ??
+    'http://localhost:4001/_next/static/chunks/remoteEntry.js',
+  employer:
+    process.env.NEXT_PUBLIC_EMPLOYER_REMOTE ??
+    'http://localhost:4002/_next/static/chunks/remoteEntry.js',
 };
 
 declare const __webpack_init_sharing__: (scope: string) => Promise<void>;

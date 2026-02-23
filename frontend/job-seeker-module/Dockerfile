@@ -29,7 +29,7 @@ FROM node:20-alpine AS runtime
 
 WORKDIR /app
 
-RUN npm install -g pnpm@8.15.1
+RUN apk add --no-cache curl && npm install -g pnpm@8.15.1
 
 COPY --from=builder /app/frontend/job-seeker-module/.next ./frontend/job-seeker-module/.next
 COPY --from=builder /app/frontend/job-seeker-module/public ./frontend/job-seeker-module/public
@@ -47,6 +47,6 @@ WORKDIR /app/frontend/job-seeker-module
 EXPOSE 4001
 
 HEALTHCHECK --interval=10s --timeout=5s --retries=3 --start-period=15s \
-    CMD node -e "require('http').get('http://localhost:4001/', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
+    CMD curl -f http://localhost:4001/ || exit 1
 
 CMD ["pnpm", "start"]

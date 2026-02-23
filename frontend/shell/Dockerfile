@@ -29,8 +29,8 @@ FROM node:20-alpine AS runtime
 
 WORKDIR /app
 
-# Install pnpm in runtime
-RUN npm install -g pnpm@8.15.1
+# Install curl for health check and pnpm
+RUN apk add --no-cache curl && npm install -g pnpm@8.15.1
 
 # Copy only production dependencies and build artifacts
 COPY --from=builder /app/frontend/shell/.next ./frontend/shell/.next
@@ -52,7 +52,7 @@ EXPOSE 4000
 
 # Health check
 HEALTHCHECK --interval=10s --timeout=5s --retries=3 --start-period=15s \
-    CMD node -e "require('http').get('http://localhost:4000/', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
+    CMD curl -f http://localhost:4000/ || exit 1
 
 # Start application
 CMD ["pnpm", "start"]

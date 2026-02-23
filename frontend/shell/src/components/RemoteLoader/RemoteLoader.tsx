@@ -7,31 +7,35 @@ import type { RemoteKey, ModuleKey } from '@/config/module-federation';
 import { Wrapper, Loader, Fallback, RetryButton } from './RemoteLoader.styles';
 
 const REMOTE_MODULE_MAP: Record<RemoteKey, ModuleKey> = {
-  jobSeeker: 'APP',
+  jobSeeker: 'JOBS_PAGE',
   employer: 'APP',
 };
 
 type Props = {
   remoteKey: RemoteKey;
+  moduleKey?: ModuleKey;
+  remoteProps?: Record<string, unknown>;
   fallbackMessage?: string;
 };
 
-export function RemoteLoader({ remoteKey, fallbackMessage }: Props) {
-  const [Component, setComponent] = useState<React.ComponentType | null>(null);
+export function RemoteLoader({ remoteKey, moduleKey, remoteProps, fallbackMessage }: Props) {
+  const [Component, setComponent] = useState<React.ComponentType<Record<string, unknown>> | null>(
+    null
+  );
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
 
   const load = useCallback(async () => {
     setError(null);
     try {
-      const moduleKey = REMOTE_MODULE_MAP[remoteKey];
-      const LoadedComponent = await loadRemote(remoteKey, moduleKey);
+      const resolvedModuleKey = moduleKey ?? REMOTE_MODULE_MAP[remoteKey];
+      const LoadedComponent = await loadRemote(remoteKey, resolvedModuleKey);
       setComponent(() => LoadedComponent);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load module');
       setComponent(null);
     }
-  }, [remoteKey, retryCount]);
+  }, [remoteKey, moduleKey, retryCount]);
 
   useEffect(() => {
     load();
@@ -77,7 +81,7 @@ export function RemoteLoader({ remoteKey, fallbackMessage }: Props) {
           </Wrapper>
         }
       >
-        <Component />
+        <Component {...(remoteProps ?? {})} />
       </Suspense>
     </ErrorBoundary>
   );

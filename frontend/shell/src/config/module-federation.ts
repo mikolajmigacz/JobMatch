@@ -17,7 +17,12 @@ export const MODULE_FEDERATION_CONFIG = {
     },
   },
   MODULES: {
-    APP: './App',
+    APP: './JobSeekerApp',
+    JOBS_PAGE: './JobsPage',
+    JOB_DETAIL_PAGE: './JobDetailPage',
+    APPLICATIONS_PAGE: './ApplicationsPage',
+    CV_ANALYSIS_PAGE: './CVAnalysisPage',
+    PROFILE_PAGE: './ProfilePage',
   },
 } as const;
 

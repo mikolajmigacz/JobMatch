@@ -14,8 +14,8 @@ const nextConfig = {
           name: 'shell',
           filename: 'static/chunks/remoteEntry.js',
           remotes: {
-            jobSeeker: 'jobSeeker@http://localhost:4001/remoteEntry.js',
-            employer: 'employer@http://localhost:4002/remoteEntry.js',
+            jobSeeker: 'jobSeeker@http://localhost:4001/_next/static/chunks/remoteEntry.js',
+            employer: 'employer@http://localhost:4002/_next/static/chunks/remoteEntry.js',
           },
           shared: {
             react: { singleton: true, requiredVersion: false },

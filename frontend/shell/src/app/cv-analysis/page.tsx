@@ -2,12 +2,12 @@
 
 import { RemoteLoader } from '@/components/RemoteLoader';
 
-export default function JobSeekerPage() {
+export default function CVAnalysisPage() {
   return (
     <RemoteLoader
       remoteKey="jobSeeker"
-      moduleKey="JOBS_PAGE"
-      fallbackMessage="Job Seeker module failed to load"
+      moduleKey="CV_ANALYSIS_PAGE"
+      fallbackMessage="Could not load CV analysis"
     />
   );
 }

@@ -2,12 +2,12 @@
 
 import { RemoteLoader } from '@/components/RemoteLoader';
 
-export default function JobSeekerPage() {
+export default function JobsPage() {
   return (
     <RemoteLoader
       remoteKey="jobSeeker"
       moduleKey="JOBS_PAGE"
-      fallbackMessage="Job Seeker module failed to load"
+      fallbackMessage="Could not load jobs listing"
     />
   );
 }
