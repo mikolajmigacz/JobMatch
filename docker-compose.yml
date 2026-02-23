@@ -288,6 +288,29 @@ services:
     networks:
       - jobmatch-network
 
+  job-seeker-frontend:
+    build:
+      context: .
+      dockerfile: frontend/job-seeker-module/Dockerfile
+    container_name: jobmatch-job-seeker-frontend
+    ports:
+      - '4001:4001'
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      NEXT_PUBLIC_API_URL: http://api-gateway:3000
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:4001/']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - jobmatch-network
+    restart: unless-stopped
+
   shell-frontend:
     build:
       context: .
@@ -299,8 +322,11 @@ services:
       NODE_ENV: ${NODE_ENV}
       NEXT_PUBLIC_API_URL: http://api-gateway:3000
       NEXT_PUBLIC_WS_URL: ws://api-gateway:3000
+      NEXT_PUBLIC_JOB_SEEKER_REMOTE_URL: http://job-seeker-frontend:4001
     depends_on:
       api-gateway:
+        condition: service_healthy
+      job-seeker-frontend:
         condition: service_healthy
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:4000/']
