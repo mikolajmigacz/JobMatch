@@ -9,7 +9,7 @@
     "test": "jest",
     "test:unit": "jest --testPathIgnorePatterns='.*\\.integration\\.spec\\.ts$'",
     "test:watch": "jest --watch",
-    "test:integration": "pnpm -w --filter @jobmatch/shared build && jest --testMatch='**/*.integration.spec.ts' --runInBand --forceExit --passWithNoTests",
+    "test:integration": "pnpm --filter @jobmatch/shared build && jest --testMatch='**/*.integration.spec.ts' --runInBand --forceExit --passWithNoTests",
     "lint": "eslint src/ test/"
   },
   "keywords": [],
