@@ -23,16 +23,16 @@ export default function Navigation() {
 
         {isAuthenticated ? (
           <>
-            <Link href="/jobs" passHref legacyBehavior>
+            <Link href="/job-seeker/jobs" passHref legacyBehavior>
               <NavLink>Browse Jobs</NavLink>
             </Link>
 
             {isJobSeeker && (
               <>
-                <Link href="/applications" passHref legacyBehavior>
+                <Link href="/job-seeker/applications" passHref legacyBehavior>
                   <NavLink>My Applications</NavLink>
                 </Link>
-                <Link href="/cv-analysis" passHref legacyBehavior>
+                <Link href="/job-seeker/cv-analysis" passHref legacyBehavior>
                   <NavLink>CV Analysis</NavLink>
                 </Link>
               </>
@@ -40,18 +40,18 @@ export default function Navigation() {
 
             {isEmployer && (
               <>
-                <Link href="/my-jobs" passHref legacyBehavior>
+                <Link href="/employer/my-jobs" passHref legacyBehavior>
                   <NavLink>My Jobs</NavLink>
                 </Link>
-                <Link href="/create-job" passHref legacyBehavior>
-                  <NavLink>Create Job</NavLink>
+                <Link href="/employer/my-jobs/new" passHref legacyBehavior>
+                  <NavLink>Post a Job</NavLink>
                 </Link>
               </>
             )}
           </>
         ) : (
           <>
-            <Link href="/jobs" passHref legacyBehavior>
+            <Link href="/job-seeker/jobs" passHref legacyBehavior>
               <NavLink>Browse Jobs</NavLink>
             </Link>
             <Link href="/login" passHref legacyBehavior>

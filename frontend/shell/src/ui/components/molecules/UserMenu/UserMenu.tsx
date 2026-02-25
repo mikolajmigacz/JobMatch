@@ -56,7 +56,7 @@ export default function UserMenu() {
           <Email>{user.email}</Email>
         </UserInfo>
 
-        <Link href="/profile" passHref legacyBehavior>
+        <Link href="/job-seeker/profile" passHref legacyBehavior>
           <MenuItem>My Profile</MenuItem>
         </Link>
         <Link href="/settings" passHref legacyBehavior>

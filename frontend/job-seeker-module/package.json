@@ -22,7 +22,6 @@
     "zod": "^3"
   },
   "devDependencies": {
-    "@module-federation/nextjs-mf": "^8.8.56",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@trpc/react-query": "^10.45.4",
@@ -38,6 +37,7 @@
     "jsdom": "^25.0.1",
     "prettier": "^3.1.0",
     "typescript": "^5.3.3",
-    "vitest": "^2.1.8"
+    "vitest": "^2.1.8",
+    "webpack": "5"
   }
 }

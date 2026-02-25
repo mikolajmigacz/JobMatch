@@ -44,6 +44,23 @@ services:
     networks:
       - jobmatch-network
 
+  dynamodb-admin:
+    image: aaronshaf/dynamodb-admin:latest
+    container_name: jobmatch-dynamodb-admin
+    ports:
+      - '8001:8001'
+    environment:
+      - DYNAMO_ENDPOINT=http://localstack:4566
+      - AWS_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+    depends_on:
+      localstack:
+        condition: service_healthy
+    networks:
+      - jobmatch-network
+    restart: unless-stopped
+
 networks:
   jobmatch-network:
     driver: bridge

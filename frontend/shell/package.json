@@ -15,10 +15,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
-    "@tanstack/react-query": "^5",
-    "@trpc/client": "^10",
-    "@trpc/react-query": "^10",
-    "@trpc/server": "^10",
+    "@module-federation/runtime": "^2.0.1",
     "next": "14.2.24",
     "react": "^18",
     "react-dom": "^18",
@@ -40,6 +37,7 @@
     "jsdom": "^25.0.1",
     "prettier": "^3.1.0",
     "typescript": "^5.3.3",
-    "vitest": "^2.1.8"
+    "vitest": "^2.1.8",
+    "webpack": "5"
   }
 }

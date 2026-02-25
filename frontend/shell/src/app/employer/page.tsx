@@ -1,7 +1,5 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-import { RemoteLoader } from '@/components/RemoteLoader';
-
-export default function EmployerPage() {
-  return <RemoteLoader remoteKey="employer" fallbackMessage="Employer module failed to load" />;
+export default function EmployerIndexPage() {
+  redirect('/employer/my-jobs');
 }

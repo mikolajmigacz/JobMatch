@@ -6,14 +6,26 @@ services:
       - '4566:4566'
     environment:
       - SERVICES=dynamodb,sqs,s3
-      - AWS_DEFAULT_REGION=us-east-1
-      - AWS_ACCESS_KEY_ID=test
-      - AWS_SECRET_ACCESS_KEY=test
-      - LOCALSTACK_HOSTNAME=localstack
+      - AWS_DEFAULT_REGION=${AWS_REGION:-us-east-1}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - LOCALSTACK_HOSTNAME=${LOCALSTACK_HOSTNAME:-localstack}
       - DATA_DIR=/tmp/localstack
+      - PERSISTENCE=1
+      # Table names — mirror the values in .env so the migration script uses
+      # the same names that the application services expect.
+      - DYNAMODB_TABLE_USERS=${DYNAMODB_TABLE_USERS:-Users}
+      - DYNAMODB_TABLE_JOBS=${DYNAMODB_TABLE_JOBS:-Jobs}
+      - DYNAMODB_TABLE_APPLICATIONS=${DYNAMODB_TABLE_APPLICATIONS:-Applications}
+      - DYNAMODB_TABLE_CV_ANALYSIS=${DYNAMODB_TABLE_CV_ANALYSIS:-CVAnalysis}
+      - DYNAMODB_TABLE_EMAILS=${DYNAMODB_TABLE_EMAILS:-EmailLogs}
+      - SQS_EMAIL_QUEUE_NAME=${SQS_EMAIL_QUEUE_NAME:-email-queue}
+      - SQS_EMAIL_DLQ_NAME=${SQS_EMAIL_DLQ_NAME:-email-queue-dlq}
+      - S3_BUCKET=${S3_BUCKET:-jobmatch-bucket}
     volumes:
       - localstack_data:/tmp/localstack
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./docker/localstack/init-resources.sh:/etc/localstack/init/ready.d/init-resources.sh
     healthcheck:
       test:
         [
@@ -292,12 +304,13 @@ services:
     build:
       context: .
       dockerfile: frontend/job-seeker-module/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${API_GATEWAY_URL}
     container_name: jobmatch-job-seeker-frontend
     ports:
       - '4001:4001'
     environment:
       NODE_ENV: ${NODE_ENV}
-      NEXT_PUBLIC_API_URL: http://api-gateway:3000
     depends_on:
       api-gateway:
         condition: service_healthy
@@ -315,14 +328,15 @@ services:
     build:
       context: .
       dockerfile: frontend/shell/Dockerfile
+      args:
+        NEXT_PUBLIC_JOB_SEEKER_URL: ${FRONTEND_JOB_SEEKER_URL}
+        NEXT_PUBLIC_EMPLOYER_URL: ${FRONTEND_EMPLOYER_URL}
+        NEXT_PUBLIC_API_URL: ${API_GATEWAY_URL}
     container_name: jobmatch-shell-frontend
     ports:
       - '4000:4000'
     environment:
       NODE_ENV: ${NODE_ENV}
-      NEXT_PUBLIC_API_URL: http://api-gateway:3000
-      NEXT_PUBLIC_WS_URL: ws://api-gateway:3000
-      NEXT_PUBLIC_JOB_SEEKER_REMOTE: http://localhost:4001/_next/static/chunks/remoteEntry.js
     depends_on:
       api-gateway:
         condition: service_healthy
@@ -334,6 +348,23 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
+    networks:
+      - jobmatch-network
+    restart: unless-stopped
+
+  dynamodb-admin:
+    image: aaronshaf/dynamodb-admin:latest
+    container_name: jobmatch-dynamodb-admin
+    ports:
+      - '8001:8001'
+    environment:
+      - DYNAMO_ENDPOINT=http://localstack:4566
+      - AWS_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+    depends_on:
+      localstack:
+        condition: service_healthy
     networks:
       - jobmatch-network
     restart: unless-stopped

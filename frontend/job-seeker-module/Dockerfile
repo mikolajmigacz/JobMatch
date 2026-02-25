@@ -3,25 +3,21 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Install pnpm
 RUN npm install -g pnpm@8.15.1
 
-# Copy workspace files
-COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
+COPY .npmrc pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
 COPY frontend/job-seeker-module/package.json ./frontend/job-seeker-module/package.json
 COPY packages/shared/package.json ./packages/shared/package.json
 COPY packages/shared/tsconfig.json ./packages/shared/tsconfig.json
 
-# Install dependencies (frozen for reproducibility)
 RUN pnpm install --frozen-lockfile
 
-# Copy packages/shared source
 COPY packages/shared/src ./packages/shared/src
-
-# Copy frontend source
 COPY frontend/job-seeker-module ./frontend/job-seeker-module
 
-# Build
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+
 RUN pnpm --filter job-seeker-module build
 
 # Production stage

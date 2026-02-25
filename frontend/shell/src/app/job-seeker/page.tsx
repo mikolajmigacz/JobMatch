@@ -1,13 +1,5 @@
-'use client';
-
-import { RemoteLoader } from '@/components/RemoteLoader';
+import { redirect } from 'next/navigation';
 
 export default function JobSeekerPage() {
-  return (
-    <RemoteLoader
-      remoteKey="jobSeeker"
-      moduleKey="JOBS_PAGE"
-      fallbackMessage="Job Seeker module failed to load"
-    />
-  );
+  redirect('/job-seeker/jobs');
 }

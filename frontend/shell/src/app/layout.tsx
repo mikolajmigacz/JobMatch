@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import StyledComponentsRegistry from '@/components/registry';
 import { AuthProvider } from '@/contexts/auth.context';
-import { TRPCProvider } from '@/trpc';
 import { Header, Footer } from '@/ui/components';
 
 export const metadata: Metadata = {
@@ -15,11 +14,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <StyledComponentsRegistry>
           <AuthProvider>
-            <TRPCProvider>
-              <Header />
-              <main style={{ flex: 1 }}>{children}</main>
-              <Footer />
-            </TRPCProvider>
+            <Header />
+            <main style={{ flex: 1 }}>{children}</main>
+            <Footer />
           </AuthProvider>
         </StyledComponentsRegistry>
       </body>

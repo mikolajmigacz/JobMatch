@@ -10,7 +10,6 @@ import {
   FooterLink,
   Divider,
   Bottom,
-  SocialLinks,
 } from './Footer.styles';
 
 export default function Footer() {
@@ -29,40 +28,37 @@ export default function Footer() {
 
           <Column>
             <Title>For Job Seekers</Title>
-            <Link href="/jobs" passHref legacyBehavior>
+            <Link href="/job-seeker/jobs" passHref legacyBehavior>
               <FooterLink>Browse Jobs</FooterLink>
             </Link>
-            <Link href="/companies" passHref legacyBehavior>
-              <FooterLink>Companies</FooterLink>
+            <Link href="/job-seeker/applications" passHref legacyBehavior>
+              <FooterLink>My Applications</FooterLink>
             </Link>
-            <Link href="/advice" passHref legacyBehavior>
-              <FooterLink>Career Advice</FooterLink>
+            <Link href="/job-seeker/cv-analysis" passHref legacyBehavior>
+              <FooterLink>CV Analysis</FooterLink>
             </Link>
           </Column>
 
           <Column>
             <Title>For Employers</Title>
-            <Link href="/post-job" passHref legacyBehavior>
+            <Link href="/employer/my-jobs" passHref legacyBehavior>
+              <FooterLink>My Jobs</FooterLink>
+            </Link>
+            <Link href="/employer/my-jobs/new" passHref legacyBehavior>
               <FooterLink>Post a Job</FooterLink>
             </Link>
-            <Link href="/pricing" passHref legacyBehavior>
-              <FooterLink>Pricing</FooterLink>
-            </Link>
-            <Link href="/resources" passHref legacyBehavior>
-              <FooterLink>Resources</FooterLink>
+            <Link href="/employer/profile" passHref legacyBehavior>
+              <FooterLink>Company Profile</FooterLink>
             </Link>
           </Column>
 
           <Column>
-            <Title>Company</Title>
-            <Link href="/about" passHref legacyBehavior>
-              <FooterLink>About Us</FooterLink>
+            <Title>Account</Title>
+            <Link href="/login" passHref legacyBehavior>
+              <FooterLink>Sign In</FooterLink>
             </Link>
-            <Link href="/blog" passHref legacyBehavior>
-              <FooterLink>Blog</FooterLink>
-            </Link>
-            <Link href="/contact" passHref legacyBehavior>
-              <FooterLink>Contact</FooterLink>
+            <Link href="/register" passHref legacyBehavior>
+              <FooterLink>Sign Up</FooterLink>
             </Link>
           </Column>
         </Grid>
@@ -71,15 +67,6 @@ export default function Footer() {
 
         <Bottom>
           <div>© {currentYear} JobMatch. All rights reserved.</div>
-          <SocialLinks>
-            <Link href="/privacy" passHref legacyBehavior>
-              <FooterLink>Privacy Policy</FooterLink>
-            </Link>
-            <span>•</span>
-            <Link href="/terms" passHref legacyBehavior>
-              <FooterLink>Terms of Service</FooterLink>
-            </Link>
-          </SocialLinks>
         </Bottom>
       </FooterContent>
     </FooterWrapper>

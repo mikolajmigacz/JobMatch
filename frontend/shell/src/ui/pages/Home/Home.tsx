@@ -43,7 +43,7 @@ export default function HomePage() {
           <Link href="/register" passHref legacyBehavior>
             <CTAButton $variant="primary">Get Started</CTAButton>
           </Link>
-          <Link href="/jobs" passHref legacyBehavior>
+          <Link href="/job-seeker/jobs" passHref legacyBehavior>
             <CTAButton $variant="secondary">Browse Jobs</CTAButton>
           </Link>
         </CTAButtons>

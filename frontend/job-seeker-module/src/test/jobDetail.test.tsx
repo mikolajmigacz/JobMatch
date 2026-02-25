@@ -32,7 +32,7 @@ describe('JobDetailPage', () => {
   });
 
   it('shows already-applied banner when application exists', async () => {
-    const { getApplications, saveApplication } = await import('../utils/applications');
+    const { saveApplication } = await import('../utils/applications');
     saveApplication({
       jobId: '1',
       jobTitle: 'Frontend Developer',

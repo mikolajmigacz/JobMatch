@@ -7,8 +7,22 @@ const nextConfig = {
     styledComponents: true,
   },
   transpilePackages: ['@jobmatch/shared'],
+  async headers() {
+    return [
+      {
+        source: '/_next/:path*',
+        headers: [{ key: 'Access-Control-Allow-Origin', value: '*' }],
+      },
+    ];
+  },
   webpack(config, { isServer }) {
     if (!isServer) {
+      config.output.uniqueName = 'jobSeeker';
+      config.output.chunkLoadingGlobal = 'webpackChunk_jobSeeker';
+      config.output.publicPath = 'auto';
+      config.output.globalObject = 'self';
+      config.optimization.runtimeChunk = false;
+
       config.plugins.push(
         new container.ModuleFederationPlugin({
           name: 'jobSeeker',
@@ -22,9 +36,9 @@ const nextConfig = {
             './ProfilePage': './src/exports/ProfilePage.ts',
           },
           shared: {
-            react: { singleton: true, strictVersion: false },
-            'react-dom': { singleton: true, strictVersion: false },
-            'styled-components': { singleton: true, strictVersion: false },
+            react: { singleton: true, requiredVersion: false },
+            'react-dom': { singleton: true, requiredVersion: false },
+            'styled-components': { singleton: true, requiredVersion: false },
           },
         })
       );
