@@ -23,9 +23,16 @@ export default function Navigation() {
 
         {isAuthenticated ? (
           <>
-            <Link href="/job-seeker/jobs" passHref legacyBehavior>
-              <NavLink>Browse Jobs</NavLink>
-            </Link>
+            {isJobSeeker && (
+              <Link href="/job-seeker/jobs" passHref legacyBehavior>
+                <NavLink>Browse Jobs</NavLink>
+              </Link>
+            )}
+            {isEmployer && (
+              <Link href="/employer/jobs" passHref legacyBehavior>
+                <NavLink>Browse Jobs</NavLink>
+              </Link>
+            )}
 
             {isJobSeeker && (
               <>

@@ -177,6 +177,7 @@ export class TestInfrastructure {
       DYNAMODB_ENDPOINT: process.env.DYNAMODB_ENDPOINT || 'http://localhost:4566',
       S3_ENDPOINT: process.env.S3_ENDPOINT || 'http://localhost:4566',
       S3_BUCKET: this.s3.getBucketName(),
+      PUBLIC_S3_BASE_URL: process.env.S3_ENDPOINT || 'http://localhost:4566',
       CORS_ORIGIN: process.env.CORS_ORIGIN || '*',
       NODE_ENV: 'test',
     } as EnvConfig;

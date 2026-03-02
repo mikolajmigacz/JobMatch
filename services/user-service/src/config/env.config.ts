@@ -9,9 +9,14 @@ export interface EnvConfig {
   JWT_SECRET: string;
   S3_ENDPOINT: string;
   S3_BUCKET: string;
+  PUBLIC_S3_BASE_URL: string;
 }
 
 export function loadEnvConfig(): EnvConfig {
+  const publicS3BaseUrl = process.env.PUBLIC_S3_BASE_URL;
+  if (!publicS3BaseUrl)
+    throw new Error('Missing required environment variable: PUBLIC_S3_BASE_URL');
+
   return {
     NODE_ENV: process.env.NODE_ENV || 'development',
     USER_SERVICE_PORT: parseInt(process.env.USER_SERVICE_PORT || '3002', 10),
@@ -23,5 +28,6 @@ export function loadEnvConfig(): EnvConfig {
     JWT_SECRET: process.env.JWT_SECRET || '',
     S3_ENDPOINT: process.env.S3_ENDPOINT || 'http://localhost:4566',
     S3_BUCKET: process.env.S3_BUCKET || 'jobmatch-bucket',
+    PUBLIC_S3_BASE_URL: publicS3BaseUrl,
   };
 }

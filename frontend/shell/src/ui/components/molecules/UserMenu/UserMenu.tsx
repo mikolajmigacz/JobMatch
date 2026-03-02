@@ -17,6 +17,7 @@ import {
 export default function UserMenu() {
   const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
+  const [imgError, setImgError] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -38,6 +39,13 @@ export default function UserMenu() {
     ? `${user.name[0]}${user.name.split(' ')[1]?.[0] || ''}`.toUpperCase()
     : 'U';
 
+  const logoUrl =
+    'companyLogoUrl' in user
+      ? ((user as { companyLogoUrl?: string | null }).companyLogoUrl ?? null)
+      : null;
+
+  const profileHref = user.role === 'employer' ? '/employer/profile' : '/job-seeker/profile';
+
   const handleLogout = () => {
     logout();
     setOpen(false);
@@ -46,7 +54,18 @@ export default function UserMenu() {
   return (
     <MenuContainer ref={menuRef}>
       <MenuButton onClick={() => setOpen(!open)}>
-        <Avatar>{initials}</Avatar>
+        <Avatar>
+          {logoUrl && !imgError ? (
+            <img
+              src={logoUrl}
+              alt={user.name || 'Company logo'}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            initials
+          )}
+        </Avatar>
         <span>{user.name || 'User'}</span>
       </MenuButton>
 
@@ -56,11 +75,8 @@ export default function UserMenu() {
           <Email>{user.email}</Email>
         </UserInfo>
 
-        <Link href="/job-seeker/profile" passHref legacyBehavior>
+        <Link href={profileHref} passHref legacyBehavior>
           <MenuItem>My Profile</MenuItem>
-        </Link>
-        <Link href="/settings" passHref legacyBehavior>
-          <MenuItem>Settings</MenuItem>
         </Link>
 
         <LogoutButton onClick={handleLogout}>Sign Out</LogoutButton>

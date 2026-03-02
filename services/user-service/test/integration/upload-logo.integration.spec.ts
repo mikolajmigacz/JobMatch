@@ -57,7 +57,7 @@ describe('Upload Logo Integration Tests', () => {
 
       expect(result).toBeDefined();
       expect(result?.companyLogoUrl).toBeTruthy();
-      expect(result?.companyLogoUrl).toContain('s3://');
+      expect(result?.companyLogoUrl).toMatch(/^https?:\/\//); // public HTTP URL
       expect(result?.companyLogoUrl).toContain('logos');
 
       const updatedUser = await repository.getById(userId);

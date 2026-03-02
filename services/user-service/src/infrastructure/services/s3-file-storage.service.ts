@@ -4,8 +4,10 @@ import { EnvConfig } from '@config/env.config';
 export class S3FileStorageService {
   private s3: S3Client;
   private bucket: string;
+  private config: EnvConfig;
 
   constructor(config: EnvConfig) {
+    this.config = config;
     this.s3 = new S3Client({
       region: config.AWS_REGION,
       endpoint: config.S3_ENDPOINT,
@@ -27,7 +29,7 @@ export class S3FileStorageService {
         ContentType: contentType,
       })
     );
-    return `s3://${this.bucket}/${key}`;
+    return `${this.config.PUBLIC_S3_BASE_URL}/${this.bucket}/${key}`;
   }
 
   async deleteFile(key: string): Promise<void> {

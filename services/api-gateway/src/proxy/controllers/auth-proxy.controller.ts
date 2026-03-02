@@ -1,4 +1,4 @@
-import { Controller, All, Req, Res, Inject } from '@nestjs/common';
+import { Controller, All, Req, Res, Inject, HttpException } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { Request, Response } from 'express';
 import { AuthServiceClient } from '@proxy/clients/auth-service.client';
@@ -16,15 +16,31 @@ export class AuthProxyController {
     const path = pathParam ? `/${Array.isArray(pathParam) ? pathParam.join('/') : pathParam}` : '';
     const finalPath = `/auth${path}`;
 
-    const response = await this.client.request({
-      method: req.method,
-      url: finalPath,
-      headers: this.filterHeaders(req.headers),
-      data: req.body,
-      params: req.query,
-    });
+    const contentType = ((req.headers['content-type'] as string) || '').toLowerCase();
+    const isMultipart = contentType.includes('multipart/form-data');
 
-    res.status(response.status).send(response.data);
+    try {
+      const response = await this.client.request({
+        method: req.method,
+        url: finalPath,
+        headers: this.filterHeaders(req.headers),
+        data: isMultipart ? req : req.body,
+        params: req.query,
+        maxBodyLength: Infinity,
+        maxContentLength: Infinity,
+      });
+
+      res.status(response.status).send(response.data);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        const body = error.getResponse() as Record<string, unknown>;
+        const upstream = body.message;
+        const payload = upstream && typeof upstream === 'object' ? upstream : body;
+        res.status(error.getStatus()).send(payload);
+      } else {
+        res.status(500).send({ message: 'Internal server error' });
+      }
+    }
   }
 
   private filterHeaders(

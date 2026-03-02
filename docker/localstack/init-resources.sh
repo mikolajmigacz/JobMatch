@@ -51,11 +51,17 @@ gsi_exists() {
 }
 
 get_schema_version() {
-  awslocal dynamodb get-item \
+  local version
+  version=$(awslocal dynamodb get-item \
     --table-name "$VERSION_TABLE" \
     --key "{\"id\":{\"S\":\"$VERSION_KEY\"}}" \
     --query 'Item.version.N' \
-    --output text 2>/dev/null || echo "0"
+    --output text 2>/dev/null) || true
+  if [ -z "$version" ] || [ "$version" = "None" ]; then
+    echo "0"
+  else
+    echo "$version"
+  fi
 }
 
 set_schema_version() {
@@ -79,9 +85,6 @@ ensure_version_table() {
   fi
 }
 
-echo "🔧 Creating DynamoDB tables..."
-
-awslocal dynamodb create-table \
 # ─────────────────────────────────────────────────────────────────────────────
 # MIGRATION 001: Initial schema
 #   Creates all core tables, SQS queues, and S3 bucket.
@@ -249,11 +252,55 @@ MIGRATIONS=(
   # "002:migration_002_add_notifications_table"
 )
 
+ensure_critical_resources() {
+  echo "🔧 Ensuring critical AWS resources exist..."
+
+  # S3 bucket — idempotent; already exists → || true swallows the error
+  awslocal s3 mb "s3://$S3_BUCKET" >/dev/null 2>&1 || true
+
+  awslocal s3api put-bucket-cors \
+    --bucket "$S3_BUCKET" \
+    --cors-configuration '{
+      "CORSRules": [{
+        "AllowedHeaders": ["*"],
+        "AllowedMethods": ["GET","PUT","POST","DELETE","HEAD"],
+        "AllowedOrigins": ["http://localhost:4000","http://localhost:4001","http://localhost:4002","http://localhost:3000"],
+        "ExposeHeaders": ["ETag"],
+        "MaxAgeSeconds": 3000
+      }]
+    }' >/dev/null 2>&1 || true
+
+  awslocal s3api put-bucket-policy \
+    --bucket "$S3_BUCKET" \
+    --policy "{
+      \"Version\": \"2012-10-17\",
+      \"Statement\": [
+        {
+          \"Sid\": \"AllowPublicRead\",
+          \"Effect\": \"Allow\",
+          \"Principal\": \"*\",
+          \"Action\": \"s3:GetObject\",
+          \"Resource\": \"arn:aws:s3:::${S3_BUCKET}/*\"
+        },
+        {
+          \"Sid\": \"AllowPublicList\",
+          \"Effect\": \"Allow\",
+          \"Principal\": \"*\",
+          \"Action\": \"s3:ListBucket\",
+          \"Resource\": \"arn:aws:s3:::${S3_BUCKET}\"
+        }
+      ]
+    }" >/dev/null 2>&1 || true
+
+  echo "  ✅ S3 bucket: $S3_BUCKET"
+}
+
 # ─── Runner ───────────────────────────────────────────────────────────────────
 echo "🚀 JobMatch — LocalStack schema migration runner"
 echo "   Region: $AWS_REGION | Tables prefix: '${TABLE_USERS%Users}'"
 
 ensure_version_table
+ensure_critical_resources
 
 current_version=$(get_schema_version)
 echo "   Current schema version: $current_version"

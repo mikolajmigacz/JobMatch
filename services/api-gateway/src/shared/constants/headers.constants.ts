@@ -1,4 +1,9 @@
-export const ALLOWED_HEADERS = ['authorization', 'content-type', 'accept'] as const;
+export const ALLOWED_HEADERS = [
+  'authorization',
+  'content-type',
+  'accept',
+  'content-length',
+] as const;
 
 export const CORS_ALLOWED_HEADERS = ['Content-Type', 'Authorization'] as const;
 

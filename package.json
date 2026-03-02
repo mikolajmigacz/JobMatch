@@ -15,6 +15,10 @@
   ],
   "scripts": {
     "dev": "pnpm -r --parallel dev",
+    "dev:frontend": "pnpm --filter shell --filter employer-module --filter job-seeker-module --parallel dev",
+    "kill:frontend": "powershell -Command \"4000,4001,4002 | ForEach-Object { $port = $_; $procId = (Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue).OwningProcess; if ($procId) { Stop-Process -Id $procId -Force; Write-Host 'Killed port' $port } }\"",
+    "restart:frontend": "pnpm kill:frontend && pnpm dev:frontend",
+    "dev:backend": "docker-compose -f docker-compose.dev.yml up -d",
     "build": "pnpm -r build",
     "test": "pnpm -r test",
     "test:watch": "pnpm -r test:watch",

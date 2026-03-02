@@ -30,7 +30,7 @@ export class AuthenticationService {
 
   async registerEmployer(
     request: EmployerRegister,
-    file: { buffer: Buffer; mimetype: string }
+    file?: { buffer: Buffer; mimetype: string }
   ): Promise<AuthResponse> {
     return this.registerEmployerUseCase.execute(request, file);
   }

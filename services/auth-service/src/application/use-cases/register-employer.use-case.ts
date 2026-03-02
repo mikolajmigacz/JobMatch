@@ -18,7 +18,7 @@ export class RegisterEmployerUseCase {
 
   async execute(
     request: EmployerRegister,
-    logoFile: { buffer: Buffer; mimetype: string }
+    logoFile?: { buffer: Buffer; mimetype: string }
   ): Promise<AuthResponse> {
     const existingUser = await this.userRepository.findByEmail(request.email);
     if (existingUser) {
@@ -35,14 +35,20 @@ export class RegisterEmployerUseCase {
       request.companyName
     );
 
-    const key = `logos/${request.email}/${logoFile.buffer.length}-${Date.now()}`;
-    const logoUrl = await this.fileStorageService.uploadFile(
-      process.env.S3_BUCKET as string,
-      key,
-      logoFile.buffer,
-      logoFile.mimetype
-    );
-    user = user.setCompanyLogoUrl(logoUrl);
+    if (logoFile) {
+      const ext =
+        logoFile.mimetype.split('/')[1] === 'jpeg'
+          ? 'jpg'
+          : (logoFile.mimetype.split('/')[1] ?? 'png');
+      const key = `logos/${user.userId.value}/${Date.now()}.${ext}`;
+      const logoUrl = await this.fileStorageService.uploadFile(
+        process.env.S3_BUCKET as string,
+        key,
+        logoFile.buffer,
+        logoFile.mimetype
+      );
+      user = user.setCompanyLogoUrl(logoUrl);
+    }
 
     await this.userRepository.save(user);
 

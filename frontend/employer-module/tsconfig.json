@@ -7,8 +7,23 @@
       "@jobmatch/shared": ["../../packages/shared/src"],
       "@jobmatch/shared/*": ["../../packages/shared/src/*"],
       "@/*": ["./src/*"]
-    }
+    },
+    "allowJs": true,
+    "jsx": "preserve",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
+  "include": ["src", ".next/types/**/*.ts"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/test",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
+  ]
 }

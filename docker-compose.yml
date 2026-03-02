@@ -1,6 +1,6 @@
 services:
   localstack:
-    image: localstack/localstack:2.3
+    image: localstack/localstack:3.8
     container_name: jobmatch-localstack
     ports:
       - '4566:4566'
@@ -10,7 +10,6 @@ services:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - LOCALSTACK_HOSTNAME=${LOCALSTACK_HOSTNAME:-localstack}
-      - DATA_DIR=/tmp/localstack
       - PERSISTENCE=1
       # Table names — mirror the values in .env so the migration script uses
       # the same names that the application services expect.
@@ -23,7 +22,7 @@ services:
       - SQS_EMAIL_DLQ_NAME=${SQS_EMAIL_DLQ_NAME:-email-queue-dlq}
       - S3_BUCKET=${S3_BUCKET:-jobmatch-bucket}
     volumes:
-      - localstack_data:/tmp/localstack
+      - localstack_data:/var/lib/localstack
       - /var/run/docker.sock:/var/run/docker.sock
       - ./docker/localstack/init-resources.sh:/etc/localstack/init/ready.d/init-resources.sh
     healthcheck:
@@ -32,12 +31,12 @@ services:
           'CMD',
           'bash',
           '-c',
-          'curl -s http://localhost:4566/_localstack/health | grep -q available || exit 1',
+          'curl -s http://localhost:4566/_localstack/health | grep -q running || exit 1',
         ]
       interval: 3s
       timeout: 5s
       retries: 10
-      start_period: 15s
+      start_period: 20s
     networks:
       - jobmatch-network
 
@@ -97,6 +96,7 @@ services:
       CORS_ORIGIN: ${CORS_ORIGIN}
       S3_ENDPOINT: ${S3_ENDPOINT}
       S3_BUCKET: ${S3_BUCKET}
+      PUBLIC_S3_BASE_URL: ${PUBLIC_S3_BASE_URL:-http://localhost:4566}
       DYNAMODB_ENDPOINT: ${DYNAMODB_ENDPOINT}
       DYNAMODB_TABLE_USERS: ${DYNAMODB_TABLE_USERS}
       AWS_REGION: ${AWS_REGION}
@@ -133,6 +133,7 @@ services:
       CORS_ORIGIN: ${CORS_ORIGIN}
       S3_ENDPOINT: ${S3_ENDPOINT}
       S3_BUCKET: ${S3_BUCKET}
+      PUBLIC_S3_BASE_URL: ${PUBLIC_S3_BASE_URL}
       DYNAMODB_ENDPOINT: ${DYNAMODB_ENDPOINT}
       DYNAMODB_TABLE_USERS: ${DYNAMODB_TABLE_USERS}
       AWS_REGION: ${AWS_REGION}
@@ -324,6 +325,30 @@ services:
       - jobmatch-network
     restart: unless-stopped
 
+  employer-frontend:
+    build:
+      context: .
+      dockerfile: frontend/employer-module/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${API_GATEWAY_URL}
+    container_name: jobmatch-employer-frontend
+    ports:
+      - '4002:4002'
+    environment:
+      NODE_ENV: ${NODE_ENV}
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:4002/']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - jobmatch-network
+    restart: unless-stopped
+
   shell-frontend:
     build:
       context: .
@@ -341,6 +366,8 @@ services:
       api-gateway:
         condition: service_healthy
       job-seeker-frontend:
+        condition: service_healthy
+      employer-frontend:
         condition: service_healthy
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:4000/']
