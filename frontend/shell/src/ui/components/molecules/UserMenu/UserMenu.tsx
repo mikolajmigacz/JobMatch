@@ -17,7 +17,6 @@ import {
 export default function UserMenu() {
   const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
-  const [imgError, setImgError] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -35,14 +34,16 @@ export default function UserMenu() {
 
   if (!user) return null;
 
-  const initials = user.name
-    ? `${user.name[0]}${user.name.split(' ')[1]?.[0] || ''}`.toUpperCase()
+  const initials = user.firstName
+    ? `${user.firstName[0]}${user.lastName?.[0] || ''}`.toUpperCase()
     : 'U';
 
-  const logoUrl =
-    'companyLogoUrl' in user
-      ? ((user as { companyLogoUrl?: string | null }).companyLogoUrl ?? null)
-      : null;
+  const rawLogoUrl =
+    'companyLogoUrl' in user ? (user as { companyLogoUrl?: string | null }).companyLogoUrl : null;
+  const s3BaseUrl = process.env.NEXT_PUBLIC_S3_BASE_URL ?? '';
+  const logoUrl = rawLogoUrl?.startsWith('s3://')
+    ? rawLogoUrl.replace(/^s3:\/\//, `${s3BaseUrl}/`)
+    : rawLogoUrl;
 
   const profileHref = user.role === 'employer' ? '/employer/profile' : '/job-seeker/profile';
 
@@ -55,23 +56,24 @@ export default function UserMenu() {
     <MenuContainer ref={menuRef}>
       <MenuButton onClick={() => setOpen(!open)}>
         <Avatar>
-          {logoUrl && !imgError ? (
+          {logoUrl ? (
             <img
               src={logoUrl}
-              alt={user.name || 'Company logo'}
+              alt={
+                user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : 'Company logo'
+              }
               style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
-              onError={() => setImgError(true)}
             />
           ) : (
             initials
           )}
         </Avatar>
-        <span>{user.name || 'User'}</span>
+        <span>{user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : 'User'}</span>
       </MenuButton>
 
       <DropdownMenu $open={open}>
         <UserInfo>
-          <div>{user.name}</div>
+          <div>{user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : ''}</div>
           <Email>{user.email}</Email>
         </UserInfo>
 

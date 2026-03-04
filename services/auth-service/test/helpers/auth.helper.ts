@@ -4,7 +4,8 @@ export interface EmployerRegisterPayload {
   email: string;
   password: string;
   role: 'employer';
-  name: string;
+  firstName: string;
+  lastName: string;
   companyName: string;
 }
 
@@ -12,7 +13,8 @@ export interface JobSeekerRegisterPayload {
   email: string;
   password: string;
   role: 'job_seeker';
-  name: string;
+  firstName: string;
+  lastName: string;
 }
 
 export type RegisterPayload = EmployerRegisterPayload | JobSeekerRegisterPayload;
@@ -30,7 +32,8 @@ export interface AuthResponse {
       userId: string;
       email: string;
       role: string;
-      name: string;
+      firstName: string;
+      lastName: string;
       companyName?: string;
       companyLogoUrl?: string;
     };
@@ -50,7 +53,8 @@ export const authTestData = {
     email: `employer-${Date.now()}@test.com`,
     password: 'SecurePass123!@',
     role: 'employer',
-    name: 'Test Employer',
+    firstName: 'Test',
+    lastName: 'Employer',
     companyName: 'Test Company Inc',
     ...overrides,
   }),
@@ -64,7 +68,8 @@ export const authTestData = {
     email: `seeker-${Date.now()}@test.com`,
     password: 'SecurePass123!@',
     role: 'job_seeker',
-    name: 'Test Job Seeker',
+    firstName: 'Test',
+    lastName: 'Job Seeker',
     ...overrides,
   }),
 
@@ -86,7 +91,8 @@ export const authTestData = {
       password: 'weak',
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       role: 'invalid_role' as any,
-      name: 'Test',
+      firstName: 'Test',
+      lastName: 'User',
       ...overrides,
     } as RegisterPayload;
   },
@@ -113,8 +119,11 @@ export class AuthApiHelper {
     if (payload.role !== undefined) {
       request = request.field('role', payload.role);
     }
-    if (payload.name !== undefined) {
-      request = request.field('name', payload.name);
+    if (payload.firstName !== undefined) {
+      request = request.field('firstName', payload.firstName);
+    }
+    if (payload.lastName !== undefined) {
+      request = request.field('lastName', payload.lastName);
     }
     if (payload.companyName !== undefined) {
       request = request.field('companyName', payload.companyName);
@@ -138,7 +147,8 @@ export class AuthApiHelper {
       .field('email', payload.email)
       .field('password', payload.password)
       .field('role', payload.role)
-      .field('name', payload.name);
+      .field('firstName', payload.firstName)
+      .field('lastName', payload.lastName);
   }
 
   /**
@@ -155,7 +165,8 @@ export class AuthApiHelper {
       .field('email', payload.email)
       .field('password', payload.password)
       .field('role', payload.role)
-      .field('name', payload.name)
+      .field('firstName', payload.firstName)
+      .field('lastName', payload.lastName)
       .attach('companyLogo', logoPath);
   }
 
@@ -219,7 +230,8 @@ export class AuthAssertions {
     expect(response.body.user).toHaveProperty('userId');
     expect(response.body.user).toHaveProperty('email');
     expect(response.body.user).toHaveProperty('role');
-    expect(response.body.user).toHaveProperty('name');
+    expect(response.body.user).toHaveProperty('firstName');
+    expect(response.body.user).toHaveProperty('lastName');
   }
 
   /**

@@ -22,17 +22,31 @@ function ensureInit() {
   if (!employerUrl)
     throw new Error('Missing required environment variable: NEXT_PUBLIC_EMPLOYER_URL');
 
+  const buildId = process.env.NEXT_PUBLIC_BUILD_ID ?? String(Date.now());
+  const bust = `?v=${buildId}`;
   init({
     name: 'shell',
     remotes: [
-      { name: 'jobSeeker', entry: `${jobSeekerUrl}${REMOTE_ENTRY_PATH}` },
-      { name: 'employer', entry: `${employerUrl}${REMOTE_ENTRY_PATH}` },
+      { name: 'jobSeeker', entry: `${jobSeekerUrl}${REMOTE_ENTRY_PATH}${bust}` },
+      { name: 'employer', entry: `${employerUrl}${REMOTE_ENTRY_PATH}${bust}` },
     ],
     shared: {
-      react: { version: React.version, lib: () => React },
-      'react-dom': { version: React.version, lib: () => ReactDOM },
-      'styled-components': { version: '6', lib: () => StyledComponents },
-      'next/navigation': { version: '14', lib: () => NextNavigation },
+      react: {
+        version: React.version,
+        lib: () => React,
+      },
+      'react-dom': {
+        version: (ReactDOM as { version?: string }).version ?? React.version,
+        lib: () => ReactDOM,
+      },
+      'styled-components': {
+        version: (StyledComponents as { version?: string }).version ?? '6.0.0',
+        lib: () => StyledComponents,
+      },
+      'next/navigation': {
+        version: '14.2.24',
+        lib: () => NextNavigation,
+      },
     },
   });
 }
@@ -42,11 +56,8 @@ export function remote<P extends object = Record<string, unknown>>(path: string)
     () => {
       ensureInit();
       return loadRemote<{ default: ComponentType<P> }>(path).then((m) => {
-        if (!m) throw new Error(`Remote module not found: ${path}`);
-        const Component = (m as { default?: ComponentType<P> }).default;
-        if (!Component || typeof Component !== 'function')
-          throw new Error(`Remote module "${path}" has no valid default export`);
-        return { default: Component };
+        if (!m) throw new Error(`Failed to load remote module: ${path}`);
+        return m;
       });
     },
     { ssr: false }

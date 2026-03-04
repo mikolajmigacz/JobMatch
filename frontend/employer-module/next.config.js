@@ -13,6 +13,14 @@ const nextConfig = {
         source: '/_next/:path*',
         headers: [{ key: 'Access-Control-Allow-Origin', value: '*' }],
       },
+      {
+        // remoteEntry.js must never be cached — its chunk references change on every build
+        source: '/_next/static/chunks/remoteEntry.js',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+        ],
+      },
     ];
   },
   webpack(config, { isServer }) {

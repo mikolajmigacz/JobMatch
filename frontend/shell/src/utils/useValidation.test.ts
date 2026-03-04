@@ -25,7 +25,8 @@ describe('useValidation', () => {
     const valid = result.current.validateJobSeekerRegister({
       email: 'test@example.com',
       password: 'TestPassword123!',
-      name: 'Test User',
+      firstName: 'Test',
+      lastName: 'User',
       role: 'job_seeker',
     });
     expect(valid.success).toBe(true);
@@ -36,7 +37,8 @@ describe('useValidation', () => {
     const valid = result.current.validateJobSeekerRegister({
       email: 'test@example.com',
       password: 'TestPassword123!',
-      name: 'A',
+      firstName: 'A',
+      lastName: 'B',
       role: 'job_seeker',
     });
     expect(valid.success).toBe(false);
@@ -47,7 +49,8 @@ describe('useValidation', () => {
     const valid = result.current.validateEmployerRegister({
       email: 'employer@example.com',
       password: 'TestPassword123!',
-      name: 'Employer',
+      firstName: 'Employer',
+      lastName: 'User',
       role: 'employer',
       companyName: 'Acme Corp',
     });
@@ -59,7 +62,8 @@ describe('useValidation', () => {
     const valid = result.current.validateEmployerRegister({
       email: 'employer@example.com',
       password: 'TestPassword123!',
-      name: 'Employer',
+      firstName: 'Employer',
+      lastName: 'User',
       role: 'employer',
     } as never);
     expect(valid.success).toBe(false);

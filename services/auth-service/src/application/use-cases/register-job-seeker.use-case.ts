@@ -22,7 +22,13 @@ export class RegisterJobSeekerUseCase {
 
     const hashedPassword = await this.passwordService.hash(request.password);
 
-    const user = User.create(request.email, hashedPassword, UserRole.JOB_SEEKER, request.name);
+    const user = User.create(
+      request.email,
+      hashedPassword,
+      UserRole.JOB_SEEKER,
+      request.firstName,
+      request.lastName
+    );
 
     await this.userRepository.save(user);
 
@@ -45,7 +51,8 @@ export class RegisterJobSeekerUseCase {
       userId: user.userId.value,
       email: user.email,
       role: user.role,
-      name: user.name,
+      firstName: user.firstName,
+      lastName: user.lastName,
       createdAt: user.createdAt.toISOString(),
       updatedAt: user.updatedAt.toISOString(),
     };

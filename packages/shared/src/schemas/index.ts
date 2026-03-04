@@ -29,10 +29,14 @@ export const UserSchema = z.object({
   email: EmailSchema,
   password: PasswordSchema,
   role: UserRoleSchema,
-  name: z
+  firstName: z
     .string()
-    .min(2, 'Name must be at least 2 characters')
-    .max(100, 'Name must be at most 100 characters'),
+    .min(2, 'First name must be at least 2 characters')
+    .max(100, 'First name must be at most 100 characters'),
+  lastName: z
+    .string()
+    .min(2, 'Last name must be at least 2 characters')
+    .max(100, 'Last name must be at most 100 characters'),
   companyName: z
     .string()
     .min(2, 'Company name must be at least 2 characters')
@@ -51,14 +55,16 @@ export const JobSeekerRegisterSchema = z.object({
   email: EmailSchema,
   password: PasswordSchema,
   role: z.literal(UserRoleSchema.Enum.job_seeker),
-  name: z.string().min(2).max(100),
+  firstName: z.string().min(2).max(100),
+  lastName: z.string().min(2).max(100),
 });
 
 export const EmployerRegisterSchema = z.object({
   email: EmailSchema,
   password: PasswordSchema,
   role: z.literal(UserRoleSchema.Enum.employer),
-  name: z.string().min(2).max(100),
+  firstName: z.string().min(2).max(100),
+  lastName: z.string().min(2).max(100),
   companyName: z.string().min(2).max(200),
 });
 
@@ -74,7 +80,8 @@ export const LoginDtoSchema = z.object({
 
 export const UpdateUserDtoSchema = z
   .object({
-    name: z.string().min(2).max(100).optional(),
+    firstName: z.string().min(2).max(100).optional(),
+    lastName: z.string().min(2).max(100).optional(),
     companyName: z.string().min(2).max(200).optional(),
     companyLogoUrl: z.string().url().nullable().optional(),
   })
@@ -88,7 +95,8 @@ export const GetProfileRequestSchema = z.object({
 
 export const UpdateProfileRequestSchema = z.object({
   userId: z.string().uuid('Invalid user ID format'),
-  name: z.string().min(2).max(100).optional(),
+  firstName: z.string().min(2).max(100).optional(),
+  lastName: z.string().min(2).max(100).optional(),
   companyName: z.string().min(2).max(200).optional(),
   companyLogoUrl: z.string().url().nullable().optional(),
 });

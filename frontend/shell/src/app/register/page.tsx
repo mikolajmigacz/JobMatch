@@ -52,7 +52,8 @@ export default function RegisterPage() {
     defaultValues: {
       email: '',
       password: '',
-      name: '',
+      firstName: '',
+      lastName: '',
       role: 'job_seeker',
       companyName: '',
     },
@@ -67,11 +68,18 @@ export default function RegisterPage() {
     try {
       const payload: RegisterRequest =
         data.role === 'job_seeker'
-          ? { email: data.email, password: data.password, name: data.name, role: 'job_seeker' }
+          ? {
+              email: data.email,
+              password: data.password,
+              firstName: data.firstName,
+              lastName: data.lastName,
+              role: 'job_seeker',
+            }
           : {
               email: data.email,
               password: data.password,
-              name: data.name,
+              firstName: data.firstName,
+              lastName: data.lastName,
               role: 'employer',
               companyName: data.companyName!,
             };
@@ -107,12 +115,21 @@ export default function RegisterPage() {
           </div>
           <div>
             <Input
-              {...registerField('name')}
+              {...registerField('firstName')}
               type="text"
-              placeholder="Full Name"
-              autoComplete="name"
+              placeholder="First Name"
+              autoComplete="given-name"
             />
-            {errors.name && <ErrorText>{errors.name.message}</ErrorText>}
+            {errors.firstName && <ErrorText>{errors.firstName.message}</ErrorText>}
+          </div>
+          <div>
+            <Input
+              {...registerField('lastName')}
+              type="text"
+              placeholder="Last Name"
+              autoComplete="family-name"
+            />
+            {errors.lastName && <ErrorText>{errors.lastName.message}</ErrorText>}
           </div>
 
           <div>

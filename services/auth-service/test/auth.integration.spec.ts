@@ -74,7 +74,8 @@ describe('Auth Integration Tests', () => {
         const response = await authHelper.registerEmployer({
           email: payload.email,
           password: payload.password,
-          name: payload.name,
+          firstName: payload.firstName,
+          lastName: payload.lastName,
           companyName: payload.companyName,
         });
 
@@ -82,7 +83,8 @@ describe('Auth Integration Tests', () => {
         expect(response.body.user).toMatchObject({
           email: payload.email,
           role: 'employer',
-          name: payload.name,
+          firstName: payload.firstName,
+          lastName: payload.lastName,
           companyName: payload.companyName,
         });
         AuthAssertions.assertEmployerHasLogo(response.body.user);
@@ -96,7 +98,8 @@ describe('Auth Integration Tests', () => {
         const response = await authHelper.registerEmployer({
           email: payload.email,
           password: payload.password,
-          name: payload.name,
+          firstName: payload.firstName,
+          lastName: payload.lastName,
           companyName: payload.companyName,
         });
 
@@ -112,12 +115,14 @@ describe('Auth Integration Tests', () => {
 
       it('should persist employer data in database', async () => {
         const email = `employer-persist-${Date.now()}@test.com`;
-        const name = 'Persistent Employer';
+        const firstName = 'Persistent';
+        const lastName = 'Employer';
         const companyName = 'Persistent Company';
 
         const response = await authHelper.registerEmployer({
           email,
-          name,
+          firstName,
+          lastName,
           companyName,
         });
 
@@ -126,7 +131,8 @@ describe('Auth Integration Tests', () => {
         const user = await databaseHelper.findUserByEmail(email);
         expect(user).toBeTruthy();
         expect(user?.email).toBe(email);
-        expect(user?.name).toBe(name);
+        expect(user?.firstName).toBe(firstName);
+        expect(user?.lastName).toBe(lastName);
       });
     });
 
@@ -181,7 +187,8 @@ describe('Auth Integration Tests', () => {
           .post('/auth/register/employer')
           .field('email', payload.email)
           .field('password', payload.password)
-          .field('name', payload.name)
+          .field('firstName', payload.firstName)
+          .field('lastName', payload.lastName)
           .field('companyName', payload.companyName);
         // Intentionally not attaching logo
 
@@ -198,14 +205,16 @@ describe('Auth Integration Tests', () => {
         const response = await authHelper.registerJobSeeker({
           email: payload.email,
           password: payload.password,
-          name: payload.name,
+          firstName: payload.firstName,
+          lastName: payload.lastName,
         });
 
         AuthAssertions.assertSuccessfulRegistration(response);
         expect(response.body.user).toMatchObject({
           email: payload.email,
           role: 'job_seeker',
-          name: payload.name,
+          firstName: payload.firstName,
+          lastName: payload.lastName,
         });
         AuthAssertions.assertJobSeekerNoLogo(response.body.user);
 
@@ -218,7 +227,8 @@ describe('Auth Integration Tests', () => {
         const response = await authHelper.registerJobSeeker({
           email: payload.email,
           password: payload.password,
-          name: payload.name,
+          firstName: payload.firstName,
+          lastName: payload.lastName,
         });
 
         AuthAssertions.assertSuccessfulRegistration(response);
@@ -233,11 +243,13 @@ describe('Auth Integration Tests', () => {
 
       it('should persist job seeker data in database', async () => {
         const email = `seeker-persist-${Date.now()}@test.com`;
-        const name = 'Persistent Seeker';
+        const firstName = 'Persistent';
+        const lastName = 'Seeker';
 
         const response = await authHelper.registerJobSeeker({
           email,
-          name,
+          firstName,
+          lastName,
         });
 
         expect(response.status).toBe(201);
@@ -245,7 +257,8 @@ describe('Auth Integration Tests', () => {
         const user = await databaseHelper.findUserByEmail(email);
         expect(user).toBeTruthy();
         expect(user?.email).toBe(email);
-        expect(user?.name).toBe(name);
+        expect(user?.firstName).toBe(firstName);
+        expect(user?.lastName).toBe(lastName);
       });
 
       it('should generate unique token for each registration', async () => {
@@ -488,11 +501,13 @@ describe('Auth Integration Tests', () => {
   describe('Data Persistence', () => {
     it('should persist employer data across requests', async () => {
       const email = `persist-employer-${Date.now()}@test.com`;
-      const name = 'Persistent Employer';
+      const firstName = 'Persistent';
+      const lastName = 'Employer';
 
       const registerResponse = await authHelper.registerEmployer({
         email,
-        name,
+        firstName,
+        lastName,
       });
       expect(registerResponse.status).toBe(201);
 
@@ -502,16 +517,19 @@ describe('Auth Integration Tests', () => {
 
       const loginResponse = await authHelper.login(email);
       expect(loginResponse.status).toBe(200);
-      expect(loginResponse.body.user.name).toBe(name);
+      expect(loginResponse.body.user.firstName).toBe(firstName);
+      expect(loginResponse.body.user.lastName).toBe(lastName);
     });
 
     it('should persist job seeker data across requests', async () => {
       const email = `persist-seeker-${Date.now()}@test.com`;
-      const name = 'Persistent Job Seeker';
+      const firstName = 'Persistent';
+      const lastName = 'Job Seeker';
 
       const registerResponse = await authHelper.registerJobSeeker({
         email,
-        name,
+        firstName,
+        lastName,
       });
       expect(registerResponse.status).toBe(201);
 
@@ -521,7 +539,8 @@ describe('Auth Integration Tests', () => {
 
       const loginResponse = await authHelper.login(email);
       expect(loginResponse.status).toBe(200);
-      expect(loginResponse.body.user.name).toBe(name);
+      expect(loginResponse.body.user.firstName).toBe(firstName);
+      expect(loginResponse.body.user.lastName).toBe(lastName);
     });
 
     it('should maintain separate profiles for employer and job seeker', async () => {

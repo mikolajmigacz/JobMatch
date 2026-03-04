@@ -7,8 +7,12 @@ export class UpdateProfileUseCase {
   async execute(request: UpdateProfileRequest): Promise<UpdateProfileResponse> {
     const updates: Record<string, unknown> = {};
 
-    if (request.name !== undefined) {
-      updates.name = request.name;
+    if (request.firstName !== undefined) {
+      updates.firstName = request.firstName;
+    }
+
+    if (request.lastName !== undefined) {
+      updates.lastName = request.lastName;
     }
 
     if (request.companyName !== undefined) {

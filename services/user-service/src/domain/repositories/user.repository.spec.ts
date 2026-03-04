@@ -21,7 +21,8 @@ describe('UserRepository', () => {
         email: 'test@example.com',
         password: 'hashedPassword',
         role: 'job_seeker',
-        name: 'Test User',
+        firstName: 'Test',
+        lastName: 'User',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -34,7 +35,8 @@ describe('UserRepository', () => {
         userId: user.userId,
         email: user.email,
         role: user.role,
-        name: user.name,
+        firstName: user.firstName,
+        lastName: user.lastName,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       });
@@ -69,7 +71,8 @@ describe('UserRepository', () => {
         email: 'test@example.com',
         password: 'hashed',
         role: 'employer',
-        name: 'Test',
+        firstName: 'Test',
+        lastName: 'User',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -97,7 +100,8 @@ describe('UserRepository', () => {
         email: 'test@example.com',
         password: 'hashed',
         role: 'employer',
-        name: 'Test',
+        firstName: 'Test',
+        lastName: 'User',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };

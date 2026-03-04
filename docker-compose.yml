@@ -1,6 +1,6 @@
 services:
   localstack:
-    image: localstack/localstack:3.8
+    image: localstack/localstack:2.3
     container_name: jobmatch-localstack
     ports:
       - '4566:4566'
@@ -31,12 +31,12 @@ services:
           'CMD',
           'bash',
           '-c',
-          'curl -s http://localhost:4566/_localstack/health | grep -q running || exit 1',
+          'curl -s http://localhost:4566/_localstack/health | grep -q available || exit 1',
         ]
       interval: 3s
       timeout: 5s
       retries: 10
-      start_period: 20s
+      start_period: 15s
     networks:
       - jobmatch-network
 
@@ -133,7 +133,6 @@ services:
       CORS_ORIGIN: ${CORS_ORIGIN}
       S3_ENDPOINT: ${S3_ENDPOINT}
       S3_BUCKET: ${S3_BUCKET}
-      PUBLIC_S3_BASE_URL: ${PUBLIC_S3_BASE_URL}
       DYNAMODB_ENDPOINT: ${DYNAMODB_ENDPOINT}
       DYNAMODB_TABLE_USERS: ${DYNAMODB_TABLE_USERS}
       AWS_REGION: ${AWS_REGION}
@@ -357,6 +356,8 @@ services:
         NEXT_PUBLIC_JOB_SEEKER_URL: ${FRONTEND_JOB_SEEKER_URL}
         NEXT_PUBLIC_EMPLOYER_URL: ${FRONTEND_EMPLOYER_URL}
         NEXT_PUBLIC_API_URL: ${API_GATEWAY_URL}
+        NEXT_PUBLIC_S3_BASE_URL: ${PUBLIC_S3_BASE_URL}
+        BUILD_ID: ${BUILD_ID:-dev}
     container_name: jobmatch-shell-frontend
     ports:
       - '4000:4000'

@@ -10,7 +10,7 @@ describe('Apply to Job Integration Tests', () => {
     await testInfra.initialize();
     const documentClient = testInfra.getDatabase().getDocumentClient();
     repository = new ApplicationRepository(documentClient, 'Applications');
-  });
+  }, 90000);
 
   afterAll(async () => {
     await testInfra.cleanup();

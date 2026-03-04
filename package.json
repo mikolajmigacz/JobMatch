@@ -27,6 +27,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "clean": "pnpm -r clean && rm -rf node_modules",
+    "seed": "node scripts/seed.mjs",
     "type-check": "pnpm -r type-check",
     "setup:dev": "pnpm build",
     "docker:up": "docker-compose up -d",

@@ -11,7 +11,7 @@ describe('User Service Integration Tests - DynamoDB', () => {
     await testInfra.initialize();
     const documentClient = testInfra.getDatabase().getDocumentClient();
     repository = new UserRepository(documentClient);
-  });
+  }, 90000);
 
   afterAll(async () => {
     await testInfra.cleanup();
@@ -25,7 +25,8 @@ describe('User Service Integration Tests - DynamoDB', () => {
         email: 'create-test@example.com',
         password: 'hashedPassword123',
         role: 'job_seeker',
-        name: 'John Doe',
+        firstName: 'John',
+        lastName: 'Doe',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -35,7 +36,8 @@ describe('User Service Integration Tests - DynamoDB', () => {
       expect(created).toMatchObject({
         userId,
         email: 'create-test@example.com',
-        name: 'John Doe',
+        firstName: 'John',
+        lastName: 'Doe',
         role: 'job_seeker',
       });
 
@@ -52,7 +54,8 @@ describe('User Service Integration Tests - DynamoDB', () => {
         email,
         password: 'hashed',
         role: 'employer',
-        name: 'Jane Smith',
+        firstName: 'Jane',
+        lastName: 'Smith',
         companyName: 'Tech Corp',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -64,7 +67,8 @@ describe('User Service Integration Tests - DynamoDB', () => {
       expect(retrieved).toMatchObject({
         userId,
         email,
-        name: 'Jane Smith',
+        firstName: 'Jane',
+        lastName: 'Smith',
         companyName: 'Tech Corp',
         role: 'employer',
       });
@@ -77,7 +81,8 @@ describe('User Service Integration Tests - DynamoDB', () => {
         email: `update-test-${Date.now()}@example.com`,
         password: 'hashed',
         role: 'employer',
-        name: 'Original Name',
+        firstName: 'Original',
+        lastName: 'Name',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -86,19 +91,22 @@ describe('User Service Integration Tests - DynamoDB', () => {
 
       // Update user
       const updated = await repository.update(userId, {
-        name: 'Updated Name',
+        firstName: 'Updated',
+        lastName: 'Name',
         companyName: 'New Company',
       });
 
       expect(updated).toMatchObject({
         userId,
-        name: 'Updated Name',
+        firstName: 'Updated',
+        lastName: 'Name',
         companyName: 'New Company',
       });
 
       // Verify update persisted
       const retrieved = await repository.getById(userId);
-      expect(retrieved?.name).toBe('Updated Name');
+      expect(retrieved?.firstName).toBe('Updated');
+      expect(retrieved?.lastName).toBe('Name');
       expect(retrieved?.companyName).toBe('New Company');
     });
 
@@ -109,7 +117,8 @@ describe('User Service Integration Tests - DynamoDB', () => {
         email: `exists-test-${Date.now()}@example.com`,
         password: 'hashed',
         role: 'job_seeker',
-        name: 'Test User',
+        firstName: 'Test',
+        lastName: 'User',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -130,7 +139,8 @@ describe('User Service Integration Tests - DynamoDB', () => {
         email,
         password: 'hashed',
         role: 'employer',
-        name: 'Test',
+        firstName: 'Test',
+        lastName: 'User',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -151,7 +161,8 @@ describe('User Service Integration Tests - DynamoDB', () => {
         email: `delete-test-${Date.now()}@example.com`,
         password: 'hashed',
         role: 'job_seeker',
-        name: 'To Delete',
+        firstName: 'To',
+        lastName: 'Delete',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -179,7 +190,8 @@ describe('User Service Integration Tests - DynamoDB', () => {
         email: `get-profile-${Date.now()}@example.com`,
         password: 'hashed',
         role: 'job_seeker',
-        name: 'Profile User',
+        firstName: 'Profile',
+        lastName: 'User',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -191,7 +203,8 @@ describe('User Service Integration Tests - DynamoDB', () => {
 
       expect(profile).toMatchObject({
         userId,
-        name: 'Profile User',
+        firstName: 'Profile',
+        lastName: 'User',
         role: 'job_seeker',
       });
     });
@@ -203,7 +216,8 @@ describe('User Service Integration Tests - DynamoDB', () => {
         email: `update-profile-${Date.now()}@example.com`,
         password: 'hashed',
         role: 'employer',
-        name: 'Before Update',
+        firstName: 'Before',
+        lastName: 'Update',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -213,18 +227,21 @@ describe('User Service Integration Tests - DynamoDB', () => {
 
       const updated = await updateProfileUseCase.execute({
         userId,
-        name: 'After Update',
+        firstName: 'After',
+        lastName: 'Update',
         companyName: 'Updated Company',
       });
 
       expect(updated).toMatchObject({
-        name: 'After Update',
+        firstName: 'After',
+        lastName: 'Update',
         companyName: 'Updated Company',
       });
 
       // Verify persisted
       const retrieved = await repository.getById(userId);
-      expect(retrieved?.name).toBe('After Update');
+      expect(retrieved?.firstName).toBe('After');
+      expect(retrieved?.lastName).toBe('Update');
       expect(retrieved?.companyName).toBe('Updated Company');
     });
   });

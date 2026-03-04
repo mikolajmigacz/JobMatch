@@ -5,7 +5,8 @@ export interface UserEntityItem {
   email: string;
   password: string;
   role: UserRole;
-  name: string;
+  firstName: string;
+  lastName: string;
   companyName?: string;
   companyLogoUrl?: string;
   createdAt: string;
@@ -17,7 +18,8 @@ export function toPublicUser(item: UserEntityItem): PublicUser {
     userId: item.userId,
     email: item.email,
     role: item.role,
-    name: item.name,
+    firstName: item.firstName,
+    lastName: item.lastName,
     companyName: item.companyName,
     companyLogoUrl: item.companyLogoUrl,
     createdAt: item.createdAt,

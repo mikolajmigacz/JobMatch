@@ -39,7 +39,8 @@ describe('RegisterJobSeekerUseCase', () => {
         email: 'jobseeker@test.com',
         password: 'SecurePass123!@',
         role: 'job_seeker' as const,
-        name: 'John Doe',
+        firstName: 'John',
+        lastName: 'Doe',
       };
 
       userRepository.findByEmail.mockResolvedValue(null);
@@ -58,7 +59,8 @@ describe('RegisterJobSeekerUseCase', () => {
           token: 'jwt-token',
           user: expect.objectContaining({
             email: request.email,
-            name: request.name,
+            firstName: request.firstName,
+            lastName: request.lastName,
             role: UserRole.JOB_SEEKER,
           }),
         })
@@ -70,10 +72,17 @@ describe('RegisterJobSeekerUseCase', () => {
         email: 'existing@test.com',
         password: 'SecurePass123!@',
         role: 'job_seeker' as const,
-        name: 'John Doe',
+        firstName: 'John',
+        lastName: 'Doe',
       };
 
-      const existingUser = User.create(request.email, 'hashed', UserRole.JOB_SEEKER, request.name);
+      const existingUser = User.create(
+        request.email,
+        'hashed',
+        UserRole.JOB_SEEKER,
+        request.firstName,
+        request.lastName
+      );
       userRepository.findByEmail.mockResolvedValue(existingUser);
 
       await expect(useCase.execute(request)).rejects.toThrow(UserAlreadyExistsException);
@@ -84,7 +93,8 @@ describe('RegisterJobSeekerUseCase', () => {
         email: 'jobseeker@test.com',
         password: 'SecurePass123!@',
         role: 'job_seeker' as const,
-        name: 'John Doe',
+        firstName: 'John',
+        lastName: 'Doe',
       };
 
       userRepository.findByEmail.mockResolvedValue(null);
@@ -101,7 +111,8 @@ describe('RegisterJobSeekerUseCase', () => {
         email: 'jobseeker@test.com',
         password: 'SecurePass123!@',
         role: 'job_seeker' as const,
-        name: 'John Doe',
+        firstName: 'John',
+        lastName: 'Doe',
       };
 
       userRepository.findByEmail.mockResolvedValue(null);

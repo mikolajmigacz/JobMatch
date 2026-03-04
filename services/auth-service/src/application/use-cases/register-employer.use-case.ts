@@ -31,7 +31,8 @@ export class RegisterEmployerUseCase {
       request.email,
       hashedPassword,
       UserRole.EMPLOYER,
-      request.name,
+      request.firstName,
+      request.lastName,
       request.companyName
     );
 
@@ -71,7 +72,8 @@ export class RegisterEmployerUseCase {
       userId: user.userId.value,
       email: user.email,
       role: user.role,
-      name: user.name,
+      firstName: user.firstName,
+      lastName: user.lastName,
       createdAt: user.createdAt.toISOString(),
       updatedAt: user.updatedAt.toISOString(),
     };

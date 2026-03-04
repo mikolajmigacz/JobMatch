@@ -50,7 +50,8 @@ describe('RegisterEmployerUseCase', () => {
         email: 'employer@test.com',
         password: 'SecurePass123!@',
         role: 'employer' as const,
-        name: 'ACME Corp',
+        firstName: 'ACME',
+        lastName: 'Corp',
         companyName: 'ACME Corporation',
       };
 
@@ -77,7 +78,8 @@ describe('RegisterEmployerUseCase', () => {
           token: 'jwt-token',
           user: expect.objectContaining({
             email: request.email,
-            name: request.name,
+            firstName: request.firstName,
+            lastName: request.lastName,
             role: UserRole.EMPLOYER,
             companyName: request.companyName,
             companyLogoUrl: 'https://s3.com/logo.png',
@@ -91,7 +93,8 @@ describe('RegisterEmployerUseCase', () => {
         email: 'existing@test.com',
         password: 'SecurePass123!@',
         role: 'employer' as const,
-        name: 'ACME Corp',
+        firstName: 'ACME',
+        lastName: 'Corp',
         companyName: 'ACME Corporation',
       };
 
@@ -104,7 +107,8 @@ describe('RegisterEmployerUseCase', () => {
         request.email,
         'hashed',
         UserRole.EMPLOYER,
-        request.name,
+        request.firstName,
+        request.lastName,
         request.companyName
       );
       userRepository.findByEmail.mockResolvedValue(existingUser);
@@ -117,7 +121,8 @@ describe('RegisterEmployerUseCase', () => {
         email: 'employer@test.com',
         password: 'SecurePass123!@',
         role: 'employer' as const,
-        name: 'ACME Corp',
+        firstName: 'ACME',
+        lastName: 'Corp',
         companyName: 'ACME Corporation',
       };
 
@@ -135,7 +140,7 @@ describe('RegisterEmployerUseCase', () => {
 
       expect(fileStorageService.uploadFile).toHaveBeenCalledWith(
         process.env.S3_BUCKET,
-        expect.stringContaining(`logos/${request.email}/`),
+        expect.stringMatching(/^logos\/[a-f0-9-]+\/\d+\.png$/),
         logoFile.buffer,
         logoFile.mimetype
       );
@@ -146,7 +151,8 @@ describe('RegisterEmployerUseCase', () => {
         email: 'employer@test.com',
         password: 'SecurePass123!@',
         role: 'employer' as const,
-        name: 'ACME Corp',
+        firstName: 'ACME',
+        lastName: 'Corp',
         companyName: 'ACME Corporation',
       };
 

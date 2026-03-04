@@ -23,8 +23,8 @@ function getEnvUrl(envVar: string): string {
 export const httpClientConfig: Record<string, HttpClientConfig> = {
   [SERVICE_NAMES.AUTH]: {
     baseURL: getEnvUrl(ENVIRONMENT_VARIABLES.AUTH_SERVICE_URL),
-    timeout: HTTP_TIMEOUTS.DEFAULT,
-    maxRetries: RETRY_CONFIG.DEFAULT_MAX_RETRIES,
+    timeout: HTTP_TIMEOUTS.AUTH,
+    maxRetries: RETRY_CONFIG.AUTH_MAX_RETRIES,
     retryDelay: RETRY_CONFIG.DEFAULT_RETRY_DELAY,
   },
   [SERVICE_NAMES.USER]: {

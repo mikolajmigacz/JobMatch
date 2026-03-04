@@ -20,7 +20,7 @@ describe('Job Service Integration Tests - DynamoDB', () => {
     createJobUseCase = new CreateJobUseCase(repository);
     getJobUseCase = new GetJobUseCase(repository);
     getAllJobsUseCase = new GetAllJobsUseCase(repository);
-  });
+  }, 90000);
 
   afterAll(async () => {
     await testInfra.cleanup();
