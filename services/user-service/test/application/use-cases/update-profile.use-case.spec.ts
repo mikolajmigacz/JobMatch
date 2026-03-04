@@ -20,7 +20,8 @@ describe('UpdateProfileUseCase', () => {
       userId,
       email: 'user@example.com',
       role: 'employer' as const,
-      name: 'John Updated',
+      firstName: 'John',
+      lastName: 'Updated',
       companyName: 'Tech Corp',
       companyLogoUrl: 'https://example.com/logo.png',
       createdAt: new Date().toISOString(),
@@ -31,14 +32,16 @@ describe('UpdateProfileUseCase', () => {
 
     const result = await useCase.execute({
       userId,
-      name: 'John Updated',
+      firstName: 'John',
+      lastName: 'Updated',
       companyName: 'Tech Corp',
       companyLogoUrl: 'https://example.com/logo.png',
     });
 
     expect(result).toEqual(updatedProfile);
     expect(mockRepository.update).toHaveBeenCalledWith(userId, {
-      name: 'John Updated',
+      firstName: 'John',
+      lastName: 'Updated',
       companyName: 'Tech Corp',
       companyLogoUrl: 'https://example.com/logo.png',
     });
@@ -50,7 +53,8 @@ describe('UpdateProfileUseCase', () => {
       userId,
       email: 'user@example.com',
       role: 'job_seeker' as const,
-      name: 'John Doe',
+      firstName: 'John',
+      lastName: 'Doe',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -70,7 +74,8 @@ describe('UpdateProfileUseCase', () => {
       userId,
       email: 'user@example.com',
       role: 'employer' as const,
-      name: 'Jane Updated',
+      firstName: 'Jane',
+      lastName: 'Updated',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -79,12 +84,14 @@ describe('UpdateProfileUseCase', () => {
 
     const result = await useCase.execute({
       userId,
-      name: 'Jane Updated',
+      firstName: 'Jane',
+      lastName: 'Updated',
     });
 
     expect(result).toEqual(updatedProfile);
     expect(mockRepository.update).toHaveBeenCalledWith(userId, {
-      name: 'Jane Updated',
+      firstName: 'Jane',
+      lastName: 'Updated',
     });
   });
 });

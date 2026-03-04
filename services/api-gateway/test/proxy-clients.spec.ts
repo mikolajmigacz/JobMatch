@@ -38,23 +38,15 @@ describe('AuthServiceClient', () => {
     expect(result.data).toEqual({ message: 'success' });
   });
 
-  it('should retry on failure and succeed', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const mockResponse: AxiosResponse = {
-      data: { message: 'success' },
-      status: 200,
-      statusText: 'OK',
-      headers: {},
-      config: { headers: {} } as any,
-    };
-    jest
-      .spyOn(httpService, 'request')
-      .mockReturnValueOnce(throwError(() => new Error('Network error')))
-      .mockReturnValueOnce(of(mockResponse));
+  it('should fail immediately without retrying (auth has maxRetries=0)', async () => {
+    const networkError = new Error('Network error');
+    jest.spyOn(httpService, 'request').mockReturnValue(throwError(() => networkError));
+    jest.spyOn(errorHandler, 'handle').mockImplementation(() => {
+      throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+    });
 
-    const result = await client.request({ method: 'GET', url: '/test' });
-
-    expect(result.data).toEqual({ message: 'success' });
+    await expect(client.request({ method: 'GET', url: '/test' })).rejects.toThrow(HttpException);
+    expect(httpService.request).toHaveBeenCalledTimes(1);
   });
 
   it('should handle errors after max retries', async () => {

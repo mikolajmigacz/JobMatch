@@ -153,7 +153,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const formData = new FormData();
           formData.append('email', validation.data.email);
           formData.append('password', validation.data.password);
-          formData.append('name', validation.data.name);
+          formData.append('firstName', validation.data.firstName);
+          formData.append('lastName', validation.data.lastName);
           formData.append('role', validation.data.role);
           formData.append('companyName', validation.data.companyName);
           formData.append('companyLogo', logoFile);
